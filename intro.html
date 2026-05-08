@@ -35,31 +35,31 @@
       border-radius: 26px;
       border: 1px solid rgba(116,152,207,0.20);
       box-shadow: 0 24px 60px rgba(0,0,0,0.30);
-      background-image: url("/static/images/page2_clean.jpg");
-      background-size: auto 100%;
-      background-position: right center;
+      background-image: url("/static/images/page2_bg_18k.jpg");
+      background-size: 70% auto;
+      background-position: right top;
       background-repeat: no-repeat;
     }
     .page2-overlay {
       position: absolute;
       inset: 0 auto 0 0;
-      width: 58%;
+      width: 57%;
       height: 100%;
       background: linear-gradient(
         90deg,
         rgba(3,12,28,0.99) 0%,
         rgba(3,12,28,0.96) 36%,
-        rgba(3,12,28,0.78) 64%,
-        rgba(3,12,28,0.16) 100%
+        rgba(3,12,28,0.72) 68%,
+        rgba(3,12,28,0.00) 100%
       );
       pointer-events: none;
-      z-index: 1;
+      z-index: 3;
     }
     .rules-title {
       position: absolute;
       left: 5.2%;
       top: 15.2%;
-      z-index: 2;
+      z-index: 4;
       margin: 0;
       font-size: clamp(42px, 3.6vw, 54px);
       line-height: 1.05;
@@ -73,7 +73,7 @@
       position: absolute;
       left: 5.25%;
       top: 33.4%;
-      z-index: 2;
+      z-index: 4;
       margin: 0;
       font-size: 18px;
       line-height: 1.35;
@@ -88,13 +88,13 @@
       width: 610px;
       height: 1px;
       background: linear-gradient(90deg, rgba(127,179,255,0.38), rgba(127,179,255,0));
-      z-index: 2;
+      z-index: 4;
     }
     .rules-list {
       position: absolute;
       left: 5.25%;
       top: 41.4%;
-      z-index: 2;
+      z-index: 4;
       width: 760px;
       max-width: 49vw;
     }
@@ -155,12 +155,48 @@
     .orange .dot { color: #ff8a1f; }
     .green .dot { color: #00d27a; }
     .yellow .dot { color: #ffd24d; }
+    .page2-shield-layer {
+      position: absolute;
+      z-index: 1;
+      width: min(14vw, 220px);
+      max-width: 220px;
+      height: auto;
+      left: 68.0%;
+      top: 8.2%;
+      transform: translateX(-50%);
+      opacity: 0.95;
+      filter: drop-shadow(0 0 18px rgba(0,170,255,0.90)) drop-shadow(0 0 46px rgba(0,110,255,0.55));
+      pointer-events: none;
+    }
+    .page2-items-layer {
+      position: absolute;
+      z-index: 2;
+      width: min(56vw, 760px);
+      height: auto;
+      right: 1.5%;
+      top: 12.0%;
+      pointer-events: none;
+      filter: drop-shadow(0 18px 32px rgba(0,0,0,0.40));
+    }
+    .page2-handshake-layer {
+      position: absolute;
+      z-index: 2;
+      left: 68.0%;
+      top: calc(8.2% + min(14vw, 220px) - 18px);
+      transform: translateX(-50%);
+      width: auto;
+      height: auto;
+      max-width: none;
+      opacity: 1;
+      pointer-events: none;
+      filter: drop-shadow(0 18px 32px rgba(0,0,0,0.40));
+    }
     .controls {
       position: absolute;
       left: 5%;
       right: 5%;
       bottom: 20px;
-      z-index: 3;
+      z-index: 5;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -182,7 +218,20 @@
     }
     .primary-btn { background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%); color: #13233b; box-shadow: 0 12px 30px rgba(255,153,0,0.28); }
     .primary-btn:hover, .ghost-btn:hover { transform: translateY(-1px); }
-    .footer-version { position: fixed; right: 14px; bottom: 10px; font-size: 12px; color: #94a3b8; z-index: 9999; pointer-events: none; }
+    .footer-version {
+  position: fixed;
+  right: 20px;
+  bottom: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(255,255,255,0.72);
+  opacity: 1;
+  z-index: 70;
+  pointer-events: none;
+}
 
     @media (max-height: 760px) and (min-width: 901px) {
       .rules-title { top: 10.5%; font-size: 40px; }
@@ -223,10 +272,13 @@
             <div class="brand-sub subtitle">Safe Transactions</div>
           </div>
         </div>
-      <div class="demo-status">Page 2</div>
+      <div class="demo-status"></div>
     </div>
     <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill"></div></div></div>
     <section class="page2-hero">
+      <img class="page2-shield-layer" src="/static/assets/bazont_page2_shield.png" alt="" aria-hidden="true">
+      <img class="page2-handshake-layer" src="/static/images/hs_overlay.png" alt="" aria-hidden="true">
+      <img class="page2-items-layer" src="/static/images/page2_items_18k.png" alt="" aria-hidden="true">
       <div class="page2-overlay"></div>
       <h1 class="rules-title">The Rules That<br>Protect Both Sides</h1>
       <p class="rules-subtitle">Clear rules. Trusted trades. Peace of mind for everyone.</p>
@@ -278,7 +330,7 @@
     </section>
 
   </main>
-  <div class="footer-version"><span id="visible-version">Bazont15Q.zip</span></div>
+  <div class="footer-version"><span id="visible-version">Bazont19D.zip</span></div>
 <script>
   (function () {
     const prev = document.getElementById("prevBtn");

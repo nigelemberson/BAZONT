@@ -1,0 +1,13 @@
+PAGE 1 UNCHANGED: PASS
+
+Changed files (excluding this proof folder):
+handover.txt
+intro.html
+version.txt
+forms/version.txt
+
+Added files (excluding this proof folder):
+static/images/page2_bg_18k.png
+static/images/page2_items_18k.png
+
+Removed files:

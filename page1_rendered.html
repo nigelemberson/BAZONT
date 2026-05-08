@@ -67,7 +67,7 @@
       border: 1px solid rgba(116,152,207,0.20);
       box-shadow: 0 24px 60px rgba(0,0,0,0.30);
       background-color: #061225;
-      background-image: url("static/images/page1_background.png?v=17U");
+      background-image: url("static/images/page1_background.jpg?v=17U");
       background-size: min(60vw, 890px) auto;
       background-position: right center;
       background-repeat: no-repeat;
@@ -146,7 +146,7 @@
 
     .deadlock-line {
       position: absolute;
-      left: 62.6%;
+      left: calc(62.6% - 20px);
       top: 39.4%;
       width: 15.4%;
       height: 0;
@@ -204,8 +204,8 @@
 
     .deadlock-center {
       position: absolute;
-      left: 68.8%;
-      top: 47.0%;
+      left: calc(68.8% - 10px);
+      top: calc(47.0% + 20px);
       transform: translate(-50%, -50%);
       text-align: center;
       z-index: 2;
@@ -214,7 +214,7 @@
     }
     .deadlock-word {
       color: var(--bazont-red);
-      font: 760 20pt/.9 Arial Black, Arial, Helvetica, sans-serif;
+      font: 760 40px/.9 Arial Black, Arial, Helvetica, sans-serif;
       letter-spacing: .032em;
       text-transform: uppercase;
     }
@@ -292,8 +292,8 @@
       .page1-text { font-size: 22px; line-height: 1.24; }
       .controls { bottom: 16px; }
       .nav-button { padding: 10px 20px; font-size: 16px; min-width: 150px; }
-      .deadlock-center { top: 46.8%; }
-      .deadlock-word { font-size: 28pt; }
+      .deadlock-center { top: calc(46.8% + 20px); }
+      .deadlock-word { font-size: 40px; }
       .deadlock-subtitle { font-size: 15pt; }
     }
 
@@ -322,6 +322,7 @@
 
 
 
+/* Bazont18W: Page 1 shield restyled to match Page 2 luminous shield family. Position and size preserved. */
 .bazont-css-shield{
   position:absolute;
   left:68.6%;
@@ -330,26 +331,26 @@
   height:clamp(70px, 6.2vw, 92px);
   z-index:3;
   pointer-events:none;
-  transform:translate(calc(-50% + 20px), -40px);
+  transform:translate(calc(-50% + 2px), -40px);
   filter:
-    drop-shadow(0 0 10px rgba(82, 174, 255, .92))
-    drop-shadow(0 0 24px rgba(38, 132, 255, .70))
-    drop-shadow(0 0 42px rgba(10, 76, 215, .44));
+    drop-shadow(0 0 14px rgba(112, 204, 255, .98))
+    drop-shadow(0 0 34px rgba(42, 150, 255, .82))
+    drop-shadow(0 0 64px rgba(0, 86, 255, .58));
 }
 .bazont-css-shield::before{
   content:"";
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(145deg,#1d8fff 0%,#0b5ee8 45%,#04338f 100%);
   clip-path:polygon(50% 0%, 90% 18%, 82% 66%, 50% 100%, 18% 66%, 10% 18%);
-  border:2px solid rgba(240,248,255,.9);
+  background:
+    linear-gradient(145deg, rgba(55, 170, 255, .32) 0%, rgba(5, 75, 190, .24) 48%, rgba(2, 20, 70, .18) 100%);
+  border:2.5px solid rgba(198, 239, 255, .98);
   box-shadow:
-    0 0 16px rgba(82, 174, 255, .95),
-    0 0 34px rgba(38, 132, 255, .70),
-    0 8px 20px rgba(0,0,0,.45),
-    inset 0 2px 12px rgba(255,255,255,.34),
-    inset 0 -10px 16px rgba(0,0,0,.35);
+    0 0 18px rgba(160, 225, 255, .95),
+    0 0 42px rgba(36, 154, 255, .78),
+    0 0 80px rgba(0, 91, 255, .52),
+    inset 0 0 20px rgba(112, 201, 255, .36),
+    inset 0 0 42px rgba(0, 58, 160, .24);
 }
 .bazont-css-shield::after{
   content:"B";
@@ -360,9 +361,13 @@
   justify-content:center;
   color:#ffffff;
   font:900 clamp(35px, 3.2vw, 48px)/1 Arial Black, Arial, sans-serif;
-  text-shadow:0 2px 6px rgba(0,0,0,.55);
+  text-shadow:
+    0 0 7px rgba(116, 206, 255, .95),
+    0 0 18px rgba(38, 144, 255, .82),
+    0 2px 6px rgba(0,0,0,.55);
   transform:translateY(-1px);
 }
+
 
 </style>
 </head>
@@ -412,7 +417,7 @@
       </div>
       <div class="copyright" aria-hidden="true">© 2026 Bazont. All rights reserved.</div>
     </section>
-    <div class="footer-version">Bazont17U.zip</div>
+    <div class="footer-version">Bazont17Y.zip</div>
   </main>
 
 </body>

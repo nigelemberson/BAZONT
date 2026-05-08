@@ -67,7 +67,7 @@
       border: 1px solid rgba(116,152,207,0.20);
       box-shadow: 0 24px 60px rgba(0,0,0,0.30);
       background-color: #061225;
-      background-image: url("{{ url_for('static', filename='images/page1_background.png') }}?v=17U");
+      background-image: url("{{ url_for('static', filename='images/page1_background.jpg') }}?v=17U");
       background-size: min(60vw, 890px) auto;
       background-position: right center;
       background-repeat: no-repeat;
@@ -144,27 +144,6 @@
       transform: translateY(-1%);
     }
 
-    .deadlock-line {
-      position: absolute;
-      left: 62.6%;
-      top: 39.4%;
-      width: 15.4%;
-      height: 0;
-      z-index: 2;
-      border-top: 3px dashed rgba(207,235,255,.64);
-      filter: drop-shadow(0 0 3px rgba(80,178,255,.42));
-    }
-    .deadlock-x {
-      position: absolute;
-      left: 70.3%;
-      top: 39.4%;
-      transform: translate(-50%, -50%) scale(0.28);
-      transform-origin: center center;
-      z-index: 3;
-      color: rgba(237,249,255,.88);
-      font: 800 clamp(24px, 2.4vw, 42px)/1 Arial Black, Arial, Helvetica, sans-serif;
-      text-shadow: 0 0 4px rgba(130,212,255,.58), 0 0 10px rgba(75,169,255,.38), 0 3px 9px rgba(0,0,0,.72);
-    }
 
     .intro-copy {
       position: absolute;
@@ -204,8 +183,8 @@
 
     .deadlock-center {
       position: absolute;
-      left: 68.8%;
-      top: 47.0%;
+      left: calc(68.8% - 10px);
+      top: calc(47.0% + 20px);
       transform: translate(-50%, -50%);
       text-align: center;
       z-index: 2;
@@ -214,7 +193,7 @@
     }
     .deadlock-word {
       color: var(--bazont-red);
-      font: 760 20pt/.9 Arial Black, Arial, Helvetica, sans-serif;
+      font: 760 40px/.9 Arial Black, Arial, Helvetica, sans-serif;
       letter-spacing: .032em;
       text-transform: uppercase;
     }
@@ -259,15 +238,19 @@
     .nav-home { background: var(--bazont-green); box-shadow: 0 0 30px rgba(32,191,85,.55); }
     .nav-next { background: linear-gradient(180deg, #ff7c19 0%, #f45f00 100%); box-shadow: 0 0 30px rgba(244,95,0,.42); }
     .footer-version {
-      position: fixed;
-      right: 20px;
-      bottom: 14px;
-      font-size: 16px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.72);
-      z-index: 70;
-      pointer-events: none;
-    }
+  position: fixed;
+  right: 20px;
+  bottom: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(255,255,255,0.72);
+  opacity: 1;
+  z-index: 70;
+  pointer-events: none;
+}
     .copyright {
       position: absolute;
       left: 50%;
@@ -292,8 +275,8 @@
       .page1-text { font-size: 22px; line-height: 1.24; }
       .controls { bottom: 16px; }
       .nav-button { padding: 10px 20px; font-size: 16px; min-width: 150px; }
-      .deadlock-center { top: 46.8%; }
-      .deadlock-word { font-size: 28pt; }
+      .deadlock-center { top: calc(46.8% + 20px); }
+      .deadlock-word { font-size: 40px; }
       .deadlock-subtitle { font-size: 15pt; }
     }
 
@@ -303,7 +286,7 @@
       .page1-hero { min-height: 760px; }
       .page1-overlay { width: 100%; background: linear-gradient(to right, rgba(5,15,30,0.96), rgba(5,15,30,0.82)); }
       .intro-copy { left: 7%; width: 86%; }
-      .party-label, .badge, .deadlock-line, .deadlock-x, .deadlock-center { opacity: .92; }
+      .party-label, .badge, .deadlock-center { opacity: .92; }
       .controls { flex-wrap: nowrap; }
       .nav-button { min-width: 0; flex: 1; }
     }
@@ -322,47 +305,19 @@
 
 
 
-.bazont-css-shield{
+/* Bazont18W: Page 1 standalone shield moved 5px left; dashed line and X removed. */
+.page2-actual-shield{
   position:absolute;
-  left:68.6%;
-  top:24.4%;
-  width:clamp(58px, 5.2vw, 78px);
-  height:clamp(70px, 6.2vw, 92px);
+  left:calc(68.6% - 5px);
+  top:20.0%;
+  width:clamp(118px, 8.8vw, 154px);
+  height:auto;
   z-index:3;
   pointer-events:none;
-  transform:translate(calc(-50% + 20px), -40px);
-  filter:
-    drop-shadow(0 0 10px rgba(82, 174, 255, .92))
-    drop-shadow(0 0 24px rgba(38, 132, 255, .70))
-    drop-shadow(0 0 42px rgba(10, 76, 215, .44));
+  transform:translate(-50%, -50%);
+  filter: drop-shadow(0 0 10px rgba(43,154,255,.28));
 }
-.bazont-css-shield::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(145deg,#1d8fff 0%,#0b5ee8 45%,#04338f 100%);
-  clip-path:polygon(50% 0%, 90% 18%, 82% 66%, 50% 100%, 18% 66%, 10% 18%);
-  border:2px solid rgba(240,248,255,.9);
-  box-shadow:
-    0 0 16px rgba(82, 174, 255, .95),
-    0 0 34px rgba(38, 132, 255, .70),
-    0 8px 20px rgba(0,0,0,.45),
-    inset 0 2px 12px rgba(255,255,255,.34),
-    inset 0 -10px 16px rgba(0,0,0,.35);
-}
-.bazont-css-shield::after{
-  content:"B";
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#ffffff;
-  font:900 clamp(35px, 3.2vw, 48px)/1 Arial Black, Arial, sans-serif;
-  text-shadow:0 2px 6px rgba(0,0,0,.55);
-  transform:translateY(-1px);
-}
+
 
 </style>
 </head>
@@ -386,9 +341,7 @@
 
       <div class="party-label buyer-label">BUYER</div>
       <div class="party-label seller-label">SELLER</div>
-      <div class="bazont-css-shield" aria-hidden="true"></div>
-      <div class="deadlock-line" aria-hidden="true"></div>
-      <div class="deadlock-x" aria-hidden="true">X</div>
+      <img class="page2-actual-shield" src="{{ url_for('static', filename='assets/bazont_page2_shield.png') }}" alt="" aria-hidden="true">
 
       <section class="intro-copy" aria-label="Bazont introduction text">
         <h1>Why Bazont Exists</h1>
@@ -412,7 +365,7 @@
       </div>
       <div class="copyright" aria-hidden="true">© 2026 Bazont. All rights reserved.</div>
     </section>
-    <div class="footer-version">Bazont17U.zip</div>
+    <div class="footer-version">{{ VERSION }}</div>
   </main>
 
 </body>

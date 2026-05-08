@@ -1,0 +1,3 @@
+version.txt: Bazont19A.zip
+forms/version.txt: Bazont19A.zip
+intro visible version: Bazont19A.zip

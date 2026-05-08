@@ -1,0 +1,1 @@
+Corrected from Bazont18V. Page 2 shield CSS reduced from min(17.5vw,275px)/max 275px to min(14vw,220px)/max 220px. Visible version set to Bazont18W.zip. No Page 1 file edits made beyond inherited baseline content.

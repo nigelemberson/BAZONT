@@ -2,4 +2,6 @@ templates/page1_intro.html
 version.txt
 forms/version.txt
 handover.txt
-page1_rendered.html
+v25_PROOF/changed_files.txt
+v25_PROOF/version_check.txt
+v25_PROOF/v25_pass_fail.txt

@@ -1,0 +1,6 @@
+Bazont19A v25 checks
+PASS: Page 1 files left unchanged from Bazont18Z baseline.
+PASS: Only handshake overlay/composition plus required version/handover/proof metadata changed.
+PASS: Handshake arms extended about 20% using existing overlay image material.
+PASS: Right cuff/end smoothed and arm ends feathered/blended.
+PASS: Package extracts at root and contains no nested ZIP.

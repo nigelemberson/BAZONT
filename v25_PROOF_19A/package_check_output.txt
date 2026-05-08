@@ -1,0 +1,5 @@
+PACKAGE CHECK: PASS
+Files found: 138
+Directories found: 23
+Manifest entries checked: 72
+Protected keep files present: yes

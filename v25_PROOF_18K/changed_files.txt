@@ -1,0 +1,6 @@
+handover.txt
+intro.html
+version.txt
+forms/version.txt
+static/images/page2_bg_18k.png
+static/images/page2_items_18k.png

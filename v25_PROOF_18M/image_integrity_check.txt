@@ -1,0 +1,1 @@
+PNG/JPG integrity checks passed for page2_items_18k.png, page2_bg_18k.png, and bazont_page2_shield.png.

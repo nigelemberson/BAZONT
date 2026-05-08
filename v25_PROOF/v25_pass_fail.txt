@@ -1,6 +1,2 @@
-V25 CHECK — Bazont17U
-
-PASS: Single requested Page 1 coordinate amendment only.
-PASS: No image generation used.
-PASS: Existing assets preserved.
-PASS: Version advanced to Bazont17U.zip.
+PASS
+Page 1 only. No image generation. Standalone shield moved 5px left. Dashed line and X removed. Version files updated to Bazont18W.zip.

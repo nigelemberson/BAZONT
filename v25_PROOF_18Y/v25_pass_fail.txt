@@ -1,0 +1,7 @@
+PASS: ZIP extracts correctly.
+PASS: No nested wrapper folder.
+PASS: Page 1 files untouched by this amendment.
+PASS: Only handshake image composition changed visually on Page 2.
+PASS: Handshake natural width is 350px, approximately 62.5% of Bazont18X 560px.
+PASS: Handshake remains centered under shield using existing Page 2 center coordinate.
+PASS: Visible version updated to Bazont18Y.zip.

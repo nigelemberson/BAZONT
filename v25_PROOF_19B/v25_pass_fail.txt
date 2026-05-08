@@ -1,0 +1,6 @@
+PASS: Page 1 unchanged by checksum against Bazont19A baseline.
+PASS: Only handshake layer/file plus required version/handover/proof metadata changed.
+PASS: Old handshake file replaced at same path: static/images/hs_overlay.png.
+PASS: New PNG is RGBA transparent overlay; no baked full-page image used.
+PASS: Multilayer Page 2 structure preserved in intro.html.
+PASS: ZIP packaging checks completed separately.
