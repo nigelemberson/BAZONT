@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bazont — Page 1</title>
+  <style>
+    :root {
+      --bazont-red: #e53935;
+      --bazont-green: #20bf55;
+      --bazont-yellow: #ffd95a;
+      --bazont-orange: #ff7c19;
+      --bazont-blue: #1877f2;
+      --bazont-blue-dark: #061224;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; background: var(--bazont-blue-dark); }
+    body { overflow: hidden; font-family: Arial, Helvetica, sans-serif; }
+
+    .page1-bg {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 620px;
+      overflow: hidden;
+      color: #fff;
+      background-image:
+        linear-gradient(180deg, rgba(0,0,0,.03) 0%, rgba(0,0,0,.02) 38%, rgba(6,18,36,.25) 72%, rgba(6,18,36,.70) 100%),
+        url("static/images/page1_background.png?v=14W");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 100% 100%;
+    }
+
+    .page-number {
+      position: absolute;
+      left: 1.35vw;
+      top: 1.35vh;
+      color: rgba(255,255,255,.92);
+      font: 850 clamp(18px, 1.65vw, 30px)/1 Arial, Helvetica, sans-serif;
+      text-shadow: 0 3px 12px rgba(0,0,0,.72);
+      z-index: 10;
+    }
+
+    .grid-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 99;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.55) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.55) 1px, transparent 1px);
+      background-size: calc(100% / 26) calc(100% / 20);
+      background-position: 0 0;
+    }
+    .grid-overlay::before {
+      content: "A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z";
+      position: absolute;
+      left: 3.9vw;
+      right: 1vw;
+      top: .65vh;
+      color: rgba(255,255,255,.92);
+      font: 900 1.55vw/1 Arial, Helvetica, sans-serif;
+      letter-spacing: 2.38vw;
+      text-shadow: 0 2px 8px rgba(0,0,0,.85);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .grid-overlay::after {
+      content: "1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20";
+      white-space: pre;
+      position: absolute;
+      left: .55vw;
+      top: 5.7vh;
+      color: rgba(255,255,255,.92);
+      font: 900 1.55vw/5.0vh Arial, Helvetica, sans-serif;
+      text-shadow: 0 2px 8px rgba(0,0,0,.85);
+    }
+
+    .party-label {
+      position: absolute;
+      z-index: 4;
+      color: var(--bazont-blue);
+      font: 950 clamp(25px, 2.15vw, 42px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      letter-spacing: .02em;
+      text-shadow: 0 3px 14px rgba(0,0,0,.78);
+    }
+    .buyer-label {
+      font-size: 20pt; left: 47.0%; top: 13.4%; }
+    .seller-label {
+      font-size: 20pt; left: 85.0%; top: 13.4%; }
+
+    .badge {
+      position: absolute;
+      left: 50%;
+      top: 16.3vh;
+      transform: translateX(-50%);
+      width: 14.0vw;
+      height: 14.0vw;
+      max-width: 215px;
+      max-height: 215px;
+      min-width: 132px;
+      min-height: 132px;
+      border-radius: 50%;
+      border: 3px solid rgba(146,199,255,.98);
+      background: radial-gradient(circle, rgba(24,119,242,.26) 0%, rgba(6,18,36,.36) 61%, rgba(6,18,36,.12) 100%);
+      box-shadow: 0 0 28px rgba(62,153,255,.85), inset 0 0 28px rgba(100,180,255,.30);
+      z-index: 4;
+      display: grid;
+      place-items: center;
+    }
+    .badge-shield {
+      width: 66%;
+      height: 76%;
+      background: linear-gradient(180deg, #1268ff 0%, #042e91 100%);
+      clip-path: polygon(50% 0%, 88% 18%, 82% 70%, 50% 100%, 18% 70%, 12% 18%);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 22px rgba(0,0,0,.45), 0 0 20px rgba(0,91,255,.52);
+    }
+    .badge-letter {
+      color: #fff;
+      font: 950 clamp(58px, 6.5vw, 116px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      text-shadow: 0 4px 12px rgba(0,0,0,.65);
+      transform: translateY(-1%);
+    }
+
+    .deadlock-line {
+      position: absolute;
+      left: 35.45vw;
+      top: 39.2vh;
+      width: 29.1vw;
+      height: 0;
+      z-index: 3;
+      border-top: clamp(4px, .45vw, 7px) dashed rgba(207,235,255,.95);
+      filter: drop-shadow(0 0 8px rgba(80,178,255,.95)) drop-shadow(0 0 18px rgba(80,178,255,.72));
+    }
+    .deadlock-x {
+      position: absolute;
+      left: 50%;
+      top: 39.2vh;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      color: rgba(237,249,255,.98);
+      font: 950 clamp(46px, 4.6vw, 80px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      text-shadow: 0 0 9px rgba(130,212,255,.95), 0 0 24px rgba(75,169,255,.85), 0 4px 18px rgba(0,0,0,.85);
+    }
+
+    .intro-copy {
+      position: absolute;
+      left: 3.35vw;
+      top: 45.5vh;
+      width: min(37vw, 610px);
+      text-align: left;
+      z-index: 3;
+      text-shadow: 0 4px 18px rgba(0,0,0,.86), 0 1px 3px rgba(0,0,0,1);
+    }
+    .intro-copy h1 {
+      margin: 0 0 .9vh 0;
+      color: #fff;
+      font: 900 clamp(30px, 2.65vw, 52px)/.96 Arial, Helvetica, sans-serif;
+      letter-spacing: .01em;
+    }
+    .statement {
+      margin: .32vh 0;
+      font: 850 clamp(15px, 1.14vw, 23px)/1.18 Arial, Helvetica, sans-serif;
+    }
+    .red { color: var(--bazont-red); }
+    .yellow { color: var(--bazont-yellow); }
+    .green { color: var(--bazont-green); }
+    .green-block { margin-top: 1.35vh; white-space: nowrap; }
+
+    .deadlock-center {
+      position: absolute;
+      left: 50%;
+      top: 48.2vh;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
+      text-shadow: 0 7px 24px rgba(0,0,0,.92), 0 2px 5px rgba(0,0,0,1);
+    }
+    .deadlock-word {
+      color: var(--bazont-red);
+      font: 950 clamp(42px, 4.4vw, 74px)/.88 Arial Black, Arial, Helvetica, sans-serif;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+    .deadlock-subtitle {
+      margin-top: .65vh;
+      color: rgba(255,255,255,.94);
+      font: italic 700 clamp(17px, 1.35vw, 28px)/1.05 Georgia, 'Times New Roman', serif;
+      letter-spacing: .015em;
+    }
+
+    .rule-box {
+      position: absolute;
+      left: 3.3vw;
+      bottom: 10.0vh;
+      width: min(57.5vw, 960px);
+      min-height: 16.1vh;
+      padding: 2.05vh 2.0vw 2.05vh 11.0vw;
+      border-radius: 18px;
+      background: rgba(3, 12, 24, .78);
+      border: 2px solid rgba(24,119,242,.82);
+      box-shadow: 0 10px 34px rgba(0,0,0,.44), inset 0 0 22px rgba(24,119,242,.13);
+      color: rgba(255,255,255,.98);
+      z-index: 3;
+      text-shadow: 0 4px 18px rgba(0,0,0,.82), 0 1px 3px rgba(0,0,0,.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+    }
+    .rule-box::before {
+      content: none;
+      display: none;
+      position: absolute;
+      left: 2.0vw;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6.8vw;
+      height: 6.8vw;
+      min-width: 92px;
+      min-height: 92px;
+      max-width: 128px;
+      max-height: 128px;
+      aspect-ratio: 1 / 1;
+      flex: 0 0 auto;
+      color: #116dff;
+      font: 950 clamp(54px, 5.8vw, 98px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      display: grid;
+      place-items: center;
+      clip-path: polygon(50% 0%, 88% 18%, 82% 70%, 50% 100%, 18% 70%, 12% 18%);
+      border: 6px solid #116dff;
+      filter: drop-shadow(0 0 10px rgba(17,109,255,.5));
+    }
+    .rule-head,
+    .rule-sub {
+      max-width: 760px;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: normal;
+      margin: 0;
+      font-size: clamp(22px, 1.74vw, 34px);
+      line-height: 1.22;
+    }
+    .rule-head { font-weight: 800; }
+    .rule-sub { font-weight: 500; }
+
+    .nav-button {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 5.8vh;
+      min-height: 42px;
+      border-radius: 28px;
+      color: #fff;
+      font: 850 clamp(18px, 1.5vw, 30px)/1 Arial, Helvetica, sans-serif;
+      text-decoration: none;
+      z-index: 4;
+      text-shadow: 0 2px 8px rgba(0,0,0,.45);
+    }
+    .nav-home {
+      left: 3.35vw;
+      bottom: 2.1vh;
+      width: 9.0vw;
+      min-width: 128px;
+      background: var(--bazont-green);
+      box-shadow: 0 0 30px rgba(32,191,85,.55);
+    }
+    .nav-next {
+      right: 4.4vw;
+      bottom: 3.5vh;
+      width: 20.6vw;
+      min-width: 282px;
+      background: linear-gradient(180deg, #ff7c19 0%, #f45f00 100%);
+      box-shadow: 0 0 30px rgba(244,95,0,.42);
+    }
+    .page-version {
+      position: absolute;
+      right: 4.1vw;
+      bottom: 1.5vh;
+      color: rgba(229,237,249,.83);
+      font: 500 clamp(12px, .88vw, 17px)/1 Arial, Helvetica, sans-serif;
+      letter-spacing: .01em;
+      text-shadow: 0 2px 8px rgba(0,0,0,.74);
+      z-index: 4;
+    }
+    .copyright {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 1.5vh;
+      color: rgba(229,237,249,.72);
+      font: 500 clamp(12px, .88vw, 17px)/1 Arial, Helvetica, sans-serif;
+      white-space: nowrap;
+      text-shadow: 0 2px 8px rgba(0,0,0,.74);
+      z-index: 4;
+    }
+
+    @media (max-height: 760px) {
+      .intro-copy { top: 44.8vh; }
+      .intro-copy h1 { font-size: clamp(28px, 2.45vw, 46px); }
+      .statement { font-size: clamp(14px, 1.05vw, 20px); }
+      .deadlock-center { top: 48.5vh; }
+      .deadlock-word { font-size: clamp(40px, 4.0vw, 66px); }
+      .rule-box { bottom: 10.2vh; min-height: 15.5vh; padding-top: 1.5vh; padding-bottom: 1.5vh; }
+      .rule-head, .rule-sub { font-size: clamp(20px, 1.58vw, 30px); line-height: 1.20; }
+      .nav-home { bottom: 2.3vh; }
+      .nav-next { bottom: 3.5vh; }
+    }
+  
+    
+
+</style>
+</head>
+<body>
+  <main class="page1-bg" aria-label="Why Bazont Exists">
+    <div class="grid-overlay" aria-hidden="true"></div>
+    <div class="page-number">1</div>
+
+    <div class="party-label buyer-label">BUYER</div>
+    <div class="party-label seller-label">SELLER</div>
+    <div class="badge" aria-hidden="true"></div></div>
+    <div class="deadlock-line" aria-hidden="true"></div>
+    <div class="deadlock-x" aria-hidden="true">X</div>
+
+    <section class="intro-copy" aria-label="Bazont introduction text">
+      <h1>Why Bazont Exists</h1>
+      <p class="statement red">Remote transactions can be risky.</p>
+      <p class="statement yellow">Without protection, both buyer and seller<br>face a high level of risk.</p>
+      <div class="statement green green-block">
+        1) Buyers don't want to send their money first.<br>
+        2) Sellers don't want to send their goods first.<br>
+        This creates deadlock.
+      </div>
+    </section>
+
+    <section class="deadlock-center" aria-label="Deadlock phrase">
+      <div class="deadlock-word">DEADLOCK</div>
+      <div class="deadlock-subtitle">...in the canyon of trade.</div>
+    </section>
+
+    <section class="rule-box" aria-label="Bazont payment rule">
+      <p class="rule-head">Bazont removes the deadlock by holding the payment securely.</p>
+      <p class="rule-sub">Payment is released only when the courier confirms delivery.</p>
+    </section>
+
+    <a class="nav-button nav-home" href="page0.html">← Home</a>
+    <a class="nav-button nav-next" href="intro.html">Next: How It Works →</a>
+    <div class="copyright" aria-hidden="true">© 2026 Bazont. All rights reserved.</div>
+    <div class="page-version">Version 14W</div>
+  </main>
+
+</body>
+</html>

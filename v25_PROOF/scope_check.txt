@@ -1,0 +1,10 @@
+Allowed substantive file change:
+- templates/page1_intro.html
+
+Allowed metadata/version changes:
+- version.txt
+- forms/version.txt
+- page1_rendered.html stale version/render reference updated to avoid old 16P display
+
+Allowed v25_PLUS_PROOF addition:
+- v25_PROOF/ audit folder

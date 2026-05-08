@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Login</title>
+  <link rel="stylesheet" href="/forms/style.css">
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">18</div>
+<div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:22.22%"></div></div></div>
+    <div class="steps">
+      <div class="step">17<br>Register</div>
+      <div class="step active">18<br>Login</div>
+      <div class="step">19<br>Role</div>
+      <div class="step">20<br>Dashboard</div>
+      <div class="step">21<br>Create</div>
+      <div class="step">22<br>Invite</div>
+      <div class="step">23<br>Transaction</div>
+      <div class="step">24<br>Actions</div>
+      <div class="step">25<br>Courier</div>
+    </div>
+
+
+
+    <div class="grid-2">
+      <div class="form-card">
+        <form id="login-form" method="post" action="/login" style="margin: 0;">
+          <h1>Login</h1>
+          <p>Now log in using the account you just created.</p>
+          <label class="label">Email address</label>
+          <input class="field" id="login-email" name="email" type="email" autocomplete="username" value="{{ prefill_email|default('')|e }}" aria-describedby="login-email-error">
+          <div class="field-error" id="login-email-error" aria-live="polite"></div>
+          <label class="label">Password</label>
+          <input class="field" id="login-password" name="password" type="password" autocomplete="current-password" value="{{ prefill_password|default('')|e }}" aria-describedby="login-password-error">
+          <div class="field-error" id="login-password-error" aria-live="polite"></div>
+          <div class="hint" id="login-hint">Enter your registered email address and password to log into the live platform.</div>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Purpose of this page</h2>
+        <p>This confirms the account exists.</p>
+        <p><strong style="color:#22c55e;">The Buyer</strong><br>
+        The buyer can now log into the platform and create a transaction.</p>
+        <p><strong style="color:#3b82f6;">The Seller</strong><br>
+        The seller can now log into the platform, review the transaction, and proceed with the sale.</p>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary" id="login-back" href="/register">← Back</a>
+      <form method="post" action="/test-login" style="margin: 0;">
+        <button class="btn btn-primary" type="submit">Test Login</button>
+      </form>
+      <a class="btn btn-primary" id="login-next" href="#">Next →</a>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  right: 20px;
+  bottom: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.72);
+  z-index: 70;
+}
+
+.field-error {
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fca5a5;
+}
+
+.field-invalid {
+  border-color: rgba(248, 113, 113, 0.95) !important;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
+}
+
+    
+
+</style>
+<div class="footer-version">{{ VERSION }}</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("login-form");
+  const emailField = document.getElementById("login-email");
+  const passwordField = document.getElementById("login-password");
+  const hint = document.getElementById("login-hint");
+  const nextButton = document.getElementById("login-next");
+  const emailError = document.getElementById("login-email-error");
+  const passwordError = document.getElementById("login-password-error");
+
+  function clearErrors() {
+    emailField.classList.remove("field-invalid");
+    passwordField.classList.remove("field-invalid");
+    emailError.textContent = "";
+    passwordError.textContent = "";
+  }
+
+  function setError(field, errorEl, message) {
+    field.classList.add("field-invalid");
+    errorEl.textContent = message;
+  }
+
+  async function submitLiveLogin(event) {
+    if (event) event.preventDefault();
+    clearErrors();
+
+    const email = emailField.value.trim();
+    const password = passwordField.value;
+    let valid = true;
+
+    if (!email) {
+      valid = false;
+      setError(emailField, emailError, "Enter your registered email address.");
+    }
+    if (!password) {
+      valid = false;
+      setError(passwordField, passwordError, "Enter your password.");
+    }
+    if (!valid) {
+      hint.textContent = "Please correct the highlighted items before continuing.";
+      return;
+    }
+
+    hint.textContent = "Checking your live login…";
+    nextButton.classList.add("disabled");
+
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        headers: {"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"},
+        body: new URLSearchParams({ email, password }).toString(),
+        credentials: "same-origin",
+        redirect: "follow"
+      });
+
+      const finalUrl = response.url || "";
+      if (response.redirected && finalUrl && !finalUrl.endsWith('/login')) {
+        window.location.href = finalUrl;
+        return;
+      }
+
+      setError(emailField, emailError, "Invalid email or password.");
+      setError(passwordField, passwordError, "Please try again.");
+      hint.textContent = "Invalid email or password.";
+    } catch (error) {
+      hint.textContent = "Login could not reach the live account system. Please try again.";
+    } finally {
+      nextButton.classList.remove("disabled");
+    }
+  }
+
+  emailField.addEventListener("input", clearErrors);
+  passwordField.addEventListener("input", clearErrors);
+  form.addEventListener("submit", submitLiveLogin);
+  nextButton.addEventListener("click", submitLiveLogin);
+});
+</script>
+
+
+</body>
+</html>

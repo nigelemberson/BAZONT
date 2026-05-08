@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% set f = tx_financials(tx) %}
+{% set tx_view = request.args.get('view', 'overview') %}
+{% if tx_view not in ['overview', 'actions', 'logs'] %}{% set tx_view = 'overview' %}{% endif %}
+{% block content %}
+<style>
+  .tx-summary-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+  .tx-summary-columns table {
+    width: 100%;
+    margin: 0;
+  }
+  .transaction-split-page {
+    gap: 10px;
+  }
+  .tx-top-section {
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+  }
+  .tx-top-section .hero-title {
+    font-size: 2.25rem !important;
+    margin-bottom: 6px !important;
+  }
+  .tx-top-section .hero-subtitle {
+    font-size: 1.06rem !important;
+    line-height: 1.28 !important;
+  }
+  .tx-summary-panel {
+    padding: 12px 2rem !important;
+  }
+  .tx-summary-panel .section-title {
+    margin-bottom: 6px !important;
+  }
+  .tx-summary-panel .muted {
+    margin-bottom: 10px !important;
+  }
+  .tx-summary-panel th,
+  .tx-summary-panel td {
+    padding: 8px 10px !important;
+    font-size: 0.96rem !important;
+  }
+  .tx-summary-panel th {
+    font-size: 0.88rem !important;
+  }
+  .tx-size-single-line {
+    white-space: nowrap;
+  }
+  .tx-invitation-sent-pill {
+    background: var(--success-bg) !important;
+    color: var(--success) !important;
+    border: 1px solid #c7efd2 !important;
+    box-shadow: none !important;
+    padding: 8px 14px !important;
+    min-height: 0 !important;
+    line-height: 1.1 !important;
+  }
+  .tx-back-blue {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 0 10px rgba(59,130,246,0.5) !important;
+  }
+  .tx-fee-note-gap {
+    margin-top: 18px !important;
+  }
+  .tx-pay-cancel-row {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 10px;
+  }
+  .tx-pay-cancel-row button {
+    width: auto !important;
+    min-width: 190px;
+  }
+  .tx-pay-button {
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    color: #ffffff !important;
+    border: none !important;
+  }
+  .tx-cancel-button {
+    background: #d9534f !important;
+    color: white !important;
+    border: none !important;
+  }
+  @media (max-width: 900px) {
+    .tx-summary-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+
+    
+
+</style>
+<div class="stack transaction-split-page">
+  <section class="hero-card tx-top-section">
+    <div>
+      <h1 class="hero-title">Transaction {{ tx['public_id'] }}</h1>
+      <p class="hero-subtitle">Shared transaction page for buyer and seller. Seller must upload tracking within {{ TRACKING_DEADLINE_DAYS }} days after payment. Delivered status causes release of funds to seller.</p>
+      <div class="badge-line">
+        <span class="pill">{{ tx['status'] }}</span>
+        <span class="pill neutral">record: {{ tx['hold_status'] }}</span>
+        {% if tx['status'] == 'INVITED' %}<span class="pill">Invite stage</span>{% endif %}
+        {% for category, message in FLASH_MESSAGES|default([]) %}
+          {% if category == 'success' and message == 'Invitation sent.' %}<span class="pill good tx-invitation-sent-pill">Invitation sent.</span>{% endif %}
+        {% endfor %}
+        {% if tx['status'] == 'PAID' %}<span class="pill" style="background:#e7f0ff;color:#123f8e;">Funds secured</span>{% endif %}
+        {% if tx['status'] == 'TRACKING_SUBMITTED' %}<span class="pill good">Tracking submitted</span>{% endif %}
+        {% if tx['status'] == 'RELEASED' %}<span class="pill good">Transaction complete — Seller paid</span>{% endif %}
+        {% if tx['status'] == 'REFUNDED' %}<span class="pill warn">Transaction complete — Buyer refunded</span>{% endif %}
+        {% if tx['status'] == 'CANCELLED' %}<span class="pill warn">Transaction cancelled</span>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% if tx_view == 'overview' %}
+  <section class="panel tx-summary-panel tx-page-section">
+    <h3 class="section-title">Transaction summary</h3>
+    <div class="tx-summary-columns">
+      <table>
+        <tr><th>Buyer user ID</th><td>{{ tx['buyer_user_id'] }}</td></tr>
+        <tr><th>Seller email</th><td>{{ tx['seller_email'] }}</td></tr>
+        <tr><th>Seller user ID</th><td>{{ tx['seller_user_id'] or 'Not joined yet' }}</td></tr>
+        <tr><th>Description</th><td>{{ tx['item_description'] }}</td></tr>
+        <tr><th>Payment received</th><td>{{ tx['payment_received_at'] or 'No' }}</td></tr>
+      </table>
+      <table>
+        <tr><th>Item price</th><td>₱{{ '%.2f'|format(tx['item_price']) }}</td></tr>
+        <tr><th>Shipping price</th><td>₱{{ '%.2f'|format(tx['shipping_price']) }}</td></tr>
+        <tr><th>Buyer’s platform fee</th><td>₱{{ '%.2f'|format(f.buyer_fee) }}</td></tr>
+        <tr><th>Transaction total</th><td><strong>₱{{ '%.2f'|format(f.transaction_total) }}</strong></td></tr>
+        <tr><th>Weight</th><td>{{ tx['weight_kg'] }} kg</td></tr>
+      </table>
+      <table>
+        <tr><th>Size</th><td class="tx-size-single-line">{{ tx['length_cm'] }} × {{ tx['width_cm'] }} × {{ tx['height_cm'] }} cm</td></tr>
+        <tr><th>Tracking</th><td>{{ tx['courier_name'] or '-' }} {{ tx['tracking_number'] or '-' }}</td></tr>
+        <tr><th>Tracking submitted</th><td>{{ tx['tracking_submitted_at'] or '-' }}</td></tr>
+        <tr><th>Released at</th><td>{{ tx['released_at'] or '-' }}</td></tr>
+        <tr><th>Refunded at</th><td>{{ tx['refunded_at'] or '-' }}</td></tr>
+      </table>
+    </div>
+  </section>
+  <div class="tx-nav-row">
+    <a class="btn tx-back-blue" href="{{ url_for('invitation_preview', public_id=tx['public_id']) if current_user and current_user['role'] == 'buyer' else url_for('seller_dashboard') }}">Back</a>
+    <a class="btn" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Next → Buyer Actions</a>
+  </div>
+
+  {% elif tx_view == 'actions' %}
+  <section class="action-card tx-page-section tx-action-page">
+    {% if current_user and current_user['role'] == 'seller' %}
+    <h3 class="section-title">Seller action panel</h3>
+    <div class="fee-card compact-financial-card">
+      <div class="tiny">Funds held</div>
+      <div class="fee-amount">₱{{ '%.2f'|format(f.platform_holds) }}</div>
+      <p class="muted">Seller will receive <strong>₱{{ '%.2f'|format(f.seller_receives) }}</strong> after DELIVERED.</p>
+    </div>
+    {% if not tx['payment_received_at'] %}
+    <div class="panel" style="margin-top:10px;">
+      <strong>Waiting for buyer payment before tracking can be added.</strong>
+    </div>
+    <form method="post">
+      <input type="hidden" name="action" value="submit_tracking">
+      <label>Courier name</label>
+      <input type="text" name="courier_name" value="{{ tx['courier_name'] or '' }}" disabled>
+      <label>Tracking number</label>
+      <input type="text" name="tracking_number" value="{{ tx['tracking_number'] or '' }}" disabled>
+      <button type="submit" disabled>Submit tracking</button>
+    </form>
+    {% else %}
+    <form method="post">
+      <input type="hidden" name="action" value="submit_tracking">
+      <label>Courier name</label>
+      <input type="text" name="courier_name" value="{{ tx['courier_name'] or '' }}" required>
+      <label>Tracking number</label>
+      <input type="text" name="tracking_number" value="{{ tx['tracking_number'] or '' }}" required>
+      <button type="submit">Submit tracking</button>
+    </form>
+    {% endif %}
+    {% else %}
+    <h3 class="section-title">Buyer action panel</h3>
+    <div class="fee-card compact-financial-card">
+      <div class="tiny">Financial breakdown</div>
+      <div class="fee-amount">₱{{ '%.2f'|format(f.buyer_pays) }}</div>
+      <table>
+        <tr><th>Buyer pays now</th><td><strong>₱{{ '%.2f'|format(f.buyer_pays) }}</strong></td></tr>
+        <tr><th>Buyer fee share</th><td>₱{{ '%.2f'|format(f.buyer_fee) }}</td></tr>
+        <tr><th>Platform holds</th><td>₱{{ '%.2f'|format(f.platform_holds) }}</td></tr>
+      </table>
+    </div>
+    <p class="muted tx-fee-note-gap">Platform fee: 3% total. Shared by buyer and seller. Minimum ₱100 per transaction. The platform holds only item + shipping.</p>
+    {% if invite_link %}
+      <div class="panel" style="margin-top:10px;">
+        <strong>Invite sent to email</strong>
+        <div class="tiny" style="margin-top:6px;">{{ tx['seller_email'] }}</div>
+        <div class="actions" style="margin-top:6px;">
+          <button type="button" class="btn soft" onclick="navigator.clipboard.writeText('{{ invite_link }}'); this.style.background='#28a745'; this.style.color='white'; this.innerText='Copied';">Copy Join Link</button>
+        </div>
+      </div>
+    {% endif %}
+    <div class="badge-line" style="margin:10px 0;">
+      {% for method in PAYMENT_METHODS %}
+        <span class="pill neutral">{{ method }}</span>
+      {% endfor %}
+    </div>
+    <form method="post" style="margin-top:6px;">
+      <label>Test Card Number</label>
+      <input type="text" name="test_card_number" placeholder="5555 5555 5555 4444" required>
+      <label>Expiry</label>
+      <input type="text" name="test_card_expiry" placeholder="12/30" required>
+      <label>CVV</label>
+      <input type="text" name="test_card_cvv" placeholder="123" required>
+      <div class="tx-pay-cancel-row">
+        <button class="tx-pay-button" type="submit" name="action" value="pay" {% if tx['payment_received_at'] or tx['status'] == 'CANCELLED' %}disabled{% endif %}>Pay</button>
+        {% if tx['status'] == 'INVITED' and tx['hold_status'] == 'NOT_FUNDED' and not tx['payment_received_at'] %}
+        <button class="tx-cancel-button" type="submit" name="action" value="cancel" formnovalidate>Cancel transaction</button>
+        {% endif %}
+      </div>
+    </form>
+    {% endif %}
+  </section>
+  <div class="tx-nav-row">
+    <a class="btn tx-back-blue" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">← Back</a>
+    <a class="btn" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next → Courier & Logs</a>
+  </div>
+
+  {% elif tx_view == 'logs' %}
+  <section class="panel tx-secondary-section tx-page-section">
+    <h3 class="section-title">Courier events</h3>
+    <table>
+      <tr><th>Time</th><th>Status</th><th>Tracking</th><th>Source</th><th>Note</th></tr>
+      {% for ev in courier_events %}
+      <tr>
+        <td>{{ ev['event_time'] }}</td>
+        <td>{{ ev['status'] }}</td>
+        <td>{{ ev['tracking_number'] }}</td>
+        <td>{{ ev['source'] }}</td>
+        <td>{{ ev['note'] or '' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5">No courier events yet.</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+
+  <section class="panel tx-secondary-section tx-page-section">
+    <h3 class="section-title">Audit trail</h3>
+    <table>
+      <tr><th>Time</th><th>Actor</th><th>Action</th><th>From</th><th>To</th><th>Details</th></tr>
+      {% for row in audit %}
+      <tr>
+        <td>{{ row['created_at'] }}</td>
+        <td>{{ row['actor_type'] }} / {{ row['actor_ref'] }}</td>
+        <td>{{ row['action'] }}</td>
+        <td>{{ row['from_state'] or '' }}</td>
+        <td>{{ row['to_state'] or '' }}</td>
+        <td>{{ row['details'] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6">No audit entries.</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+  <div class="tx-nav-row">
+    <a class="btn secondary" href="{{ url_for('transaction_detail', public_id=tx['public_id'], view='actions') }}">← Back</a>
+    <a class="btn" href="{{ url_for('live_home') }}">Done / Home</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+

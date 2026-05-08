@@ -1,0 +1,27 @@
+BAZONT MASTER BUILD 1M
+
+Baseline
+- Built directly from BAZONT MASTER BUILD 1L
+- No rebuild from scratch
+- No workflow logic changes
+- No route changes
+- No seller logic changes
+- No UI content changes except version-source plumbing
+
+What changed in 1M
+- Fixed version updating permanently by moving the version label to a single source file: version.txt
+- app.py now reads the visible app version from version.txt
+- /__version now reflects the same value from version.txt
+- Top header, page title, and footer version display now stay aligned because they all use the same loaded version value
+
+Files added
+- version.txt
+
+Checks
+- app.py syntax compile passed
+- app launched successfully
+- Home page version label shows 1M
+- /__version returns 1M
+
+Notes
+- For the next build, update version.txt and the app-visible version will update everywhere consistently.

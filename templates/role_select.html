@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero-card">
+  <h1 class="hero-title">Choose dashboard</h1>
+  <p class="hero-subtitle">Select where you want to go next.</p>
+  <div class="actions" style="margin-top:24px;">
+    <a class="btn" href="{{ url_for('buyer_dashboard') }}">Buyer Dashboard</a>
+    <a class="btn secondary" href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
+  </div>
+</section>
+<div class="role-action-row">
+  <a class="btn role-home" href="{{ url_for('gateway_home') }}">Home</a>
+  <a class="btn role-back" href="{{ url_for('login') }}">Back</a>
+  <a class="btn role-logout" href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock %}

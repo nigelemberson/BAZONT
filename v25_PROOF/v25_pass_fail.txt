@@ -1,0 +1,6 @@
+V25 CHECK — Bazont17U
+
+PASS: Single requested Page 1 coordinate amendment only.
+PASS: No image generation used.
+PASS: Existing assets preserved.
+PASS: Version advanced to Bazont17U.zip.

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid-2 register-flow-grid">
+  <section class="hero-card">
+    <h1 class="hero-title">Register</h1>
+    <p class="hero-subtitle">Create your account to enter the real Bazont flow.</p>
+    <form id="real-register-form" method="post" style="margin-top: 18px;">
+      <label>Email</label>
+      <input type="email" name="email" required>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <input type="hidden" name="role" value="buyer">
+    </form>
+  </section>
+  <section class="action-card">
+    <h3 class="section-title">What registration does</h3>
+    <ul>
+      <li>Buyer can create transactions and record payment.</li>
+      <li>Seller can access assigned transactions and upload tracking.</li>
+      <li style="color:#ffd36b;">After registration login is via Home page</li>
+    </ul>
+  </section>
+</div>
+<div class="register-action-row" aria-label="Register page navigation">
+  <a class="btn btn-secondary" href="/">Home</a>
+  <a class="btn btn-secondary" href="/forms/finish.html">Back</a>
+  <div class="register-login-stack">
+    <button class="btn btn-primary" type="submit" form="real-register-form">Register</button>
+    <a class="btn btn-secondary go-login-btn" href="/login">Go to Login</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid-2">
+  <section class="hero-card">
+    <h1 class="hero-title">Seller join</h1>
+    <p class="hero-subtitle">This link is tied to transaction <strong>{{ tx['public_id'] }}</strong> and seller email <strong>{{ tx['seller_email'] }}</strong>.</p>
+    <form method="post" style="margin-top: 18px;">
+      <label>Choose seller password</label>
+      <input type="password" name="password" required>
+      <button type="submit">Join as seller</button>
+    </form>
+  </section>
+  <section class="action-card">
+    <h3 class="section-title">Transaction summary</h3>
+    <table>
+      <tr><th>Description</th><td>{{ tx['item_description'] }}</td></tr>
+      <tr><th>Total</th><td>₱{{ '%.2f'|format(tx['total_amount']) }}</td></tr>
+      <tr><th>Status</th><td>{{ tx['status'] }}</td></tr>
+      <tr><th>record</th><td>{{ tx['hold_status'] }}</td></tr>
+      <tr><th>Buyer pays now</th><td>₱{{ '%.2f'|format(tx_financials(tx).buyer_pays) }}</td></tr>
+      <tr><th>Seller receives on delivery</th><td>₱{{ '%.2f'|format(tx_financials(tx).seller_receives) }}</td></tr>
+    </table>
+  </section>
+</div>
+{% endblock %}

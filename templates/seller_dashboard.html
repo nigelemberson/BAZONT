@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="role-banner seller">
+  {% if current_user %}
+    <div class="role-banner-text">VIEWING AS {{ current_user['role']|upper }}</div>
+  {% endif %}
+</div>
+<div class="stack">
+  <section class="hero-card">
+    <h1 class="hero-title">Seller dashboard</h1>
+    <p class="hero-subtitle">Only transactions assigned to the logged-in seller appear here. Seller payout shown below is after the seller share of the platform fee.</p>
+  </section>
+
+  <section class="grid-4">
+    <div class="stat-card"><div class="tiny">Assigned transactions</div><div class="kpi">{{ transactions|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Awaiting tracking</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'PAID')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Tracking submitted</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'TRACKING_SUBMITTED')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Released</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'RELEASED')|list|length }}</div></div>
+  </section>
+
+  <section class="panel">
+    <h3 class="section-title">Assigned transactions</h3>
+    <table>
+      <tr><th>Public ID</th><th>record total</th><th>Seller receives</th><th>Status</th><th>Tracking</th><th>Action</th></tr>
+      {% for tx in transactions %}
+      {% set f = tx_financials(tx) %}
+      <tr>
+        <td><strong>{{ tx['public_id'] }}</strong></td>
+        <td>₱{{ '%.2f'|format(f.transaction_total) }}</td>
+        <td>₱{{ '%.2f'|format(f.seller_receives) }}</td>
+        <td>{{ tx['status'] }}</td>
+        <td>{{ tx['tracking_number'] or '-' }}</td>
+        <td><a class="btn secondary" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Open</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6">No assigned transactions.</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+</div>
+{% endblock %}

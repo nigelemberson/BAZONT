@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% set f = tx_financials(tx) %}
+{% block content %}
+<style>
+  .ba-stack { display:grid; gap:10px; }
+  .ba-hero { padding:18px 26px !important; }
+  .ba-hero .hero-title { font-size:2.35rem !important; margin-bottom:6px !important; }
+  .ba-hero .hero-subtitle { font-size:1.12rem !important; line-height:1.25 !important; }
+  .ba-status-inline { display:inline-block; margin-left:16px; font-size:1.08rem; white-space:nowrap; }
+  .ba-dot { display:inline-block; margin:0 8px; color:#e5e7eb; }
+  .ba-status-blue { color:#38a4ff; font-weight:900; }
+  .ba-status-gold { color:#fbbf24; font-weight:900; }
+  .ba-grid { display:grid; grid-template-columns:1fr 1.08fr; gap:14px; align-items:stretch; }
+  .ba-panel { padding:20px 24px !important; }
+  .ba-panel .section-title { margin-bottom:8px !important; }
+  .ba-subtitle { color:#cfe2ff; font-weight:800; font-size:1.1rem; margin-bottom:8px; }
+  .ba-table th, .ba-table td { padding:8px 12px !important; font-size:1rem !important; }
+  .ba-table th { width:70%; }
+  .ba-total td, .ba-total th { border-top:2px solid rgba(255,255,255,.14); font-weight:900; }
+  .ba-total td { color:#fbbf24; }
+  .ba-note { margin-top:18px; color:#f8fafc; font-size:1.08rem; line-height:1.38; }
+  .ba-note p { margin:0 0 6px; }
+  .ba-methods { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:8px 0 8px; }
+  .ba-method { border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.07); border-radius:14px; padding:11px 10px; text-align:center; font-weight:900; font-size:1.05rem; }
+  .ba-method.active { border-color:#1d9bf0; box-shadow:0 0 0 1px rgba(29,155,240,.55); }
+  .ba-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .ba-form label { font-size:0.98rem; }
+  .ba-form input { margin-top:4px !important; margin-bottom:9px !important; padding:10px 12px !important; }
+  .ba-pay-row { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:6px; }
+  .ba-pay { background:linear-gradient(135deg,#16a34a,#22c55e) !important; box-shadow:0 14px 30px rgba(34,197,94,.25) !important; }
+  .ba-cancel { background:linear-gradient(135deg,#dc2626,#ef4444) !important; box-shadow:0 14px 30px rgba(239,68,68,.25) !important; }
+  .ba-secure { text-align:center; margin-top:12px; color:#e5e7eb; font-size:1rem; }
+  .ba-nav { display:flex; justify-content:space-between; gap:18px; margin-top:6px; }
+  .ba-nav .btn { width:auto; min-width:190px; }
+  .ba-back-blue { background:linear-gradient(135deg,#3b82f6,#2563eb) !important; color:white !important; border:none !important; box-shadow:0 0 10px rgba(59,130,246,.5) !important; }
+  @media(max-width:900px){ .ba-grid{grid-template-columns:1fr;} .ba-methods,.ba-pay-row,.ba-form-row{grid-template-columns:1fr;} }
+
+    
+
+</style>
+<div class="ba-stack">
+  <section class="hero-card ba-hero">
+    <h1 class="hero-title">Transaction {{ tx['public_id'] }}</h1>
+    <p class="hero-subtitle">Shared transaction page for buyer and seller. Seller must upload tracking within {{ TRACKING_DEADLINE_DAYS }} days after payment.<br>Delivered status causes release of funds to seller. <span class="ba-status-inline">Status: <span class="ba-status-blue">{{ 'NOT YET INVITED' if tx['status'] == 'INVITED' and not tx['payment_received_at'] else tx['status'].replace('_', ' ') }}</span> <span class="ba-dot">•</span> Payment: <span class="ba-status-gold">{{ 'FUNDED' if tx['payment_received_at'] else 'NOT YET FUNDED' }}</span></span></p>
+  </section>
+
+  <div class="ba-grid">
+    <section class="panel ba-panel">
+      <h3 class="section-title">Buyer action panel</h3>
+      <div class="ba-subtitle">Financial breakdown</div>
+      <table class="ba-table">
+        <tr><th>ITEM PRICE</th><td>₱{{ '%.2f'|format(f.item_price) }}</td></tr>
+        <tr><th>SHIPPING FEE</th><td>₱{{ '%.2f'|format(f.shipping_price) }}</td></tr>
+        <tr><th>PLATFORM FEE (3%)</th><td>₱{{ '%.2f'|format(f.buyer_fee) }}</td></tr>
+        <tr class="ba-total"><th>TOTAL AMOUNT DUE</th><td>₱{{ '%.2f'|format(f.buyer_pays) }}</td></tr>
+      </table>
+      <div class="ba-note">
+        <p>Platform fee: 3% total, shared between buyer and seller.</p>
+        <p>Minimum Platform fee 100 peso.</p>
+        <p>The platform holds only the item price and shipping fee.</p>
+      </div>
+    </section>
+
+    <section class="panel ba-panel">
+      <h3 class="section-title">Make a payment</h3>
+      <div class="ba-subtitle">Choose payment method</div>
+      <div class="ba-methods">
+        <div class="ba-method active">GCash</div>
+        <div class="ba-method">Maya</div>
+        <div class="ba-method">Bank transfer</div>
+      </div>
+      <form method="post" class="ba-form">
+        <label>Test Card Number</label>
+        <input type="text" name="test_card_number" placeholder="5555 5555 5555 4444" required>
+        <div class="ba-form-row">
+          <div><label>Expiry</label><input type="text" name="test_card_expiry" placeholder="12/30" required></div>
+          <div><label>CVV</label><input type="text" name="test_card_cvv" placeholder="123" required></div>
+        </div>
+        <div class="ba-pay-row">
+          <button class="ba-pay" type="submit" name="action" value="pay" {% if tx['payment_received_at'] or tx['status'] == 'CANCELLED' %}disabled{% endif %}>Pay</button>
+          {% if tx['status'] == 'INVITED' and tx['hold_status'] == 'NOT_FUNDED' and not tx['payment_received_at'] %}
+          <button class="ba-cancel" type="submit" name="action" value="cancel" formnovalidate>Cancel transaction</button>
+          {% endif %}
+        </div>
+      </form>
+      <div class="ba-secure">🔒 Your payment is secure and encrypted.</div>
+    </section>
+  </div>
+
+  <div class="ba-nav">
+    <a class="btn ba-back-blue" href="{{ url_for('new_transaction') }}">← Back</a>
+    <a class="btn" href="{{ url_for('invitation_preview', public_id=tx['public_id']) }}">Next → Invitation Preview</a>
+  </div>
+</div>
+{% endblock %}
+
+

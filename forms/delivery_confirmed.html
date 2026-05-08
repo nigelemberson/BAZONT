@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Delivery Confirmed</title>
+  <link rel="stylesheet" href="/forms/style.css">
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">14</div>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 14</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:66.66%"></div></div></div>
+    <div class="steps">
+      <div class="step">9<br>Register</div>
+      <div class="step">10<br>Login</div>
+      <div class="step">11<br>Create</div>
+      <div class="step">12<br>Seller</div>
+      <div class="step">13<br>Pay</div>
+      <div class="step active">14<br>Delivery</div>
+      <div class="step">15<br>Release</div>
+      <div class="step">16<br>Finish</div>
+<a href="/faq"><div class="step">26<br>FAQ</div></a>
+    </div>
+
+    <div class="hero">
+      <div class="card">
+        <h1>Delivery confirmed</h1>
+        <p>The parcel has arrived. Confirmation comes from the courier.</p>
+        <div class="sample-box">
+          Item: <strong id="delivery-item">iPhone 11, good condition</strong><br>
+          Courier: <strong id="delivery-courier">LBC</strong><br>
+          Confirmation path: <strong>Courier confirmed delivery</strong>
+        </div>
+      </div>
+      <div class="card">
+        <h2>What the customer learns</h2>
+        <p>Shortly after the parcel arrives, the courier confirms delivery.<br>Payment is still protected until this point.</p>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary" href="/forms/buyer_pays.html">← Back</a>
+      <span class="next-guidance-anchor" style="position:relative;display:inline-block;">
+        <p class="demo-guidance" style="position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);margin:0;white-space:nowrap;color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">Review the details, then click Next</p>
+        <a class="btn btn-primary" href="/forms/payment_released.html">Next →</a>
+      </span>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+    
+
+</style>
+<div class="footer-version"><span id="visible-version">Bazont12B.zip</span></div>
+
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

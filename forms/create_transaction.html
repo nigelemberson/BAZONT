@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Create Transaction</title>
+  <link rel="stylesheet" href="/forms/style.css">
+<style>
+  .create-split { grid-template-columns: 1.16fr 0.84fr; }
+  .page { padding-top: 18px; padding-bottom: 86px; }
+  .steps { margin-bottom: 8px; }
+  .grid-2 { gap: 12px; }
+  .card, .form-card { padding: 16px 18px; }
+  h1 { margin-bottom: 6px; }
+  p { margin-bottom: 6px; }
+  @media (max-width: 900px) {
+    .create-split { grid-template-columns: 1fr; }
+  }
+  .field-error {
+    min-height: 18px;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fca5a5;
+  }
+  .field-invalid {
+    border-color: rgba(248, 113, 113, 0.95) !important;
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
+  }
+  .create-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px 10px;
+    align-items: start;
+  }
+  .create-form-grid .span-3 { grid-column: span 3; }
+  .create-form-grid .span-2 { grid-column: span 2; }
+  .create-form-grid .label { margin-top: 0; }
+  .create-form-grid .field-error { margin-top: 1px; min-height: 6px; }
+  .create-form-grid .label { margin-bottom: 2px; }
+  .create-form-grid .field { padding-top: 8px; padding-bottom: 8px; }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .info-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px;
+    padding: 8px 10px;
+    color: #dbeafe;
+  }
+  .info-box strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #f8fafc;
+  }
+  .create-demo-panel .create-fee-box {
+    margin: 14px 0 14px;
+    max-width: 360px;
+  }
+  @media (max-width: 900px) {
+    .create-form-grid { grid-template-columns: 1fr; }
+    .create-form-grid .span-3, .create-form-grid .span-2 { grid-column: span 1; }
+    .info-grid { grid-template-columns: 1fr; }
+  }
+
+    
+
+</style>
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">11</div>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 11</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:33.33%"></div></div></div>
+    <div class="steps">
+      <div class="step">9<br>Register</div>
+      <div class="step">10<br>Login</div>
+      <div class="step active">11<br>Create</div>
+      <div class="step">12<br>Seller</div>
+      <div class="step">13<br>Pay</div>
+      <div class="step">14<br>Delivery</div>
+      <div class="step">15<br>Release</div>
+      <div class="step">16<br>Finish</div>
+<a href="/faq"><div class="step">26<br>FAQ</div></a>
+    </div>
+
+    <div class="grid-2 create-split">
+      <div class="form-card">
+        <h1>Create transaction</h1>
+        <p id="create-mode-label">Sample mode: values are pre-filled for demonstration.</p>
+        <div class="create-form-grid">
+          <div class="span-3">
+            <label class="label">Item description</label>
+            <input class="field" id="tx-item-description" value="iPhone 11, good condition" aria-describedby="tx-item-description-error">
+            <div class="field-error" id="tx-item-description-error" aria-live="polite"></div>
+          </div>
+
+          <div>
+            <label class="label">Transaction amount</label>
+            <input class="field" id="tx-transaction-amount" value="8500" aria-describedby="tx-transaction-amount-error">
+            <div class="field-error" id="tx-transaction-amount-error" aria-live="polite"></div>
+          </div>
+
+          <div>
+            <label class="label">Shipping fee</label>
+            <input class="field" id="tx-shipping-fee" value="300" aria-describedby="tx-shipping-fee-error">
+            <div class="field-error" id="tx-shipping-fee-error" aria-live="polite"></div>
+          </div>
+          <div>
+            <label class="label">Courier</label>
+            <input class="field" id="tx-courier" value="LBC" aria-describedby="tx-courier-error">
+            <div class="field-error" id="tx-courier-error" aria-live="polite"></div>
+          </div>
+
+          <div class="span-2">
+            <label class="label">Seller email</label>
+            <input class="field" id="tx-seller-email" value="sellerdemo@example.com" aria-describedby="tx-seller-email-error">
+            <div class="field-error" id="tx-seller-email-error" aria-live="polite"></div>
+          </div>
+
+          <div>
+            <label class="label">Weight (kg)</label>
+            <input class="field" value="0.70" readonly>
+            <div class="field-error" aria-hidden="true"></div>
+          </div>
+
+          <div>
+            <label class="label">Length (cm)</label>
+            <input class="field" value="18" readonly>
+            <div class="field-error" aria-hidden="true"></div>
+          </div>
+
+          <div>
+            <label class="label">Width (cm)</label>
+            <input class="field" value="9" readonly>
+            <div class="field-error" aria-hidden="true"></div>
+          </div>
+
+          <div>
+            <label class="label">Height (cm)</label>
+            <input class="field" value="4" readonly>
+            <div class="field-error" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card create-demo-panel">
+        <h2>Demo action</h2>
+        <p>This is a sample transaction screen.<br>Sample details have been entered. Proceed to the next step.</p>
+        <div class="info-box create-fee-box">
+          <strong>Platform fee: 3% total</strong>
+          <div>Shared by buyer and seller</div>
+          <div>Minimum ₱100 per transaction</div>
+        </div>
+        <p class="financial-trust-line" style="margin:6px 0 0;color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">All calculations follow Bazont rules</p>
+        <button type="button" class="btn btn-primary" disabled style="cursor:not-allowed;opacity:0.92;">Send invitation</button>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary" href="/forms/login.html">← Back</a>
+      <span class="next-guidance-anchor" style="position:relative;display:inline-block;">
+        <p class="demo-guidance" style="position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);margin:0;white-space:nowrap;color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">Review the details, then click Next</p>
+        <a class="btn btn-primary" id="create-next" href="/forms/seller_joins.html">Next →</a>
+      </span>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+    
+
+</style>
+<div class="footer-version"><span id="visible-version">Bazont12B.zip</span></div>
+
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

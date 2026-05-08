@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Buyer Pays</title>
+  <link rel="stylesheet" href="/forms/style.css">
+
+<style>
+.page { padding-top: 18px; padding-bottom: 86px; }
+.steps { margin-bottom: 8px; }
+.grid-2 { gap: 12px; }
+.card, .form-card { padding: 16px 18px; }
+h1 { margin-bottom: 6px; }
+.label { margin-top: 6px; margin-bottom: 4px; }
+.field { padding-top: 8px; padding-bottom: 8px; }
+p.muted { margin-top: 6px !important; margin-bottom: 8px; line-height: 1.35; }
+
+    
+
+</style>
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">13</div>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 13</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:55.55%"></div></div></div>
+    <div class="steps">
+      <div class="step">9<br>Register</div>
+      <div class="step">10<br>Login</div>
+      <div class="step">11<br>Create</div>
+      <div class="step">12<br>Seller</div>
+      <div class="step active">13<br>Pay</div>
+      <div class="step">14<br>Delivery</div>
+      <div class="step">15<br>Release</div>
+      <div class="step">16<br>Finish</div>
+<a href="/faq"><div class="step">26<br>FAQ</div></a>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-card">
+        <h1>Buyer pays</h1>
+        <label class="label">Item amount</label>
+        <input class="field" id="pay-item-amount" readonly value="₱8,500">
+        <label class="label">Shipping</label>
+        <input class="field" id="pay-shipping" readonly value="₱300">
+        <label class="label">Buyer fee share</label>
+        <input class="field" id="pay-buyer-fee" readonly value="₱132">
+        <label class="label">Total buyer pays</label>
+        <input class="field" id="pay-total" readonly value="₱8,932">
+        <p class="financial-trust-line" style="margin:6px 0 0;color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">All calculations follow Bazont rules</p>
+      </div>
+      <div class="card">
+        <h2>Important message</h2>
+        <p>The buyer pays into the platform. The seller does not receive the money yet. Funds remain protected until delivery is confirmed.</p>
+        <p class="muted" style="margin-top:8px;">Platform fee: 3% total. Shared by buyer and seller. Minimum ₱100 per transaction.</p>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary" href="/forms/seller_joins.html">← Back</a>
+      <span class="next-guidance-anchor" style="position:relative;display:inline-block;">
+        <p class="demo-guidance" style="position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);margin:0;white-space:nowrap;color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">Review the details, then click Next</p>
+        <a class="btn btn-primary" href="/forms/delivery_confirmed.html">Next →</a>
+      </span>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+    
+
+</style>
+<div class="footer-version"><span id="visible-version">Bazont12B.zip</span></div>
+
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

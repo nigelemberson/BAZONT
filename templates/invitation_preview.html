@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  body.invitation-preview-body .page-wrap > .flash.success { display: none !important; }
+  body.invitation-preview-body .invite-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 18px;
+  }
+  body.invitation-preview-body .invite-header-row .section-title { margin: 0; }
+  body.invitation-preview-body .invite-subtext { white-space: nowrap; font-weight: 700; }
+
+    
+
+</style>
+<div class="stack invitation-preview-page">
+  <section class="panel invitation-preview-panel">
+    <div class="invite-header-row">
+      <h3 class="section-title">Invitation preview</h3>
+      <span class="invite-subtext">Transaction funded. Seller invitation shows FUNDED status.</span>
+    </div>
+    <div class="invitation-clean-copy" aria-label="Seller invitation preview">
+      <div class="invite-meta-panel">
+        <div class="invite-line"><span>TO:</span><strong>{{ tx['seller_email'] }}</strong></div>
+        <div class="invite-line"><span>SUBJECT:</span><strong>Join BAZONT transaction {{ tx['public_id'] }}</strong></div>
+      </div>
+
+      <div class="invite-block invite-link-block">
+        <div class="invite-label">Seller invitation link:</div>
+        <div class="invite-link">{{ url_for('seller_join', token=tx['invite_token'], _external=True) }}</div>
+      </div>
+
+      <div class="invite-rule-text">
+        This transaction is already funded. The buyer has paid Bazont. Funds are held securely and will be released to the seller after the courier reports DELIVERED.
+      </div>
+
+      <div class="invite-grid">
+        <div class="invite-card">
+          <div class="invite-label">Transaction details</div>
+          <p><span>Transaction</span><strong>{{ tx['public_id'] }}</strong></p>
+          <p><span>Item</span><strong>{{ tx['item_description'] }}</strong></p>
+          <p><span>Item price</span><strong>PHP {{ '%.2f'|format(tx['item_price']) }}</strong></p>
+          <p><span>Shipping</span><strong>PHP {{ '%.2f'|format(tx['shipping_price']) }}</strong></p>
+          <p><span>Total secured</span><strong>PHP {{ '%.2f'|format(tx['total_amount']) }}</strong></p>
+        </div>
+        <div class="invite-card">
+          <div class="invite-label">Payment details</div>
+          <p><span>Buyer payment status</span><strong>FUNDED</strong></p>
+          <p><span>Buyer paid into Bazont</span><strong>PHP {{ '%.2f'|format(financials['buyer_pays']) }}</strong></p>
+          <p><span>Seller receives on delivery (after seller fee share)</span><strong>PHP {{ '%.2f'|format(financials['seller_receives']) }}</strong></p>
+          <p><span>Tracking deadline</span><strong>{{ TRACKING_DEADLINE_DAYS }} days after payment</strong></p>
+          <p><span>Release rule</span><strong>Payment is released after courier confirms DELIVERED.</strong></p>
+        </div>
+      </div>
+
+      <div class="invite-rule-text">
+        Tracking must be uploaded within {{ TRACKING_DEADLINE_DAYS }} days after payment. Payment is released after courier confirms DELIVERED.
+      </div>
+    </div>
+  </section>
+
+  <div class="page-22-bottom-actions" aria-label="Invitation preview navigation">
+    <a class="btn page-22-home" href="{{ url_for('gateway_home') }}">Home</a>
+    <form method="post" style="display:contents;"><button class="btn page-22-send" type="submit">Send Invite</button></form>
+    <a class="btn page-22-back" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Back to Payment</a>
+    <a class="btn page-22-logout" href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</div>
+{% endblock %}
+
+

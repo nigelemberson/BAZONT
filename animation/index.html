@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BAZONT Demo B Fix4</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="page-id-badge" class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">3</div>
+  <div class="app-shell">
+    <section class="hero hidden" id="hero">
+      <div class="hero-badge">DEMO MODE</div>
+      <h1>BAZONT</h1>
+      <p class="hero-sub">A clear animated walkthrough of a protected buyer-to-seller transaction.</p>
+      <button id="startBtn" class="primary-btn">Start Guided Demo</button>
+      <p class="hero-note">No real money · No registration required · Page-by-page visual guide</p>
+    </section>
+
+    <section class="demo" id="demo">
+      <div class="topbar">
+        <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+        <div class="demo-status" id="demoStatus">Page 3</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="scene-grid">
+        <div class="scene-panel">
+          <div class="scene-header">
+            <div class="scene-title" id="sceneTitle">Buyer creates transaction</div>
+            <div class="scene-subtitle" id="sceneSubtitle">The buyer enters brief details and invites the seller to join the Platform.</div>
+          </div>
+
+          <div class="stage" id="stage">
+            <div class="actor actor-buyer">
+              <div class="actor-icon-wrap">
+                <div class="actor-icon">🧑</div>
+                <div class="ring hidden" id="ringBuyer"></div>
+              </div>
+              <div class="actor-label">Buyer</div>
+            </div>
+
+            <div class="actor actor-seller">
+              <div class="actor-icon-wrap">
+                <div class="actor-icon">📦</div>
+                <div class="ring hidden" id="ringSeller"></div>
+              </div>
+              <div class="actor-label">Seller</div>
+            </div>
+
+            <div class="actor actor-platform">
+              <div class="actor-icon-wrap">
+                <div class="actor-icon" id="platformIcon">🛡️</div>
+                <div class="ring hidden" id="ringPlatform"></div>
+              </div>
+              <div class="actor-label">Platform</div>
+            </div>
+
+            <div class="travel-lane lane-money hidden" id="laneMoney">
+              <div class="moving-chip money-chip hidden" id="moneyChip">₱ Funds</div>
+            </div>
+
+            <div class="travel-lane lane-parcel hidden" id="laneParcel">
+              <div class="moving-chip parcel-chip hidden" id="parcelChip">📦 Parcel</div>
+            </div>
+
+            <div class="card card-left hidden" id="cardCreate">
+              <div class="card-title">Create transaction</div>
+              <div class="card-text">Enter basic item details</div>
+              <div class="card-text">Add seller contact details</div>
+              <div class="card-text">Send invitation to join</div>
+            </div>
+
+            <div class="card card-right hidden" id="cardInvite">
+              <div class="card-title">Receive invitation</div>
+              <div class="card-text">Opens invitation link</div>
+              <div class="card-text">Reviews transaction details</div>
+              <div class="card-text">Joins the platform</div>
+            </div>
+
+            <div class="card card-center hold-card hidden" id="cardHold">
+              <div class="card-title dark">PAYMENT HELD SAFELY 🔒</div>
+              <div class="card-text dark">Funds stay protected until delivery is confirmed.</div>
+            </div>
+
+            <div class="card card-center ship-card hidden" id="cardShip">
+              <div class="big-emoji">🚚</div>
+              <div class="card-title dark">SELLER SHIPS THE ITEM</div>
+            </div>
+
+            <div class="card card-center info-card hidden" id="cardConfirm">
+              <div class="big-emoji">📦</div>
+              <div class="card-title">Delivery confirmed</div>
+            </div>
+
+            <div class="card card-center release-card hidden" id="cardRelease">
+              <div class="big-emoji">💸</div>
+              <div class="card-title dark">Payment released to seller</div>
+            </div>
+
+            <div class="arrow arrow-left hidden" id="arrowLeft">➜</div>
+            <div class="arrow arrow-right hidden" id="arrowRight">➜</div>
+          </div>
+        </div>
+
+        <aside class="info-panel">
+          <div class="caption-box" id="captionBox">
+            Buyer creates the transaction and enters the seller’s email address.
+          </div>
+
+          <div class="step-list">
+            <div class="step-item active"><span>3</span> Buyer creates transaction</div>
+            <div class="step-item"><span>4</span> Seller joins transaction</div>
+            <div class="step-item"><span>5</span> Buyer makes payment</div>
+            <div class="step-item"><span>6</span> Seller ships item</div>
+            <div class="step-item"><span>7</span><div style="display:flex;flex-direction:column;line-height:1.1;"><span style="width:auto;height:auto;border-radius:0;background:none;display:block;font-weight:700;">Courier confirms delivery</span></div></div>
+            <div class="step-item"><span>8</span> Platform releases payment</div>
+          </div>
+
+          <div class="controls">
+            <button id="homeBtn" class="ghost-btn" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: #ffffff; border: none; box-shadow: 0 0 12px rgba(34,197,94,0.6);" onclick="window.location.href='/'">Home</button>
+            <button id="prevBtn" class="ghost-btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 0 10px rgba(59,130,246,0.5);">Back</button>
+            <button id="nextBtn" class="primary-btn">Next</button>
+            <span id="autoBtn" hidden aria-hidden="true">Auto Play: Off</span>
+            <span id="restartBtn" hidden aria-hidden="true">Restart</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+  <div style="position:fixed;right:14px;bottom:10px;font-size:12px;color:#94a3b8;z-index:9999;"><span id="visible-version">Bazont12B.zip</span></div>
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Register</title>
+  <link rel="stylesheet" href="/forms/style.css">
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">9</div>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 9</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:11.11%"></div></div></div>
+            <div class="steps">
+      <div class="step active">9<br>Register</div>
+      <div class="step">10<br>Login</div>
+      <div class="step">11<br>Create</div>
+      <div class="step">12<br>Seller</div>
+      <div class="step">13<br>Pay</div>
+      <div class="step">14<br>Delivery</div>
+      <div class="step">15<br>Release</div>
+      <div class="step">16<br>Finish</div>
+<a href="/faq"><div class="step">26<br>FAQ</div></a>
+    </div>
+
+
+
+    <div class="grid-2">
+      <div class="form-card">
+        <h1>Register</h1>
+        <p>Create a buyer or seller account first.</p>
+<div class="register-field-grid">
+          <div class="register-field-column">
+            <label class="label">Full name</label>
+            <input class="field" id="reg-fullname" readonly value="John Buyer" aria-describedby="reg-fullname-error">
+            <div class="field-error" id="reg-fullname-error" aria-live="polite"></div>
+            <label class="label">Email address</label>
+            <input class="field" id="reg-email" readonly value="johnbuyer@example.com" aria-describedby="reg-email-error">
+            <div class="field-error" id="reg-email-error" aria-live="polite"></div>
+          </div>
+          <div class="register-field-column">
+            <label class="label">Password</label>
+            <input class="field" id="reg-password" readonly value="Buyer12345" aria-describedby="reg-password-error">
+            <div class="field-error" id="reg-password-error" aria-live="polite"></div>
+            <label class="label">Role</label>
+            <div class="role-toggle" id="role-toggle" aria-describedby="reg-role-error">
+              <button type="button" class="role-pill active" data-role="Buyer">Buyer</button>
+              <button type="button" class="role-pill" data-role="Seller">Seller</button>
+            </div>
+            <div class="field-error" id="reg-role-error" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Demo action</h2>
+        <p>This is a sample registration screen.<br>Use Next to continue the walkthrough.</p>
+      </div>
+    </div>
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary btn-back" href="/animation/?step=6">← Back</a>
+      <span class="next-guidance-anchor">
+        <p class="demo-guidance" style="color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">Review the details, then click Next</p>
+        <a class="btn btn-primary" id="register-next" href="/forms/login.html">Next →</a>
+      </span>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.demo-login-link { text-decoration: none; }
+.helper-login { margin-top: 2px; }
+
+.register-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.register-field-column .label:first-child {
+  margin-top: 0;
+}
+@media (max-width: 900px) {
+  .register-field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-error {
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fca5a5;
+}
+
+.field-invalid {
+  border-color: rgba(248, 113, 113, 0.95) !important;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
+}
+
+.next-guidance-anchor {
+  position: relative;
+  display: inline-block;
+}
+
+.next-guidance-anchor .demo-guidance {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  transform: translateX(-50%);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.role-toggle-invalid {
+  padding: 6px;
+  border-radius: 18px;
+  border: 1px solid rgba(248, 113, 113, 0.85);
+  background: rgba(127, 29, 29, 0.12);
+}
+
+    
+
+</style>
+<div class="footer-version"><span id="visible-version">Bazont12B.zip</span></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const nextButton = document.getElementById("register-next");
+  if (!nextButton) return;
+
+  nextButton.addEventListener("click", function () {
+    sessionStorage.setItem("formsDemoRegisterMode", "sample");
+    sessionStorage.setItem("formsDemoAuthMode", "sample");
+    sessionStorage.setItem("formsDemoRegisterData", JSON.stringify({
+      fullName: "John Buyer",
+      email: "johnbuyer@example.com",
+      password: "Buyer12345",
+      role: "Buyer"
+    }));
+  });
+});
+</script>
+
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

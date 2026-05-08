@@ -1,0 +1,29 @@
+FIX5: Screen fit improved + animation slowed by ~25%
+FIX7: corrected step 1 subtitle in script.js.
+
+FIX10 verification:
+- Step 1 caption verified without 'e.g.'
+- Step 2 subtitle verified as 'The seller receives the invite and opens the transaction link.'
+
+FIX11 verification:
+- Step 1 caption verified without e.g.
+- Step 2 title verified as Seller joins the platform.
+- Step 2 subtitle verified as The seller receives the invite and opens the transaction link.
+
+FIX15:
+- Money lane extended further right.
+- Funds now travel full path to the Seller position.
+- Earlier stop-short endpoint removed.
+
+FIX16:
+- Added more bottom clearance to the stage.
+- Moved Platform icon area lower but fully inside the scene.
+- Raised parcel lane away from the Platform area.
+- Raised center cards slightly to prevent cutting the Platform icon.
+
+FIX17:
+- Demo container width constrained.
+- Horizontal overflow hidden.
+- Scene grid now uses minmax containment.
+- Stage forced to respect parent width.
+- Added container safety rules for embedding.

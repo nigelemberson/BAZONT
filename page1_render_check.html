@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bazont — Page 1</title>
+  <style>
+    :root {
+      --bazont-red: #e53935;
+      --bazont-green: #20bf55;
+      --bazont-yellow: #ffd95a;
+      --bazont-blue-dark: #061224;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; background: var(--bazont-blue-dark); }
+    body { overflow: hidden; font-family: Arial, Helvetica, sans-serif; }
+
+    .page1-bg {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-image:
+        linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.02) 36%, rgba(6,18,36,.38) 76%, rgba(6,18,36,.78) 100%),
+        url("{{ url_for('static', filename='images/page1_background.png') }}");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 100% 100%;
+      color: #fff;
+    }
+
+        .page-number {
+      position: fixed;
+      top: 8px;
+      left: 10px;
+      z-index: 2147483647;
+      background: rgba(15,23,42,0.92);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font: 700 12px/1 Arial, sans-serif;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+    }
+
+    .content {
+      position: absolute;
+      left: 2.5vw;
+      top: 36.5%;
+      bottom: auto;
+      transform: none;
+      width: min(36vw, 620px);
+      text-align: left;
+      text-shadow: 0 4px 18px rgba(0,0,0,.78), 0 1px 3px rgba(0,0,0,.95);
+      z-index: 2;
+    }
+
+    .title {
+      margin: 0 0 .85vh;
+      font: 900 clamp(28px, 2.75vw, 54px)/.96 Arial, Helvetica, sans-serif;
+      letter-spacing: .012em;
+    }
+
+    .statement {
+      margin: .26vh 0;
+      font: 800 clamp(16px, 1.18vw, 24px)/1.10 Arial, Helvetica, sans-serif;
+    }
+
+    .red { color: var(--bazont-red); }
+    .yellow { color: var(--bazont-yellow); }
+    .green { color: var(--bazont-green); }
+
+    .green-block {
+      display: block;
+      margin-top: 1.0vh;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .deadlock-center {
+      position: absolute;
+      left: 69.9%;
+      top: 46.8%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
+      text-shadow: 0 6px 24px rgba(0,0,0,.90), 0 2px 5px rgba(0,0,0,1);
+    }
+
+    .deadlock-word {
+      color: var(--bazont-red);
+      font: 950 clamp(36px, 4.1vw, 78px)/.88 Arial Black, Arial, Helvetica, sans-serif;
+      letter-spacing: .055em;
+      text-transform: uppercase;
+    }
+
+    .deadlock-subtitle {
+      margin-top: .45vh;
+      color: rgba(255,255,255,.92);
+      font: italic 700 clamp(17px, 1.35vw, 28px)/1.05 Georgia, 'Times New Roman', serif;
+      letter-spacing: .015em;
+    }
+
+    .white-box {
+      position: absolute;
+      left: 2.5vw;
+      bottom: 14.3vh;
+      width: min(56vw, 930px);
+      padding: 1.25vh 1.7vw;
+      border-radius: 20px;
+      background: rgba(3, 12, 24, .74);
+      border: 1px solid rgba(24,119,242,.58);
+      box-shadow: 0 10px 34px rgba(0,0,0,.42);
+      color: rgba(255,255,255,.98);
+      font: 850 clamp(20px, 1.68vw, 34px)/1.16 Arial, Helvetica, sans-serif;
+      z-index: 3;
+      text-shadow: 0 4px 18px rgba(0,0,0,.78), 0 1px 3px rgba(0,0,0,.95);
+    }
+
+    .nav-button {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 7.3vh;
+      min-height: 44px;
+      border-radius: 28px;
+      color: #fff;
+      font: 800 clamp(18px, 1.55vw, 30px)/1 Arial, Helvetica, sans-serif;
+      text-decoration: none;
+      box-shadow: 0 0 28px rgba(0,0,0,.35);
+      z-index: 4;
+    }
+
+    .nav-home {
+      left: 6.9vw;
+      bottom: 8.9vh;
+      width: 9.3vw;
+      min-width: 130px;
+      background: var(--bazont-green);
+      box-shadow: 0 0 30px rgba(32,191,85,.52);
+    }
+
+    .nav-next {
+      right: 6.9vw;
+      bottom: 8.9vh;
+      width: 20.8vw;
+      min-width: 280px;
+      background: linear-gradient(180deg, #ff7c19 0%, #f45f00 100%);
+      box-shadow: 0 0 30px rgba(244,95,0,.38);
+    }
+
+    .page-version {
+      position: absolute;
+      right: 4.2vw;
+      bottom: 2.6vh;
+      color: rgba(229,237,249,.72);
+      font: 500 clamp(12px, .95vw, 18px)/1 Arial, Helvetica, sans-serif;
+      letter-spacing: .01em;
+      text-shadow: 0 2px 8px rgba(0,0,0,.72);
+      z-index: 4;
+    }
+
+    .copyright {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 2.6vh;
+      color: rgba(229,237,249,.58);
+      font: 500 clamp(12px, .95vw, 18px)/1 Arial, Helvetica, sans-serif;
+      white-space: nowrap;
+      text-shadow: 0 2px 8px rgba(0,0,0,.72);
+      z-index: 4;
+    }
+  
+    
+
+</style>
+</head>
+<body>
+  <main class="page1-bg" aria-label="Why Bazont Exists">
+    <div class="page-number">1</div>
+
+    <section class="content" aria-label="Bazont introduction text">
+      <h1 class="title">Why Bazont Exists</h1>
+      <p class="statement red">Remote transactions can be risky.</p>
+      <p class="statement yellow">Without protection, both buyer and seller face a high level of risk.</p>
+      <div class="statement green green-block">
+        1) Buyers don't want to send their money first.<br>
+        2) Sellers don't want to send their goods first.<br>
+        This creates deadlock.
+      </div>
+    </section>
+
+    <div class="white-box">
+      Bazont removes the deadlock by holding the payment securely.<br>
+      Payment is released only when the courier confirms delivery.
+    </div>
+
+    <section class="deadlock-center" aria-label="Deadlock phrase">
+      <div class="deadlock-word">DEADLOCK</div>
+      <div class="deadlock-subtitle">...in the canyon of trade.</div>
+    </section>
+
+    <a class="nav-button nav-home" href="{{ url_for('page0_welcome') }}">← Home</a>
+    <a class="nav-button nav-next" href="{{ url_for('intro_page') }}">Next: How It Works →</a>
+    <div class="copyright" aria-hidden="true">© 2026 Bazont. All rights reserved.</div>
+    <div class="page-version">Version 15H</div>
+  </main>
+
+</body>
+</html>

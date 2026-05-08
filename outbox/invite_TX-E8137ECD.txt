@@ -1,0 +1,10 @@
+TO: seller8m@example.com
+SUBJECT: Join BAZONT transaction TX-E8137ECD
+
+Open this link to join as seller:
+http://localhost/seller/join/gQgxYXE8X2ucH-ReYPF7xPVQ56Pf2Gzn
+
+Transaction: TX-E8137ECD
+Total secured: PHP 1100.00
+Buyer pays now (includes buyer fee share): PHP 1150.00
+Seller receives on delivery (after seller fee share): PHP 1050.00

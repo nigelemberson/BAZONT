@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Finish</title>
+  <link rel="stylesheet" href="/forms/style.css">
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">16</div>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 16</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:88.88%"></div></div></div>
+        <div class="steps">
+      <div class="step">9<br>Register</div>
+      <div class="step">10<br>Login</div>
+      <div class="step">11<br>Create</div>
+      <div class="step">12<br>Seller</div>
+      <div class="step">13<br>Pay</div>
+      <div class="step">14<br>Delivery</div>
+      <div class="step">15<br>Release</div>
+      <div class="step active">16<br>Finish</div>
+    </div>
+
+
+
+    <div class="hero finish-hero">
+      <div class="card center">
+        <h1>Finish</h1>
+        <p>The guided forms demo is complete.</p>
+        <p id="finish-summary">The customer has now seen the whole process from registration to payment release.</p>
+      </div>
+
+    </div>
+
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary" href="/forms/payment_released.html">← Back</a>
+      <a class="btn btn-primary" href="/register">Go Live</a> <a class="btn" href="/faq" style="background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;border-color:transparent;box-shadow:0 14px 30px rgba(185,28,28,0.35);">FAQ</a>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+    
+
+</style>
+<div class="footer-version"><span id="visible-version">Bazont12B.zip</span></div>
+
+
+<style>
+.finish-hero {
+  grid-template-columns: 1fr;
+}
+.finish-hero .card {
+  width: 100%;
+}
+
+    
+
+</style>
+
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

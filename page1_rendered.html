@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bazont — Page 1</title>
+  <style>
+    :root {
+      --bazont-red: #e53935;
+      --bazont-green: #20bf55;
+      --bazont-yellow: #ffd95a;
+      --bazont-orange: #ff7c19;
+      --bazont-blue: #1877f2;
+      --bazont-blue-dark: #061224;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; background: var(--bazont-blue-dark); }
+    body {
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #f8fafc;
+      min-height: 100vh;
+      background: #061225;
+      padding: clamp(10px, 1.5vh, 20px) clamp(18px, 2vw, 28px);
+    }
+    .page-id-badge,
+    .page-number {
+      position: fixed;
+      top: 8px;
+      left: 10px;
+      z-index: 2147483647;
+      background: rgba(15,23,42,0.92);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font: 700 12px/1 Arial, sans-serif;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+    }
+    .page-shell {
+      max-width: 1380px;
+      width: min(1380px, calc(100vw - 56px));
+      height: calc(100vh - 40px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 8px; min-height: 62px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand > div { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
+    .header-icon { height: 58px; width: auto; object-fit: contain; border-radius: 6px; }
+    .brand-title { font-size: 28px; font-weight: 900; letter-spacing: -0.02em; }
+    .brand-sub, .demo-status { color: #c7d7f5; font-size: 16px; }
+    .page-label { font-size: 14px; color: #f8fafc; font-weight: 500; }
+    .progress-wrap { margin-bottom: 7px; }
+    .progress-bar { width: 100%; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+    .progress-fill { height: 100%; width: 8.33%; border-radius: 999px; background: linear-gradient(90deg, #ffb022 0%, #3a86ff 100%); }
+
+    .page1-hero {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 26px;
+      border: 1px solid rgba(116,152,207,0.20);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.30);
+      background-color: #061225;
+      background-image: url("static/images/page1_background.png?v=17U");
+      background-size: min(60vw, 890px) auto;
+      background-position: right center;
+      background-repeat: no-repeat;
+    }
+    .page1-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(3,12,28,0) 0%, rgba(3,12,28,0.04) 58%, rgba(3,12,28,0.08) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .page1-overlay {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 58%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        rgba(3,12,28,0.94) 0%,
+        rgba(3,12,28,0.84) 34%,
+        rgba(3,12,28,0.50) 58%,
+        rgba(3,12,28,0.16) 82%,
+        rgba(3,12,28,0.0) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .party-label {
+      position: absolute;
+      z-index: 3;
+      color: var(--bazont-blue);
+      font: 950 clamp(21px, 2.05vw, 36px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      letter-spacing: .02em;
+      text-shadow: 0 3px 14px rgba(0,0,0,.78);
+    }
+    .buyer-label {
+      font-size: 20pt; left: 48.0%; top: 14.0%; transform: translate(-60px,-10px); }
+    .seller-label {
+      font-size: 20pt; left: 85.0%; top: 14.0%; transform: translateY(-10px); }
+
+    .badge {
+      position: absolute;
+      left: 58.7%;
+      top: 5.6%;
+      width: clamp(118px, 9.2vw, 168px);
+      height: clamp(118px, 9.2vw, 168px);
+      transform: translateX(-50%) scale(1);
+      transform-origin: center center;
+      clip-path: polygon(50% 0%, 88% 16%, 82% 62%, 50% 100%, 18% 62%, 12% 16%);
+      border-radius: 0;
+      border: 2px solid rgba(146,199,255,.62);
+      background: radial-gradient(circle, rgba(24,119,242,.16) 0%, rgba(6,18,36,.24) 61%, rgba(6,18,36,.06) 100%);
+      box-shadow: inset 0 0 14px rgba(100,180,255,.16);
+      filter: drop-shadow(0 0 12px rgba(62,153,255,.36));
+      z-index: 3;
+      display: grid;
+      place-items: center;
+    }
+    .badge-shield {
+      width: 66%;
+      height: 76%;
+      background: linear-gradient(180deg, #1268ff 0%, #042e91 100%);
+      clip-path: polygon(50% 0%, 88% 18%, 82% 70%, 50% 100%, 18% 70%, 12% 18%);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 22px rgba(0,0,0,.45), 0 0 20px rgba(0,91,255,.52);
+    }
+    .badge-letter {
+      color: #fff;
+      font: 820 clamp(30px, 3.1vw, 54px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      text-shadow: 0 3px 9px rgba(0,0,0,.52);
+      transform: translateY(-1%);
+    }
+
+    .deadlock-line {
+      position: absolute;
+      left: 62.6%;
+      top: 39.4%;
+      width: 15.4%;
+      height: 0;
+      z-index: 2;
+      border-top: 3px dashed rgba(207,235,255,.64);
+      filter: drop-shadow(0 0 3px rgba(80,178,255,.42));
+    }
+    .deadlock-x {
+      position: absolute;
+      left: 70.3%;
+      top: 39.4%;
+      transform: translate(-50%, -50%) scale(0.28);
+      transform-origin: center center;
+      z-index: 3;
+      color: rgba(237,249,255,.88);
+      font: 800 clamp(24px, 2.4vw, 42px)/1 Arial Black, Arial, Helvetica, sans-serif;
+      text-shadow: 0 0 4px rgba(130,212,255,.58), 0 0 10px rgba(75,169,255,.38), 0 3px 9px rgba(0,0,0,.72);
+    }
+
+    .intro-copy {
+      position: absolute;
+      left: 2.0%;
+      top: 13.8%;
+      width: 38%;
+      max-width: 610px;
+      text-align: left;
+      z-index: 2;
+      text-shadow: 0 4px 18px rgba(0,0,0,.86), 0 1px 3px rgba(0,0,0,1);
+    }
+    .intro-copy h1 {
+      margin: 0 0 28px 0;
+      color: #fff;
+      font: 900 clamp(38px, 3.25vw, 50px)/1.05 Arial, Helvetica, sans-serif;
+      letter-spacing: -0.045em;
+      max-width: 560px;
+    }
+    .left-text-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
+      max-width: 590px;
+    }
+    .statement { margin: 0; }
+    .page1-text {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 20px;
+      line-height: 1.34;
+      font-weight: 800;
+    }
+    .red { color: var(--bazont-red); }
+    .yellow { color: var(--bazont-yellow); }
+    .green { color: var(--bazont-green); }
+    .white { color: rgba(255,255,255,.98); }
+
+    .deadlock-center {
+      position: absolute;
+      left: 68.8%;
+      top: 47.0%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
+      text-shadow: 0 7px 24px rgba(0,0,0,.92), 0 2px 5px rgba(0,0,0,1);
+    }
+    .deadlock-word {
+      color: var(--bazont-red);
+      font: 760 20pt/.9 Arial Black, Arial, Helvetica, sans-serif;
+      letter-spacing: .032em;
+      text-transform: uppercase;
+    }
+    .deadlock-subtitle {
+      margin-top: .34vh;
+      color: rgba(255,255,255,.82);
+      font: italic 500 14pt/1.05 Georgia, 'Times New Roman', serif;
+      letter-spacing: .01em;
+    }
+
+
+    .controls {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      bottom: 18px;
+      z-index: 4;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: auto;
+      margin: 0;
+    }
+    .nav-button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 22px;
+      min-width: 170px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      text-shadow: 0 2px 8px rgba(0,0,0,.45);
+      color: #fff;
+    }
+    .nav-home { background: var(--bazont-green); box-shadow: 0 0 30px rgba(32,191,85,.55); }
+    .nav-next { background: linear-gradient(180deg, #ff7c19 0%, #f45f00 100%); box-shadow: 0 0 30px rgba(244,95,0,.42); }
+    .footer-version {
+      position: fixed;
+      right: 20px;
+      bottom: 14px;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.72);
+      z-index: 70;
+      pointer-events: none;
+    }
+    .copyright {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 16px;
+      color: rgba(229,237,249,.72);
+      font: 500 12px/1 Arial, Helvetica, sans-serif;
+      white-space: nowrap;
+      text-shadow: 0 2px 8px rgba(0,0,0,.74);
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    @media (max-height: 760px) and (min-width: 901px) {
+      .header-icon { height: 52px; }
+      .brand-title { font-size: 25px; }
+      .brand-sub { font-size: 15px; }
+      .page1-hero { border-radius: 22px; }
+      .intro-copy { top: 11.8%; }
+      .intro-copy h1 { font-size: clamp(38px, 3.2vw, 50px); margin-bottom: 22px; }
+      .left-text-column { gap: 18px; }
+      .page1-text { font-size: 22px; line-height: 1.24; }
+      .controls { bottom: 16px; }
+      .nav-button { padding: 10px 20px; font-size: 16px; min-width: 150px; }
+      .deadlock-center { top: 46.8%; }
+      .deadlock-word { font-size: 28pt; }
+      .deadlock-subtitle { font-size: 15pt; }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .page-shell { width: min(100%, calc(100vw - 28px)); height: auto; min-height: calc(100vh - 28px); }
+      .page1-hero { min-height: 760px; }
+      .page1-overlay { width: 100%; background: linear-gradient(to right, rgba(5,15,30,0.96), rgba(5,15,30,0.82)); }
+      .intro-copy { left: 7%; width: 86%; }
+      .party-label, .badge, .deadlock-line, .deadlock-x, .deadlock-center { opacity: .92; }
+      .controls { flex-wrap: nowrap; }
+      .nav-button { min-width: 0; flex: 1; }
+    }
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+.bazont-css-shield{
+  position:absolute;
+  left:68.6%;
+  top:24.4%;
+  width:clamp(58px, 5.2vw, 78px);
+  height:clamp(70px, 6.2vw, 92px);
+  z-index:3;
+  pointer-events:none;
+  transform:translate(calc(-50% + 20px), -40px);
+  filter:
+    drop-shadow(0 0 10px rgba(82, 174, 255, .92))
+    drop-shadow(0 0 24px rgba(38, 132, 255, .70))
+    drop-shadow(0 0 42px rgba(10, 76, 215, .44));
+}
+.bazont-css-shield::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(145deg,#1d8fff 0%,#0b5ee8 45%,#04338f 100%);
+  clip-path:polygon(50% 0%, 90% 18%, 82% 66%, 50% 100%, 18% 66%, 10% 18%);
+  border:2px solid rgba(240,248,255,.9);
+  box-shadow:
+    0 0 16px rgba(82, 174, 255, .95),
+    0 0 34px rgba(38, 132, 255, .70),
+    0 8px 20px rgba(0,0,0,.45),
+    inset 0 2px 12px rgba(255,255,255,.34),
+    inset 0 -10px 16px rgba(0,0,0,.35);
+}
+.bazont-css-shield::after{
+  content:"B";
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#ffffff;
+  font:900 clamp(35px, 3.2vw, 48px)/1 Arial Black, Arial, sans-serif;
+  text-shadow:0 2px 6px rgba(0,0,0,.55);
+  transform:translateY(-1px);
+}
+
+</style>
+</head>
+<body>
+  <div class="page-id-badge">1</div>
+  <main class="page-shell page1-only">
+    <div class="topbar">
+      <div class="brand header-left">
+        <img src="static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+        <div class="header-title">
+          <div class="brand-title brand-name">BAZONT</div>
+          <div class="brand-sub subtitle">Safe Transactions</div>
+        </div>
+      </div>
+      
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill"></div></div></div>
+
+    <section class="page1-hero" aria-label="Why Bazont Exists">
+      <div class="page1-overlay" aria-hidden="true"></div>
+
+      <div class="party-label buyer-label">BUYER</div>
+      <div class="party-label seller-label">SELLER</div>
+      <div class="bazont-css-shield" aria-hidden="true"></div>
+      <div class="deadlock-line" aria-hidden="true"></div>
+      <div class="deadlock-x" aria-hidden="true">X</div>
+
+      <section class="intro-copy" aria-label="Bazont introduction text">
+        <h1>Why Bazont Exists</h1>
+        <div class="left-text-column">
+          <p class="statement page1-text red">Remote transactions can be risky.</p>
+          <p class="statement page1-text yellow">Without protection, both buyer and seller<br>face a high level of risk.</p>
+          <p class="statement page1-text green">Buyers don't want to send their money first.</p>
+          <p class="statement page1-text green">Sellers don't want to send their goods first.<br>This creates deadlock.</p>
+          <p class="statement page1-text white">Bazont removes the deadlock by holding the payment securely.<br>Payment is released only when the courier confirms delivery.</p>
+        </div>
+      </section>
+
+      <section class="deadlock-center" aria-label="Deadlock phrase">
+        <div class="deadlock-word">DEADLOCK</div>
+        <div class="deadlock-subtitle">...in the canyon of trade.</div>
+      </section>
+
+      <div class="controls" aria-label="Page navigation">
+        <a class="nav-button nav-home" href="#">← Home</a>
+        <a class="nav-button nav-next" href="#">Next: How It Works →</a>
+      </div>
+      <div class="copyright" aria-hidden="true">© 2026 Bazont. All rights reserved.</div>
+    </section>
+    <div class="footer-version">Bazont17U.zip</div>
+  </main>
+
+</body>
+</html>

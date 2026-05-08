@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BAZONT Guided Walkthrough</title>
+  <style>
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(53,117,255,0.24), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(255,166,0,0.16), transparent 28%),
+    linear-gradient(135deg, #071120 0%, #0a1b34 55%, #10284a 100%);
+  color: white;
+}
+
+.hidden { display: none !important; }
+.app-shell {
+  min-height: 100vh;
+  padding: clamp(14px, 2vh, 28px) clamp(18px, 2vw, 28px);
+}
+
+.hero {
+  min-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-badge {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+
+.hero h1 { margin: 0; font-size: 64px; letter-spacing: 1px; }
+
+.hero-sub {
+  font-size: 24px;
+  max-width: 880px;
+  color: #d8e4fb;
+  margin: 18px 0 26px;
+}
+
+.hero-note { color: #bfd0ef; margin-top: 18px; font-size: 15px; }
+
+.primary-btn, .ghost-btn, .mini-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 14px 22px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+
+.primary-btn {
+  background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%);
+  color: #13233b;
+  box-shadow: 0 12px 30px rgba(255,153,0,0.28);
+}
+
+.ghost-btn {
+  background: rgba(255,255,255,0.10);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.16);
+}
+
+.mini-btn {
+  padding: 10px 14px;
+  font-size: 14px;
+  color: white;
+  background: linear-gradient(180deg, #4d8bff 0%, #2f65db 100%);
+}
+
+.mini-btn.alt {
+  color: #13233b;
+  background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%);
+}
+
+.primary-btn:hover, .ghost-btn:hover, .mini-btn:hover { transform: translateY(-1px); }
+
+.demo { max-width: 1380px; width: min(1380px, calc(100vw - 56px)); margin: 0 auto; overflow: hidden; }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand > div { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
+
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%);
+  color: #12223c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.brand-title { font-size: 22px; font-weight: 800; }
+.brand-sub, .demo-status { color: #c7d7f5; font-size: 14px; }
+
+.progress-wrap { margin-bottom: 12px; }
+
+.progress-bar {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 16.66%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb022 0%, #3a86ff 100%);
+  transition: width 0.4s ease;
+}
+
+.scene-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.58fr) minmax(300px, 0.82fr);
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.scene-panel, .info-panel {
+  min-width: 0;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 26px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.24);
+  backdrop-filter: blur(6px);
+}
+
+.scene-panel { padding: 18px; }
+
+.info-panel {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scene-header { margin-bottom: 12px; }
+
+.scene-title {
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.scene-subtitle {
+  font-size: 17px;
+  color: #d3e0fb;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: clamp(560px, calc(100vh - 255px), 700px);
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top center, rgba(91,143,255,0.16), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.actor {
+  position: absolute;
+  width: 140px;
+  text-align: center;
+  z-index: 5;
+}
+
+.actor-buyer { left: 58px; top: 42px; }
+.actor-seller { right: 58px; top: 42px; }
+.actor-platform { left: 50%; transform: translateX(-50%); top: 480px; width: 160px; }
+
+.actor-icon-wrap {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 10px;
+  position: relative;
+}
+
+.actor-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 18px 30px rgba(0,0,0,0.18);
+  position: relative;
+  z-index: 3;
+}
+
+.ring {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 96px;
+  height: 96px;
+  border: 4px solid rgba(255,176,34,0.95);
+  border-radius: 28px;
+  z-index: 2;
+  animation: ringPulse 1.3s infinite;
+}
+
+.actor-label {
+  font-size: 17px;
+  font-weight: 700;
+  position: relative;
+  z-index: 4;
+}
+
+.travel-lane {
+  position: absolute;
+  left: 100px;
+  right: 40px;
+  border-radius: 999px;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.lane-money {
+  top: 158px;
+  height: 42px;
+}
+
+.lane-parcel {
+  top: 376px;
+  height: 42px;
+}
+
+.moving-chip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.22);
+  white-space: nowrap;
+}
+
+.money-chip {
+  background: linear-gradient(180deg, #73ff96 0%, #38d66b 100%);
+  color: #092f1c;
+}
+
+.parcel-chip {
+  background: linear-gradient(180deg, #82b2ff 0%, #4b83f8 100%);
+  color: white;
+}
+
+.move-left-to-center { animation: leftToCenter 1.45s ease forwards; }
+.move-center-to-right-safe { animation: centerToRightSafe 1.45s ease forwards; }
+.move-right-to-left-safe { animation: rightToLeftSafe 1.6s ease forwards; }
+
+.card {
+  position: absolute;
+  border-radius: 22px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 22px 40px rgba(0,0,0,0.22);
+  z-index: 4;
+}
+
+.card-left, .card-right {
+  width: 230px;
+  background: rgba(13,31,58,0.88);
+  top: 220px;
+}
+
+.card-left { left: 58px; }
+.card-right { right: 58px; }
+
+.card-center {
+  width: 340px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 214px;
+  text-align: center;
+}
+
+.hold-card {
+  background: linear-gradient(180deg, rgba(255,178,34,0.96), rgba(255,140,0,0.96));
+  color: #13233b;
+  min-height: 140px;
+}
+
+.info-card {
+  background: rgba(17,42,77,0.92);
+  color: white;
+}
+
+.stage.step-3 .info-card {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.stage.step-3 .hold-card {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.stage.step-4 .info-card {
+  background: #27ae60 !important;
+  color: #ffffff !important;
+}
+
+.stage.step-5 .info-card {
+  background: #8e44ad !important;
+  color: #ffffff !important;
+}
+
+.stage.step-6 .info-card {
+  background: #c9a227 !important;
+  color: #13233b !important;
+}
+
+.release-card {
+  background: linear-gradient(180deg, rgba(255,178,34,0.96), rgba(255,140,0,0.96));
+  color: #13233b;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.card-title.dark, .card-text.dark { color: #13233b; }
+.card-text { font-size: 14px; font-weight: 700; }
+.big-emoji { font-size: 46px; margin-bottom: 8px; }
+
+.line {
+  height: 12px;
+  border-radius: 999px;
+  margin-bottom: 9px;
+  background: rgba(255,255,255,0.12);
+}
+
+.line.short { width: 55%; }
+.line.strong { width: 74%; background: rgba(255,255,255,0.22); }
+
+.arrow {
+  position: absolute;
+  top: 266px;
+  font-size: 48px;
+  color: #ffd166;
+  text-shadow: 0 0 20px rgba(255,209,102,0.42);
+  z-index: 6;
+  animation: pulse 1.1s infinite;
+}
+
+.arrow-left { left: 330px; }
+.arrow-right { right: 330px; }
+
+.caption-box {
+  border-radius: 20px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+  background: linear-gradient(180deg, rgba(255,176,34,0.96), rgba(255,140,0,0.94));
+  color: #13233b;
+}
+
+.step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.step-item {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: #d8e5ff;
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.18s ease, background 0.18s ease, border 0.18s ease;
+}
+
+.step-item span {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.step-item.active {
+  background: rgba(58,134,255,0.28);
+  border-color: rgba(58,134,255,0.65);
+  transform: translateX(4px);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.98); opacity: 0.72; }
+  50% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(0.98); opacity: 0.72; }
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(0.95); opacity: 0.28; }
+  50% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.28; }
+}
+
+@keyframes leftToCenter {
+  0% { left: 0; }
+  100% { left: calc(50% - 102px); }
+}
+
+@keyframes centerToRightSafe {
+  0% { left: calc(50% - 102px); }
+  100% { left: calc(100% - 121px); }
+}
+
+@keyframes rightToLeftSafe {
+  0% { left: calc(100% - 170px); }
+  100% { left: 40px; }
+}
+
+@media (max-width: 1180px) {
+  .scene-grid { grid-template-columns: 1fr; }
+  .controls { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 760px) {
+  .app-shell { padding: 16px; }
+  .hero h1 { font-size: 42px; }
+  .hero-sub { font-size: 18px; }
+  .scene-title { font-size: 24px; }
+  .scene-subtitle, .caption-box { font-size: 16px; }
+  .controls { grid-template-columns: 1fr; }
+}
+
+/* FIX17 CONTAINER SAFETY */
+html, body {
+  max-width: 100%;
+}
+
+.app-shell,
+.demo,
+.scene-grid,
+.scene-panel,
+.info-panel,
+.stage {
+  box-sizing: border-box;
+}
+
+.scene-panel,
+.info-panel,
+.stage {
+  overflow: hidden;
+}
+
+@media (max-width: 1180px) {
+  .demo {
+    width: min(100%, calc(100vw - 32px));
+  }
+
+  .scene-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-panel {
+    min-width: 0;
+  }
+}
+
+
+.stage.step-4 .hold-card {
+  background: linear-gradient(180deg, #7ee081, #1f9a3f);
+  color: #ffffff;
+}
+
+.stage.step-5 .hold-card {
+  background: linear-gradient(180deg, #c79bff, #7a49d6);
+  color: #ffffff;
+}
+
+.stage.step-6 .hold-card {
+  background: linear-gradient(180deg, #ffe08a, #d4a62a);
+  color: #13233b;
+}
+
+
+#hero, #demo {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+    .header-icon { height: 48px; width: auto; object-fit: contain; border-radius: 6px; }
+
+    
+
+</style>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.demo-root {
+  width: 100vw;
+  height: 100vh;
+  transform-origin: center center;
+}
+
+.demo {
+  transform: scale(1.22);
+  transform-origin: top center;
+}
+
+.hero {
+  transform: none;
+}
+
+    
+
+</style>
+
+</head>
+<body><div class=\"demo-root\">
+<div class="app-shell">
+    <section class="hero" id="hero">
+      <div class="hero-badge">DEMO MODE</div>
+      <h1>BAZONT</h1>
+      <p class="hero-sub">A clear animated walkthrough of a protected buyer-to-seller transaction.</p>
+      <button id="startBtn" class="primary-btn">Start Guided Demo</button>
+      <p class="hero-note">No real money · No registration required · Step-by-step visual guide</p>
+    </section>
+
+    <section class="demo hidden" id="demo">
+      <div class="topbar">
+        <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+        <div class="demo-status" id="demoStatus">Step 1 of 6</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="scene-grid">
+        <div class="scene-panel">
+          <div class="scene-header">
+            <div class="scene-title" id="sceneTitle">Buyer starts the transaction</div>
+            <div class="scene-subtitle" id="sceneSubtitle">The buyer enters brief details and invites the seller to join the Platform.</div>
+          </div>
+
+          <div class="stage" id="stage">
+            <div class="actor actor-buyer">
+              <div class="actor-icon-wrap">
+                <div class="actor-icon">🧑</div>
+                <div class="ring hidden" id="ringBuyer"></div>
+              </div>
+              <div class="actor-label">Buyer</div>
+            </div>
+
+            <div class="actor actor-seller">
+              <div class="actor-icon-wrap">
+                <div class="actor-icon">📦</div>
+                <div class="ring hidden" id="ringSeller"></div>
+              </div>
+              <div class="actor-label">Seller</div>
+            </div>
+
+            <div class="actor actor-platform">
+              <div class="actor-icon-wrap">
+                <div class="actor-icon">🛡️</div>
+                <div class="ring hidden" id="ringPlatform"></div>
+              </div>
+              <div class="actor-label">Platform</div>
+            </div>
+
+            <div class="travel-lane lane-money hidden" id="laneMoney">
+              <div class="moving-chip money-chip hidden" id="moneyChip">₱ Funds</div>
+            </div>
+
+            <div class="travel-lane lane-parcel hidden" id="laneParcel">
+              <div class="moving-chip parcel-chip hidden" id="parcelChip">📦 Parcel</div>
+            </div>
+
+            <div class="card card-left hidden" id="cardCreate">
+              <div class="card-title">Create transaction</div>
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line short"></div>
+              <button class="mini-btn">Send invite</button>
+            </div>
+
+            <div class="card card-right hidden" id="cardInvite">
+              <div class="card-title">Seller receives the invite</div>
+              <div class="line strong"></div>
+              <div class="line"></div>
+              <div class="line short"></div>
+              <button class="mini-btn alt">Open invite</button>
+            </div>
+
+            <div class="card card-center hold-card hidden" id="cardHold">
+              <div class="card-title dark">PAYMENT HELD SAFELY</div>
+              <div class="card-text dark">Funds stay protected until delivery is confirmed.</div>
+            </div>
+
+            <div class="card card-center info-card hidden" id="cardShip">
+              <div class="big-emoji">🚚</div>
+              <div class="card-title">Seller ships the item</div>
+            </div>
+
+            <div class="card card-center info-card hidden" id="cardConfirm">
+              <div class="big-emoji">✅</div>
+              <div class="card-title">Delivery confirmed</div>
+            </div>
+
+            <div class="card card-center release-card hidden" id="cardRelease">
+              <div class="big-emoji">💸</div>
+              <div class="card-title dark">Payment released to seller</div>
+            </div>
+
+            <div class="arrow arrow-left hidden" id="arrowLeft">➜</div>
+            <div class="arrow arrow-right hidden" id="arrowRight">➜</div>
+          </div>
+        </div>
+
+        <aside class="info-panel">
+          <div class="caption-box" id="captionBox">
+            Buyer creates the transaction and enters the seller’s email address.
+          </div>
+
+          <div class="step-list">
+            <div class="step-item active"><span>1</span> Buyer creates transaction</div>
+            <div class="step-item"><span>2</span> Seller joins from invite</div>
+            <div class="step-item"><span>3</span> Buyer pays securely</div>
+            <div class="step-item"><span>4</span> Seller ships item</div>
+            <div class="step-item"><span>5</span> Buyer confirms delivery</div>
+            <div class="step-item"><span>6</span> Platform releases payment</div>
+          </div>
+
+          <div class="controls">
+            <button id="prevBtn" class="ghost-btn">Back</button>
+            <button id="nextBtn" class="primary-btn">Next</button>
+            <button id="autoBtn" class="ghost-btn">Auto Play: Off</button>
+            <button id="restartBtn" class="ghost-btn">Restart</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+const steps = [
+  {
+    title: "Buyer starts the transaction",
+    subtitle: "The buyer enters brief details and invites the seller to join the Platform.",
+    caption: "Buyer creates the transaction and contacts the seller by email, messenger, whatsapp etc.",
+    status: "Step 1 of 6",
+    setup() {
+      show("cardCreate", "ringBuyer", "arrowLeft");
+    }
+  },
+  {
+    title: "Seller joins the platform",
+    subtitle: "The seller receives the link and joins the transaction.",
+    caption: "The seller receives the invite and opens the transaction link.",
+    status: "Step 2 of 6",
+    setup() {
+      show("cardInvite", "ringSeller", "arrowRight");
+    }
+  },
+  {
+    title: "Buyer pays securely into the Platform",
+    subtitle: "The platform protects the funds while delivery has not yet been confirmed.",
+    caption: "The buyer pays, but the funds are held safely by the platform and not released yet.",
+    status: "Step 3 of 6",
+    setup() {
+      show("cardHold", "ringPlatform", "laneMoney", "moneyChip");
+      const chip = document.getElementById("moneyChip");
+      chip.classList.add("move-left-to-center");
+    }
+  },
+  {
+    title: "Seller ships the item",
+    subtitle: "The item moves while the buyer’s funds remain protected in the platform's account.",
+    caption: "The seller sends the parcel. The money remains protected until the Courier (or buyer) confirms delivery.",
+    status: "Step 4 of 6",
+    setup() {
+      show("cardHold", "cardShip", "laneParcel", "parcelChip");
+      const chip = document.getElementById("parcelChip");
+      chip.style.left = "calc(100% - 170px)";
+      chip.classList.add("move-right-to-left-safe");
+    }
+  },
+  {
+    title: "Delivery is confirmed",
+    subtitle: "Delivery is confirmed by the courier, (or by the buyer inside the platform).",
+    caption: "Delivery is confirmed by the courier, or manually by the buyer on the platform.",
+    status: "Step 5 of 6",
+    setup() {
+      show("cardConfirm", "ringBuyer");
+    }
+  },
+  {
+    title: "Platform releases payment",
+    subtitle: "Only after courier confirmation (or confirmation from the buyer on the platform) does the platform release the payment to the seller.",
+    caption: "Once the courier confirms delivery, the platform releases the payment to the seller.",
+    status: "Step 6 of 6",
+    setup() {
+      show("cardRelease", "ringSeller", "laneMoney", "moneyChip");
+      const chip = document.getElementById("moneyChip");
+      chip.style.left = "calc(50% - 102px)";
+      chip.classList.add("move-center-to-right-safe");
+    }
+  }
+];
+
+let currentStep = 0;
+let autoPlay = false;
+let timer = null;
+
+const hero = document.getElementById("hero");
+const demo = document.getElementById("demo");
+const startBtn = document.getElementById("startBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const restartBtn = document.getElementById("restartBtn");
+const autoBtn = document.getElementById("autoBtn");
+const progressFill = document.getElementById("progressFill");
+const stage = document.getElementById("stage");
+const sceneTitle = document.getElementById("sceneTitle");
+const sceneSubtitle = document.getElementById("sceneSubtitle");
+const captionBox = document.getElementById("captionBox");
+const demoStatus = document.getElementById("demoStatus");
+const stepItems = Array.from(document.querySelectorAll(".step-item"));
+
+const sceneIds = [
+  "cardCreate","cardInvite","cardHold","cardShip","cardConfirm","cardRelease",
+  "ringBuyer","ringSeller","ringPlatform","laneMoney","laneParcel",
+  "moneyChip","parcelChip","arrowLeft","arrowRight"
+];
+
+startBtn.addEventListener("click", () => {
+  hero.classList.add("hidden");
+  demo.classList.remove("hidden");
+  currentStep = 0;
+  renderStep();
+});
+
+prevBtn.addEventListener("click", () => {
+  stopTimer();
+  currentStep = Math.max(0, currentStep - 1);
+  renderStep();
+});
+
+nextBtn.addEventListener("click", () => {
+  stopTimer();
+  currentStep = currentStep < steps.length - 1 ? currentStep + 1 : 0;
+  renderStep();
+});
+
+restartBtn.addEventListener("click", () => {
+  stopTimer();
+  currentStep = 0;
+  renderStep();
+});
+
+autoBtn.addEventListener("click", () => {
+  autoPlay = !autoPlay;
+  autoBtn.textContent = `Auto Play: ${autoPlay ? "On" : "Off"}`;
+  if (autoPlay) scheduleAdvance();
+  else stopTimer();
+});
+
+function renderStep() {
+  resetScene();
+  const step = steps[currentStep];
+  stage.classList.add(`step-${currentStep + 1}`);
+  sceneTitle.textContent = step.title;
+  sceneSubtitle.textContent = step.subtitle;
+  captionBox.textContent = step.caption;
+  demoStatus.textContent = step.status;
+  progressFill.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+
+  stepItems.forEach((item, index) => {
+    item.classList.toggle("active", index === currentStep);
+  });
+
+  step.setup();
+  if (autoPlay) scheduleAdvance();
+}
+
+function resetScene() {
+  stopTimer();
+  stage.classList.remove("step-1", "step-2", "step-3", "step-4", "step-5", "step-6");
+  sceneIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
+
+  const money = document.getElementById("moneyChip");
+  const parcel = document.getElementById("parcelChip");
+
+  money.classList.remove("move-left-to-center", "move-center-to-right-safe");
+  parcel.classList.remove("move-right-to-left-safe");
+
+  money.style.left = "0";
+  parcel.style.left = "0";
+}
+
+function show(...ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("hidden");
+  });
+}
+
+function scheduleAdvance() {
+  stopTimer();
+  timer = window.setTimeout(() => {
+    currentStep = (currentStep + 1) % steps.length;
+    renderStep();
+  }, 6750);
+}
+
+function stopTimer() {
+  if (timer) {
+    clearTimeout(timer);
+    timer = null;
+  }
+}
+
+  </script>
+</div>
+</body>
+</html>

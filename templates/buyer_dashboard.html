@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .tx-row-link { cursor:pointer; }
+  .tx-row-link:hover { background:#f7fbff; }
+
+  body.buyer-dashboard-page .shell { padding: 14px 18px 14px; }
+  body.buyer-dashboard-page .page-wrap { margin-top: 10px; padding-top: 0; }
+  body.buyer-dashboard-page .stack { gap: 8px; }
+  body.buyer-dashboard-page .hero-card { padding: 20px 28px; border-radius: 22px; }
+  body.buyer-dashboard-page .grid-2 { gap: 26px; grid-template-columns: 1.7fr 0.8fr; align-items: center; }
+  body.buyer-dashboard-page .hero-title { font-size: 2.35rem; margin-bottom: 14px; }
+  body.buyer-dashboard-page .hero-subtitle { font-size: 1.16rem; line-height: 1.48; margin-bottom: 0; }
+  body.buyer-dashboard-page .actions .btn { padding: 11px 18px; font-size: 1rem; min-width: 260px; width: 260px; height: 46px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; text-align: center; }
+  body.buyer-dashboard-page .grid-4 { gap: 10px; }
+  body.buyer-dashboard-page .stat-card { padding: 14px 16px; border-radius: 18px; }
+  body.buyer-dashboard-page .tiny { font-size: 0.94rem; line-height: 1.25; }
+  body.buyer-dashboard-page .kpi { font-size: 2rem; margin: 4px 0 0; }
+  body.buyer-dashboard-page .panel { padding: 16px 18px; border-radius: 20px; }
+  body.buyer-dashboard-page .section-title { font-size: 1.45rem; margin-bottom: 8px; }
+  body.buyer-dashboard-page th,
+  body.buyer-dashboard-page td { padding: 10px 12px; font-size: 1.02rem; }
+  body.buyer-dashboard-page th { font-size: 0.9rem; }
+  body.buyer-dashboard-page .footer { margin-top: 12px; padding-top: 10px; font-size: 0.95rem; }
+  body.buyer-dashboard-page .buyer-action-highlight { color: #ffcf5a; }
+  body.buyer-dashboard-page .buyer-text-block { display: block; margin-top: 16px; }
+  body.buyer-dashboard-page .buyer-text-block:first-child { margin-top: 0; }
+  body.buyer-dashboard-page .buyer-text-line { display: block; margin-top: 4px; }
+  body.buyer-dashboard-page .dashboard-actions { justify-content: center; align-items: flex-end; gap: 16px; margin-top: 0; flex-direction: column; align-self: center; }
+
+    
+
+</style>
+<div class="stack">
+  <section class="hero-card">
+    <div class="grid-2">
+      <div>
+        <h1 class="hero-title">Buyer dashboard</h1>
+        <p class="hero-subtitle">
+          <span class="buyer-text-block">You are now logged in as Buyer.</span>
+          <span class="buyer-text-block">Your next step is to:
+            <span class="buyer-action-highlight buyer-text-line">Create a new transaction or open an existing one.</span>
+          </span>
+          <span class="buyer-text-block">To secure the deal, the Buyer deposits the item price and shipping cost on the platform.</span>
+          <span class="buyer-text-block">The Seller then has 3 days to enter a valid shipping number.
+            <span class="buyer-text-line">If this is not provided, a FULL refund is issued automatically.</span>
+          </span>
+        </p>
+      </div>
+      <div class="actions dashboard-actions" style="justify-content:center; align-items:flex-end;">
+        <a class="btn" href="{{ url_for('new_transaction') }}">Create new transaction</a>
+        <a class="btn" style="background: linear-gradient(135deg, #16a34a, #15803d); color: #ffffff;" href="{{ url_for('buyer_transactions') }}">See existing transactions</a>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="buyer-dashboard-bottom-actions" aria-label="Buyer dashboard navigation">
+  <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
+  <a class="btn buyer-dashboard-back" href="{{ url_for('role_select') }}">Back</a>
+  <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock %}
+
+

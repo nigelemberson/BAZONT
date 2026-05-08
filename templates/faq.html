@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bazont FAQ</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #f3f6ff;
+      background:
+        radial-gradient(circle at 85% 85%, rgba(255,120,40,0.18), transparent 22%),
+        linear-gradient(90deg, #11295c 0%, #07152d 38%, #040d1d 100%);
+      min-height: 100vh;
+    }
+    .page-tag {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      background: rgba(15, 25, 50, 0.88);
+      color: #eaf0ff;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      z-index: 10;
+    }
+    .wrap {
+      max-width: 1120px;
+      margin: 76px auto 40px;
+      padding: 0 24px 24px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+    }
+    .back-btn {
+      display: inline-block;
+      text-decoration: none;
+      color: #ffffff;
+      background: linear-gradient(180deg, #4b93ff 0%, #2f6cf0 100%);
+      border-radius: 20px;
+      padding: 12px 28px;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(52, 120, 255, 0.32);
+    }
+    .hero, .faq-card {
+      background: rgba(7, 18, 42, 0.72);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .hero {
+      padding: 28px 30px;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      margin: 0 0 10px 0;
+      font-size: 50px;
+      line-height: 1.05;
+      font-weight: 800;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 20px;
+      color: #dce5ff;
+      line-height: 1.5;
+      max-width: 900px;
+    }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .faq-card {
+      padding: 22px 24px;
+    }
+    .faq-card h2 {
+      margin: 0 0 12px 0;
+      font-size: 28px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+    .faq-card p {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      line-height: 1.55;
+      color: #edf2ff;
+    }
+    .faq-card p:last-child {
+      margin-bottom: 0;
+    }
+    .faq-card ul {
+      margin: 0 0 12px 22px;
+      padding: 0;
+    }
+    .faq-card li {
+      font-size: 20px;
+      line-height: 1.55;
+      margin-bottom: 8px;
+      color: #edf2ff;
+    }
+    .footer-space {
+      height: 16px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; }
+.brand > div { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
+    .brand-mark { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%); color: #12223c; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; }
+    .brand-title { font-size: 22px; font-weight: 800; }
+    .brand-sub, .demo-status { color: #c7d7f5; font-size: 14px; }
+    .bazont-old-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .progress-wrap { margin-bottom: 12px; }
+    .progress-bar { width: 100%; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #ffb022 0%, #3a86ff 100%); }
+    .header-icon { height: 48px; width: auto; object-fit: contain; border-radius: 6px; }
+
+    
+
+</style>
+</head>
+<body>
+  <div class="page-tag">26</div>
+
+  <div class="wrap">
+    <div class="bazont-old-header">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 26</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div>
+    <div class="topbar">
+      <a class="back-btn" href="/forms/finish.html">Back</a>
+    </div>
+
+    <section class="hero">
+      <h1>Frequently Asked Questions</h1>
+      <p>
+        Bazont is a rules-based platform. It follows the rules. It does not depend on judgement,
+        arguments, or manual intervention. The system relies on valid courier tracking.
+      </p>
+    </section>
+
+    <section class="faq-grid">
+      <div class="faq-card">
+        <h2>1. How does Bazont work?</h2>
+        <p>The Buyer pays into a secure account.</p>
+        <p>The Seller must provide valid courier tracking within the required time.</p>
+        <p>When delivery is confirmed by the courier, payment is released automatically.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>2. Does the Buyer need to confirm delivery?</h2>
+        <p>No.</p>
+        <p>Bazont relies entirely on official courier tracking.</p>
+        <p>When the courier marks the item as <strong>DELIVERED</strong>, the system releases payment automatically.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>3. What if the Seller does not provide tracking?</h2>
+        <p>If valid tracking is not provided within the required time, the Buyer is automatically refunded and the transaction is terminated.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>4. What counts as valid tracking?</h2>
+        <p>Tracking must satisfy all of the following:</p>
+        <ul>
+          <li>It must come from a recognised courier.</li>
+          <li>It must exist in the courier’s system.</li>
+          <li>It must not already show <strong>DELIVERED</strong> at the time of entry.</li>
+        </ul>
+        <p>Invalid, fake, reused, or already-delivered tracking will be rejected.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>5. Can the Seller use any courier?</h2>
+        <p>No.</p>
+        <p>Buyers should only use reputable, trackable courier services.</p>
+        <p>Bazont depends entirely on official tracking data. If the courier cannot be verified, the transaction cannot proceed.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>6. Can the Seller enter a fabricated shipping number?</h2>
+        <p>No.</p>
+        <p>The system relies entirely on the tracking number. A fabricated or unverifiable number is not accepted.</p>
+        <p>If tracking is invalid, the transaction cannot continue under the rules.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>7. What happens after tracking is submitted?</h2>
+        <p>Once accepted, the tracking number is locked.</p>
+        <p>It cannot be changed, and the system monitors delivery status automatically.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>8. What triggers payment to the Seller?</h2>
+        <p>Only one condition triggers payment release:</p>
+        <p><strong>Courier status = DELIVERED</strong></p>
+        <p>No manual approvals. No disputes. No intervention.</p>
+      </div>
+
+      <div class="faq-card">
+        <h2>9. What if something goes wrong?</h2>
+        <p>Bazont does not manage disputes.</p>
+        <p>It follows strict rules:</p>
+        <ul>
+          <li>No tracking = refund</li>
+          <li>Valid delivery = payment</li>
+        </ul>
+        <p>This keeps the system simple, fast, and reliable.</p>
+      </div>
+    </section>
+
+    <div class="footer-space"></div>
+  </div>
+
+</body>
+</html>

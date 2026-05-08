@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bazont</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,0.30), transparent 32%),
+      radial-gradient(circle at bottom right, rgba(249,115,22,0.22), transparent 28%),
+      linear-gradient(135deg, #0f2247 0%, #09162f 42%, #050d1f 100%);
+    color: #f8fafc;
+  }
+  .page-id-badge {
+    position: fixed;
+    top: 8px;
+    left: 10px;
+    z-index: 2147483647;
+    background: rgba(15,23,42,0.92);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font: 700 12px/1 Arial, sans-serif;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+  }
+  .top-login {
+    position: fixed;
+    top: 28px;
+    right: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 20px;
+    padding: 16px 26px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    box-shadow: 0 14px 30px rgba(22,163,74,0.35);
+  }
+  .top-login svg {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+  }
+  .wrap {
+    min-height: calc(100vh - 52px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 24px 28px;
+  }
+  .hero {
+    width: min(1000px, 100%);
+    text-align: center;
+    zoom: 0.94;
+    padding: 58px 42px 42px;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  h1 {
+    margin: 0 0 18px;
+    font-size: clamp(48px, 6vw, 78px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+  .sub {
+    max-width: 860px;
+    margin: 0 auto 21px;
+    font-size: clamp(23px, 2.7vw, 32px);
+    line-height: 1.35;
+    color: #dbe4f3;
+  }
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .cta {
+    min-width: 370px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 800;
+    font-size: 26px;
+    padding: 28px 34px;
+    border-radius: 24px;
+    box-shadow: 0 16px 34px rgba(0,0,0,0.20);
+  }
+  .cta svg {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+  }
+  .cta-animation {
+    background: linear-gradient(180deg, #fb923c, #f97316);
+    box-shadow: 0 16px 34px rgba(249,115,22,0.28);
+  }
+  .cta-forms {
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
+    box-shadow: 0 16px 34px rgba(37,99,235,0.32);
+  }
+  .cta-login {
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    box-shadow: 0 16px 34px rgba(22,163,74,0.32);
+  }
+  .routing-note {
+    display: none;
+  }
+  .footer-lines {
+    margin-top: 21px;
+    text-align: center;
+    color: rgba(255,255,255,0.92);
+    font-size: 22px;
+    line-height: 1.55;
+  }
+  .footer-lines .line-1 {
+    color: rgba(255,255,255,0.90);
+  }
+  .footer-lines .line-2 {
+    margin-top: 2px;
+  }
+
+  .welcome-to-title {
+    margin: 0 0 9px;
+    font-size: clamp(40px, 4.2vw, 56px);
+    line-height: 1.05;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+  }
+  .bazont-logo-4Ta {
+    width: min(620px, 100%);
+    margin: 0 auto 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: bazontFadeIn 0.8s ease-out forwards;
+  }
+  .bazont-logo-4Ta img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: none;
+    transition: transform 0.2s ease;
+  }
+  .bazont-logo-4Ta img:hover {
+    transform: scale(1.02);
+    filter: none;
+  }
+  @keyframes bazontFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .footer-version {
+    position: fixed;
+    right: 20px;
+    bottom: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.72);
+    z-index: 70;
+  }
+  /* BUILD 7S: Page 1 screen-fit only */
+  .page1-fit .wrap {
+    min-height: calc(100vh - 34px);
+    padding: 12px 24px 18px;
+  }
+  .page1-fit .hero {
+    zoom: 0.90;
+    padding: 32px 42px 24px;
+  }
+  .page1-fit .welcome-to-title { margin-bottom: 5px; }
+  .page1-fit .bazont-logo-4Ta { margin-bottom: 6px; }
+  .page1-fit .sub { margin-bottom: 12px; line-height: 1.25; }
+  .page1-fit .actions { margin-top: 0; gap: 18px; }
+  .page1-fit .footer-lines { margin-top: 10px; line-height: 1.35; }
+
+  @media (max-width: 900px) {
+    .top-login {
+      top: 18px;
+      right: 18px;
+      font-size: 18px;
+      padding: 14px 22px;
+    }
+    .hero {
+      padding: 48px 24px 34px;
+    }
+    .cta {
+      min-width: 300px;
+      font-size: 22px;
+      padding: 24px 24px;
+    }
+    .footer-lines {
+      font-size: 18px;
+    }
+  }
+  @media (max-width: 680px) {
+    .wrap {
+      padding-top: 90px;
+    }
+    .top-login {
+      position: absolute;
+    }
+    .cta {
+      min-width: 100%;
+    }
+  }
+
+    
+
+</style>
+</head>
+<body class="page1-fit">
+  <div class="page-id-badge">1</div>
+
+
+  <div class="wrap">
+    <main class="hero">
+      <h1 class="welcome-to-title">Welcome to</h1>
+      <div class="bazont-logo-4Ta">
+        <img src="/static/assets/bazont_logo.png" alt="Bazont">
+      </div>
+      <div class="sub">Login if already registered, or click Next to see how Bazont protects transactions between distant buyers and sellers.</div>
+
+      <div class="actions">
+        <a class="cta cta-animation" href="/intro.html" style="transform: scale(0.65); transform-origin: center;">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10,8 17,12 10,16 10,8" fill="currentColor" stroke="none"></polygon>
+          </svg>
+          <span>Next</span>
+        </a>
+
+        <a class="cta cta-login" href="/login" style="transform: scale(0.65); transform-origin: center;">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Login</span>
+        </a>
+      </div>
+
+      <div class="footer-lines">
+        <div class="line-1">Secure transactions&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Rules-based process&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;No manual intervention</div>
+      </div>
+    </main>
+  </div>
+
+  <div class="footer-version"><span id="visible-version">…</span></div>
+
+  <script>
+  fetch("/__version", {cache:"no-store"})
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      const el = document.getElementById("visible-version");
+      if (el && data && data.version) el.textContent = String(data.version).trim();
+    })
+    .catch(() => {});
+  </script>
+
+</body>
+</html>

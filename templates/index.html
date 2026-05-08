@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  /* P11 colour-only alignment to reference sample */
+  .hero-card {
+    background: linear-gradient(180deg, rgba(5, 23, 54, 0.92), rgba(3, 20, 46, 0.92)) !important;
+    border-color: rgba(116, 152, 207, 0.18) !important;
+    box-shadow: none !important;
+  }
+  .hero-card .muted,
+  .hero-card .tiny,
+  .hero-card .big-lead,
+  .hero-card p {
+    color: #e6edf8 !important;
+  }
+  .hero-card .panel {
+    background: linear-gradient(180deg, rgba(8, 23, 52, 0.96), rgba(5, 20, 46, 0.96)) !important;
+    border: 1px solid rgba(116, 152, 207, 0.18) !important;
+    box-shadow: none !important;
+  }
+  .hero-card .panel h2,
+  .hero-card .panel .tiny {
+    color: #f8fbff !important;
+  }
+  .hero-card .panel .note-strong:first-of-type {
+    color: #7ee05a !important;
+  }
+  .hero-card .panel .note-strong:nth-of-type(2) {
+    color: #7ee05a !important;
+  }
+  .badge-line .pill {
+    background: linear-gradient(180deg, rgba(6, 20, 48, 0.96), rgba(4, 17, 40, 0.96)) !important;
+    color: #f8fbff !important;
+    border: 1px solid rgba(116, 152, 207, 0.18) !important;
+    box-shadow: none !important;
+  }
+  .badge-line .pill:first-child,
+  .badge-line .pill.warn {
+    color: #ff961f !important;
+  }
+  .badge-line .pill.neutral {
+    color: #7ee05a !important;
+  }
+  section > .panel,
+  section .panel {
+    background: linear-gradient(180deg, rgba(5, 23, 54, 0.92), rgba(3, 20, 46, 0.92)) !important;
+    border-color: rgba(116, 152, 207, 0.18) !important;
+    box-shadow: none !important;
+  }
+  .pill[style*='LIVE MODE'] {
+    background: rgba(11, 55, 116, 0.68) !important;
+    color: #49a3ff !important;
+    border-color: rgba(73, 163, 255, 0.20) !important;
+  }
+  .btn {
+    background: linear-gradient(180deg, #ff961f, #f97316) !important;
+    box-shadow: none !important;
+  }
+  .btn.secondary {
+    background: transparent !important;
+    color: #49a3ff !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding-left: 0 !important;
+  }
+  .flash.success {
+    background: rgba(8, 73, 50, 0.52) !important;
+    color: #7ee05a !important;
+    border-color: rgba(126, 224, 90, 0.18) !important;
+  }
+  .flash.error {
+    background: rgba(11, 55, 116, 0.18) !important;
+    color: #e6edf8 !important;
+    border-color: rgba(116, 152, 207, 0.18) !important;
+  }
+
+    
+
+</style>
+
+<style>
+  .p11-nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 40px;
+    width: 900px;
+    max-width: calc(100% - 40px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    z-index: 50;
+  }
+  .p11-btn {
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 14px 24px;
+    font-weight: 800;
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 18px;
+  }
+  .p11-btn-primary {
+    background: linear-gradient(180deg, #fb923c, #ea580c);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 14px 30px rgba(234,88,12,0.35);
+  }
+  .p11-btn-secondary {
+    background: rgba(255,255,255,0.08);
+    color: #f8fafc;
+  }
+  @media (max-width: 900px) {
+    .p11-nav {
+      width: calc(100% - 20px);
+      bottom: 20px;
+    }
+  }
+
+    
+
+</style>
+
+<div class="stack" style="gap:22px;">
+
+  <section class="hero-card" style="padding:24px;">
+    <div class="stack" style="gap:14px;">
+      <div class="grid-2" style="align-items:start; gap:18px; grid-template-columns:minmax(0,1.08fr) minmax(320px,0.92fr);">
+        <div>
+          <p class="muted" style="margin:0;">
+            Demo Mode lets visitors explore the system freely. Real Transactions require a registered Buyer account. It's FREE!
+          </p>
+          <div class="badge-line" style="margin-top:12px;">
+            <span class="pill" style="background:rgba(11,55,116,0.18); color:#e6edf8; border-color:rgba(116,152,207,0.18);">Maximum item price: ₱{{ "{:,.0f}".format(MAX_ITEM_PRICE) }}</span>
+            <span class="pill neutral" style="background:rgba(34,197,94,0.14); color:#dcfce7; border-color:rgba(34,197,94,0.24);">Maximum weight: {{ MAX_WEIGHT }} kg</span>
+            <span class="pill neutral">Maximum size: {{ '%.0f'|format(MAX_DIM) }} × {{ '%.0f'|format(MAX_DIM) }} × {{ '%.0f'|format(MAX_DIM) }} cm</span>
+            <span class="pill warn" style="background:rgba(11,55,116,0.18); color:#e6edf8; border-color:rgba(116,152,207,0.18);">Tracking deadline: {{ TRACKING_DEADLINE_DAYS }} days</span>
+          </div>
+        </div>
+        <div class="panel" style="padding:20px; background:rgba(15,23,42,0.62); border:1px solid rgba(116, 152, 207, 0.18); box-shadow:0 18px 40px rgba(0,0,0,0.24);">
+          <div class="pill" style="margin-bottom:10px; padding:8px 14px; background:rgba(11,55,116,0.18); color:#e6edf8; border-color:rgba(116,152,207,0.18);">LIVE MODE • Real Transactions</div>
+          <h2 style="margin:0 0 6px; font-size:1.28rem; color:#f8fafc;">Start a real transaction</h2>
+          <p class="tiny" style="margin:0 0 8px; color:#dbeafe;">Register an account → Log in as Buyer → Create Transaction.</p>
+          <p class="tiny" style="margin:0; color:#dbeafe;">You must register first and then login as a Buyer before you can create a real transaction.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="panel" style="padding:18px 18px 18px; border:1px solid rgba(255,255,255,0.08); border-top:2px solid rgba(34,197,94,0.42); background:rgba(15,23,42,0.42); box-shadow:none; width:100%;">
+
+
+      {% if current_user and current_user['role'] == 'buyer' %}
+      <div class="actions" style="flex-direction:column; align-items:flex-start; gap:8px;">
+        <a class="btn" href="{{ url_for('new_transaction') }}" style="display:inline-flex; align-items:center; justify-content:center; font-size:0.98rem; padding:11px 20px; font-weight:800; width:auto; min-width:0; max-width:none; min-height:0; border-radius:16px;">Create Transaction</a>
+        <a class="btn secondary" href="{{ url_for('buyer_dashboard') }}" style="width:auto; min-width:0; padding:10px 18px; border-radius:16px;">Open buyer dashboard</a>
+      </div>
+      <div class="flash success" style="margin-top:10px; margin-bottom:0; background:rgba(34,197,94,0.12); color:#dcfce7; border:1px solid rgba(34,197,94,0.22); padding:10px 14px;">You are logged in as a Buyer. You can start now.</div>
+
+      {% elif current_user and current_user['role'] == 'seller' %}
+      <div class="flash error" style="margin-bottom:10px; background:rgba(11,55,116,0.18); color:#e6edf8; border:1px solid rgba(116,152,207,0.18); padding:10px 14px;">Create Transaction is for Buyer accounts only. Please switch to a Buyer account or register a new Buyer account.</div>
+      <div class="actions" style="flex-direction:column; align-items:flex-start; gap:8px;">
+        <a class="btn secondary" href="{{ url_for('login') }}" style="width:auto; min-width:0; padding:10px 18px; border-radius:16px;">Login with another account</a>
+        <a class="btn secondary" href="{{ url_for('register') }}" style="width:auto; min-width:0; padding:10px 18px; border-radius:16px;">Register account</a>
+      </div>
+
+      {% else %}
+
+      <div class="actions" style="flex-direction:column; align-items:flex-start; gap:8px;">
+        <a class="btn" href="{{ url_for('login', next=url_for('new_transaction')) }}" style="display:inline-flex; align-items:center; justify-content:center; font-size:0.98rem; padding:11px 20px; font-weight:800; width:auto; min-width:0; max-width:none; min-height:0; border-radius:16px;">Create Transaction</a>
+        <a class="btn secondary" href="{{ url_for('login') }}" style="width:auto; min-width:0; padding:10px 18px; border-radius:16px;">Login</a>
+        <a class="btn secondary" href="{{ url_for('register') }}" style="width:auto; min-width:0; padding:10px 18px; border-radius:16px;">Register account</a>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+</div>
+
+  <div class="p11-nav">
+    <a class="p11-btn" style="background:#22c55e;color:white;" href="{{ url_for('gateway_home') }}">Home</a>
+    <a class="p11-btn p11-btn-secondary" style="background:#3b82f6;color:white;" href="/forms/finish.html">← Back</a>
+    <a class="p11-btn p11-btn-primary" href="{{ url_for('register') }}">Next →</a>
+  </div>
+{% endblock %}
+
+

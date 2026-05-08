@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms Demo - Login</title>
+  <link rel="stylesheet" href="/forms/style.css">
+</head>
+<body>
+  <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">10</div>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 10</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:22.22%"></div></div></div>
+            <div class="steps">
+      <div class="step">9<br>Register</div>
+      <div class="step active">10<br>Login</div>
+      <div class="step">11<br>Create</div>
+      <div class="step">12<br>Seller</div>
+      <div class="step">13<br>Pay</div>
+      <div class="step">14<br>Delivery</div>
+      <div class="step">15<br>Release</div>
+      <div class="step">16<br>Finish</div>
+<a href="/faq"><div class="step">26<br>FAQ</div></a>
+    </div>
+
+
+
+    <div class="grid-2">
+      <div class="form-card">
+        <h1>Login</h1>
+        <p>Now log in using the account you just created.</p>
+        <label class="label">Email address</label>
+        <input class="field" id="login-email" readonly value="johnbuyer@example.com" aria-describedby="login-email-error">
+        <div class="field-error" id="login-email-error" aria-live="polite"></div>
+        <label class="label">Password</label>
+        <input class="field" id="login-password" readonly value="Buyer12345" aria-describedby="login-password-error">
+        <div class="field-error" id="login-password-error" aria-live="polite"></div>
+        <div class="hint" id="login-hint">The customer sees exactly which credentials are used on this page.</div>
+      </div>
+      <div class="card">
+        <h2>Purpose of this page</h2>
+        <p>This confirms the account exists. The buyer can now log into the platform and create a transaction. The seller can now log into the platform, review the transaction, and proceed with the sale.</p>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a class="btn btn-secondary" href="/">Home</a>
+      <a class="btn btn-secondary" href="/forms/register.html">← Back</a>
+      <span class="next-guidance-anchor" style="position:relative;display:inline-block;">
+        <p class="demo-guidance" style="position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);margin:0;white-space:nowrap;color:#cbd5e1;font-size:12px;line-height:1.35;font-weight:400;">Review the details, then click Next</p>
+        <a class="btn btn-primary" id="login-next" href="/forms/create_transaction.html">Next →</a>
+      </span>
+    </div>
+  </div>
+  <script src="/forms/script.js"></script>
+
+<style>
+.footer-version {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.field-error {
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fca5a5;
+}
+
+.field-invalid {
+  border-color: rgba(248, 113, 113, 0.95) !important;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
+}
+
+    
+
+</style>
+<div class="footer-version"><span id="visible-version">Bazont12B.zip</span></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const emailField = document.getElementById("login-email");
+  const passwordField = document.getElementById("login-password");
+  const hint = document.getElementById("login-hint");
+  const nextButton = document.getElementById("login-next");
+  const emailError = document.getElementById("login-email-error");
+  const passwordError = document.getElementById("login-password-error");
+  const mode = sessionStorage.getItem("formsDemoRegisterMode") || "sample";
+  const notice = sessionStorage.getItem("formsDemoLoginNotice");
+  const raw = sessionStorage.getItem("formsDemoRegisterData");
+
+  function clearErrors() {
+    emailField.classList.remove("field-invalid");
+    passwordField.classList.remove("field-invalid");
+    emailError.textContent = "";
+    passwordError.textContent = "";
+  }
+
+  function setError(field, errorEl, message) {
+    field.classList.add("field-invalid");
+    errorEl.textContent = message;
+  }
+
+  if (raw) {
+    try {
+      const data = JSON.parse(raw);
+      if (data.email) emailField.value = data.email;
+      if (data.password) passwordField.value = data.password;
+    } catch (error) {
+      console.error("Unable to read saved Register details.", error);
+    }
+  }
+
+  if (mode === "practice") {
+    emailField.readOnly = false;
+    passwordField.readOnly = false;
+    hint.textContent = notice || "Log in using the same email address and password used to register.";
+  } else {
+    emailField.readOnly = true;
+    passwordField.readOnly = true;
+    hint.textContent = "These sample credentials match the sample values shown on the Register screen.";
+  }
+
+  emailField.addEventListener("input", clearErrors);
+  passwordField.addEventListener("input", clearErrors);
+
+  nextButton.addEventListener("click", async function (event) {
+    if (mode !== "practice") return;
+    event.preventDefault();
+    clearErrors();
+
+    const email = emailField.value.trim();
+    const password = passwordField.value;
+    let valid = true;
+
+    if (!email) {
+      valid = false;
+      setError(emailField, emailError, "Enter your registered email address.");
+    }
+    if (!password) {
+      valid = false;
+      setError(passwordField, passwordError, "Enter your password.");
+    }
+    if (!valid) {
+      hint.textContent = "Please correct the highlighted items before continuing.";
+      return;
+    }
+
+    hint.textContent = "Checking your live login…";
+    nextButton.classList.add("disabled");
+
+    try {
+      const response = await fetch("/forms-api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password})
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (response.ok && result.ok) {
+        const rawData = sessionStorage.getItem("formsDemoRegisterData");
+        let data = {};
+        try { data = rawData ? JSON.parse(rawData) : {}; } catch (error) {}
+        data.email = email;
+        data.password = password;
+        sessionStorage.setItem("formsDemoRegisterData", JSON.stringify(data));
+        sessionStorage.removeItem("formsDemoLoginNotice");
+        sessionStorage.setItem("formsDemoAuthStatus", "logged_in");
+        window.location.href = nextButton.href;
+        return;
+      }
+
+      setError(emailField, emailError, result.message || "Invalid email or password.");
+      setError(passwordField, passwordError, "Please try again.");
+      hint.textContent = result.message || "Invalid email or password.";
+    } catch (error) {
+      hint.textContent = "Login could not reach the live account system. Please try again.";
+    } finally {
+      nextButton.classList.remove("disabled");
+    }
+  });
+});
+</script>
+
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

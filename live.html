@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go Live</title>
+  <style>
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f172a;color:#f8fafc;display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .card{max-width:760px;margin:20px;padding:32px;border-radius:20px;background:#111827;border:1px solid #334155;text-align:center}
+    h1{margin:0 0 14px;font-size:42px}
+    p{margin:0 0 12px;line-height:1.5;color:#cbd5e1;font-size:20px}
+    a{display:inline-block;margin-top:18px;padding:14px 22px;border-radius:999px;text-decoration:none;background:#22c55e;color:white;font-weight:700}
+    .v{position:fixed;right:20px;bottom:14px;font-size:16px;font-weight:500;color:rgba(255,255,255,0.72);z-index:70}
+  
+    
+
+</style>
+</head>
+<body>
+<div class="card">
+    <h1>Go Live</h1>
+    <p>This button is now working locally.</p>
+    <p>When this gateway is inserted into BAZONT, this button should link to the real live app.</p>
+    <a href="index.html">Back to gateway</a>
+  </div>
+  <div class="v"><span id="visible-version">Bazont12C.zip</span></div>
+
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

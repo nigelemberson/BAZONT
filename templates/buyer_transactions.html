@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .tx-row-link { cursor:pointer; }
+  .tx-row-link:hover { background:#f7fbff; }
+
+  body.buyer-dashboard-page .shell { padding: 14px 18px 14px; }
+  body.buyer-dashboard-page .page-wrap { margin-top: 10px; padding-top: 0; }
+  body.buyer-dashboard-page .stack { gap: 10px; }
+  body.buyer-dashboard-page .panel { padding: 16px 18px; border-radius: 20px; }
+  body.buyer-dashboard-page .section-title { font-size: 1.45rem; margin-bottom: 8px; }
+  body.buyer-dashboard-page th,
+  body.buyer-dashboard-page td { padding: 10px 12px; font-size: 1.02rem; }
+  body.buyer-dashboard-page th { font-size: 0.9rem; }
+
+    
+
+</style>
+<div class="stack">
+<section class="panel">
+    <h3 class="section-title">My transactions</h3>
+    <table>
+      <tr><th>Public ID</th><th>Seller email</th><th>record total</th><th>Buyer pays</th><th>Seller receives</th><th>Status</th><th>Action</th></tr>
+      {% for tx in transactions %}
+      {% set f = tx_financials(tx) %}
+      <tr>
+        <td><strong><a href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">{{ tx['public_id'] }}</a></strong></td>
+        <td>{{ tx['seller_email'] }}</td>
+        <td>₱{{ '%.2f'|format(f.transaction_total) }}</td>
+        <td>₱{{ '%.2f'|format(f.buyer_pays) }}</td>
+        <td>₱{{ '%.2f'|format(f.seller_receives) }}</td>
+        <td>{{ tx['status'] }}</td>
+        <td><a class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 0 10px rgba(59,130,246,0.5); width: auto; min-width: max-content; white-space: nowrap;" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Open transaction</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">No transactions yet.</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+</div>
+<div class="buyer-dashboard-bottom-actions" aria-label="Buyer transactions navigation">
+  <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
+  <a class="btn buyer-dashboard-back" href="{{ url_for('buyer_dashboard') }}">Back</a>
+  <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock %}
+
+

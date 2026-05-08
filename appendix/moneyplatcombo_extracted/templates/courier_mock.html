@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="stack">
+  <section class="hero-card">
+    <h1 class="hero-title">Mock courier — {{ tx['public_id'] }}</h1>
+    <p class="hero-subtitle">Use this testing page to post courier status updates. DELIVERED will trigger automatic seller release under the platform rules.</p>
+  </section>
+  <section class="grid-2">
+    <div class="panel">
+      <form method="post">
+        <label>Tracking number</label>
+        <input type="text" name="tracking_number" value="{{ tx['tracking_number'] or '' }}" required>
+        <label>Status</label>
+        <input type="text" name="status" placeholder="e.g. IN_TRANSIT or DELIVERED" required>
+        <label>Note</label>
+        <textarea name="note"></textarea>
+        <button type="submit">Record courier event</button>
+      </form>
+    </div>
+    <div class="action-card">
+      <h3 class="section-title">Current transaction state</h3>
+      <table>
+        <tr><th>Status</th><td>{{ tx['status'] }}</td></tr>
+        <tr><th>record</th><td>{{ tx['hold_status'] }}</td></tr>
+        <tr><th>Tracking</th><td>{{ tx['tracking_number'] or '-' }}</td></tr>
+        {% set f = tx_financials(tx) %}
+        <tr><th>Seller receives on release</th><td>₱{{ '%.2f'|format(f.seller_receives) }}</td></tr>
+      </table>
+      <div class="actions" style="margin-top:12px;">
+        <a class="btn secondary" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Back to transaction</a>
+      </div>
+    </div>
+  </section>
+  <section class="panel">
+    <h3 class="section-title">Courier event log</h3>
+    <table>
+      <tr><th>Time</th><th>Status</th><th>Tracking</th><th>Source</th><th>Note</th></tr>
+      {% for ev in events %}
+      <tr>
+        <td>{{ ev['event_time'] }}</td>
+        <td>{{ ev['status'] }}</td>
+        <td>{{ ev['tracking_number'] }}</td>
+        <td>{{ ev['source'] }}</td>
+        <td>{{ ev['note'] or '' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5">No courier events yet.</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+Bazont17V.zip
+
+One substantive change only: Page 1 shield glow treatment copied/strengthened to match the Page 2 blue luminous shield style.
+No Page 1 positions, typography, buttons, bridge image, buyer/seller positions, or layout were changed.
+
+Checks: package_check PASS; zip_check PASS; Python compile PASS; flat ZIP root verified.

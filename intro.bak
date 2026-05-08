@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Bazont Exists</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; overflow-x: hidden; }
+    body {
+      font-family: Arial, Helvetica, sans-serif; color: #f8fafc; min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(53,117,255,0.24), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(255,166,0,0.16), transparent 28%),
+        linear-gradient(135deg, #071120 0%, #0a1b34 55%, #10284a 100%);
+      padding: clamp(10px, 1.5vh, 20px) clamp(18px, 2vw, 28px);
+    }
+    .page-id-badge { position: fixed; top: 8px; left: 10px; z-index: 2147483647; background: rgba(15,23,42,0.92); color: #fff; padding: 4px 8px; border-radius: 999px; font: 700 12px/1 Arial,sans-serif; letter-spacing: 0.04em; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.28); }
+    .page-shell { max-width: 1380px; width: min(1380px, calc(100vw - 56px)); min-height: calc(100vh - 40px); margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+.brand > div { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
+    .brand-mark { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%); color: #12223c; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; }
+    .brand-title { font-size: 22px; font-weight: 800; }
+    .brand-sub, .demo-status { color: #c7d7f5; font-size: 14px; }
+    .progress-wrap { margin-bottom: 12px; }
+    .progress-bar { width: 100%; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+    .progress-fill { height: 100%; width: 16.66%; border-radius: 999px; background: linear-gradient(90deg, #ffb022 0%, #3a86ff 100%); }
+    .intro-panel { flex: 1; display: flex; flex-direction: column; min-height: 0; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 26px; box-shadow: 0 24px 60px rgba(0,0,0,0.24); backdrop-filter: blur(6px); padding: clamp(20px, 2.8vw, 34px); }
+    .intro-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(330px, 0.98fr); gap: clamp(18px, 2.2vw, 30px); align-items: stretch; }
+    .left-column { display: flex; flex-direction: column; justify-content: center; padding: clamp(10px, 1.8vw, 24px); }
+    h1 { margin: 0 0 clamp(22px, 3vh, 34px); font-size: clamp(3rem, 5vw, 5.4rem); line-height: 0.98; letter-spacing: -0.05em; }
+    .main-lines { display: grid; gap: clamp(16px, 2vh, 24px); }
+    .main-lines p { margin: 0; font-size: clamp(1.45rem, 2.45vw, 2.35rem); line-height: 1.22; color: #e5edf9; font-weight: 700; }
+    .main-lines p:last-child { color: #ffffff; font-weight: 800; }
+    .right-column { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vh, 18px); min-height: 0; }
+    .rule-card { min-height: 0; padding: clamp(16px, 1.8vw, 22px); border-radius: 22px; background: linear-gradient(180deg, rgba(6, 20, 48, 0.96), rgba(4, 17, 40, 0.96)); border: 1px solid rgba(116, 152, 207, 0.18); box-shadow: 0 18px 40px rgba(0,0,0,0.20); overflow: hidden; }
+    .rule-card h2 { margin: 0 0 10px; font-size: clamp(1.12rem, 1.8vw, 1.45rem); color: #ffffff; }
+    .rule-card p { margin: 0 0 8px; color: #dbeafe; font-size: clamp(0.98rem, 1.28vw, 1.18rem); line-height: 1.34; }
+    .rule-card p:last-child { margin-bottom: 0; }
+    .actions { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: clamp(16px, 2vh, 24px); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-width: 170px; padding: 14px 22px; border-radius: 999px; text-decoration: none; font-weight: 800; color: #ffffff; border: 1px solid rgba(255,255,255,0.16); box-shadow: 0 12px 30px rgba(0,0,0,0.24); font-size: 18px; }
+    .btn-back { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .btn-next { background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%); color: #13233b; box-shadow: 0 12px 30px rgba(255,153,0,0.28); }
+    .footer-version { position: fixed; right: 14px; bottom: 10px; font-size: 12px; color: #94a3b8; z-index: 9999; pointer-events: none; }
+    @media (max-width: 900px) { .page-shell { width: min(100%, calc(100vw - 28px)); } .intro-grid { grid-template-columns: 1fr; } .right-column { grid-template-rows: none; } .left-column { justify-content: flex-start; } .actions { flex-wrap: wrap; } }
+    @media (max-height: 760px) and (min-width: 901px) { .intro-panel { padding: 18px; } h1 { font-size: clamp(2.6rem, 4.6vw, 4.6rem); margin-bottom: 18px; } .main-lines { gap: 14px; } .main-lines p { font-size: clamp(1.25rem, 2vw, 1.9rem); } .rule-card { padding: 14px 18px; } .rule-card p { font-size: clamp(0.9rem, 1.12vw, 1.05rem); line-height: 1.25; } .actions { margin-top: 14px; } .btn { padding: 12px 20px; } }
+  
+    .intro-fee-block {
+      margin: 12px auto 10px;
+      text-align: center;
+      color: rgba(245, 248, 255, 0.9);
+      font-size: 0.94rem;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    /* Bazont7R: Page 2-only fit fix. Scoped to .page2-only so shared/global styles and other pages are untouched. */
+    .page2-only { min-height: calc(100vh - 32px); }
+    .page2-only .topbar { margin-bottom: 10px; }
+    .page2-only .progress-wrap { margin-bottom: 10px; }
+    .page2-only .intro-panel { padding: clamp(16px, 2.1vw, 26px); }
+    .page2-only .intro-grid { gap: clamp(14px, 1.8vw, 24px); }
+    .page2-only .left-column { padding: clamp(8px, 1.4vw, 18px); }
+    .page2-only h1 { margin-bottom: clamp(18px, 2.4vh, 28px); }
+    .page2-only .main-lines { gap: clamp(13px, 1.65vh, 20px); }
+    .page2-only .right-column { grid-template-rows: repeat(4, minmax(0, 1fr)); gap: clamp(9px, 1.25vh, 14px); }
+    .page2-only .rule-card { padding: clamp(14px, 1.45vw, 18px); }
+    .page2-only .rule-card h2 { margin-bottom: 8px; }
+    .page2-only .rule-card p { margin-bottom: 6px; line-height: 1.28; }
+    .page2-only .actions { margin-top: clamp(10px, 1.35vh, 16px); }
+
+    /* BUILD 7T: Page 2 polish only, isolated under .page2-only. No global CSS changes. */
+    .page2-only { min-height: calc(100vh - 24px); }
+    .page2-only .topbar { margin-bottom: 7px; }
+    .page2-only .progress-wrap { margin-bottom: 7px; }
+    .page2-only .intro-panel { padding: 14px 16px; }
+    .page2-only .intro-grid { gap: 16px; }
+    .page2-only .left-column .main-lines { gap: clamp(11px, 1.35vh, 17px); }
+    .page2-only .left-column .main-lines p { font-size: clamp(1.34rem, 2.25vw, 2.16rem); line-height: 1.08; }
+    .page2-only .right-column { gap: 6px; font-size: 0.95em; }
+    .page2-only .right-column .rule-card { padding: 9px 12px; border-radius: 18px; border-color: rgba(139, 170, 222, 0.24); box-shadow: 0 14px 34px rgba(0,0,0,0.20); }
+    .page2-only .right-column .rule-card h2 { margin-bottom: 3px; }
+    .page2-only .right-column .rule-card p { margin-bottom: 3px; line-height: 1.18; }
+    .page2-only .actions { margin-top: 9px; justify-content: flex-end; gap: 10px; }
+    .page2-only .btn { min-width: 0; border: none; border-radius: 16px; padding: 14px 22px; font-size: 18px; font-weight: 700; cursor: pointer; transition: transform 0.18s ease; box-shadow: none; }
+    .page2-only .btn:hover { transform: translateY(-1px); }
+    .page2-only .btn-back { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .page2-only .btn-next { background: linear-gradient(180deg, #ffb022 0%, #ff8a00 100%); color: #13233b; box-shadow: 0 12px 30px rgba(255,153,0,0.28); }
+
+    .header-icon { height: 48px; width: auto; object-fit: contain; border-radius: 6px; }
+</style>
+</head>
+<body>
+  <div class="page-id-badge">2</div>
+  <main class="page-shell page2-only">
+    <div class="topbar">
+      <div class="brand header-left">
+          <img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b">
+          <div class="header-title">
+            <div class="brand-title brand-name">BAZONT</div>
+            <div class="brand-sub subtitle">Safe Transactions</div>
+          </div>
+        </div>
+      <div class="demo-status">Page 2</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill"></div></div></div>
+    <section class="intro-panel">
+      <div class="intro-grid">
+        <section class="left-column">
+          <h1>Why Bazont Exists</h1>
+          <div class="main-lines">
+            <p>Buyers don’t want to send their money first.</p>
+            <p>Sellers don’t want to send their goods first.</p>
+            <p>Bazont addresses this dilemma with a secure, rules-based transaction.</p>
+          </div>
+        </section>
+        <section class="right-column" aria-label="Bazont rules summary">
+          <section class="rule-card">
+            <h2>Transaction limits</h2>
+            <p>Maximum item value: ₱10,000</p>
+            <p>Maximum package weight: 15 kg</p>
+            <p>Maximum size: 50 cm × 50 cm × 50 cm</p>
+          </section>
+          <section class="rule-card">
+            <h2>Shipping rules</h2>
+            <p>Seller must provide a valid courier tracking number</p>
+            <p>Only authentic courier tracking numbers are accepted</p>
+            <p>Tracking must be provided within 3 days</p>
+          </section>
+          <section class="rule-card">
+            <h2>Enforcement</h2>
+            <p>If tracking is not provided within 3 days:</p>
+            <p>→ Transaction is cancelled</p>
+            <p>→ Buyer is fully refunded</p>
+          </section>
+        <section class="rule-card">
+          <h2>Platform fee</h2>
+          <p>3% total</p>
+          <p>Shared by buyer and seller</p>
+          <p>Minimum ₱100 per transaction</p>
+        </section>
+
+        </section>
+      </div>
+      <nav class="actions" aria-label="Page navigation">
+        <a class="btn btn-back" href="/">Back</a>
+        <a class="btn btn-next" href="/animation/?step=1">Next</a>
+      </nav>
+    </section>
+
+  </main>
+  <div class="footer-version"><span id="visible-version">Bazont10T.zip</span></div>
+</body>
+</html>
+
+<script>
+fetch("/__version", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => { const el = document.getElementById("visible-version"); if (el && data && data.version) el.textContent = String(data.version).trim(); })
+  .catch(() => {});
+</script>

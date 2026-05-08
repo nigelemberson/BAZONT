@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+<style>
+/* Build 11T: Page 21 measurement row fix only. */
+body.new-transaction-page .stack { gap: 8px; }
+body.new-transaction-page .hero-card { padding-bottom: 14px; }
+body.new-transaction-page .hero-subtitle { margin-bottom: 0; line-height: 1.24; }
+body.new-transaction-page .create-right-panel-note { line-height: 1.24; font-size: 1.12rem; padding: 0; }
+body.new-transaction-page .create-right-panel-note p + p { margin-top: 4px; }
+body.new-transaction-page .page-25-single-panel-section { margin-top: 0; }
+body.new-transaction-page .page-25-form-panel-only { padding: 10px 16px; }
+body.new-transaction-page #page-25-create-form .grid-2,
+body.new-transaction-page #page-25-create-form .grid-4 { gap: 6px 10px; }
+body.new-transaction-page #page-25-create-form label { display: block; margin-bottom: 2px; font-size: 0.92rem; line-height: 1.05; }
+body.new-transaction-page #page-25-create-form input,
+body.new-transaction-page #page-25-create-form textarea { padding: 7px 10px; margin: 2px 0 4px; font-size: 0.98rem; line-height: 1.1; }
+body.new-transaction-page #page-25-create-form textarea.page-25-description { min-height: 30px; height: 30px; }
+body.new-transaction-page #page-25-create-form .page-25-measurements { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 8px; white-space: nowrap; }
+body.new-transaction-page #page-25-create-form .page-25-measurements > div { min-width: 0; }
+body.new-transaction-page .page-25-action-row { margin-top: 6px; }
+
+    
+
+</style>
+{% block content %}
+<style>
+/* Build 11T: Page 21 Weight/Length/Width/Height row fix only. */
+body.new-transaction-page #page-25-create-form .page-25-measurements {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 10px;
+  row-gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: start;
+  white-space: normal;
+}
+body.new-transaction-page #page-25-create-form .page-25-measurements > div {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+body.new-transaction-page #page-25-create-form .page-25-measurements label {
+  display: block;
+  margin: 0 0 3px;
+  white-space: nowrap;
+}
+body.new-transaction-page #page-25-create-form .page-25-measurements input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+    
+
+</style>
+<div class="stack">
+  <section class="hero-card">
+    <div class="grid-2" style="align-items:start;">
+      <div>
+        <h1 class="hero-title">Create transaction</h1>
+        <p class="hero-subtitle">Enter item details and Seller email. Item price limit is <strong>for the single item only</strong>. Shipping cost is separate. Platform fee: 3% total. Shared by buyer and seller. Minimum ₱100 per transaction.</p>
+      </div>
+      <div class="create-right-panel-note">
+        <p>After the Seller sees the Full item price and Shipping cost held by the platform, the Seller pays shipping to the Courier.</p>
+        <p>Courier must support a final DELIVERED status. Seller must upload tracking within {{ TRACKING_DEADLINE_DAYS }} days after payment.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-25-single-panel-section">
+    <div class="panel page-25-form-panel-only">
+      <form method="post" id="page-25-create-form">
+        <div class="grid-2 page-25-description-email-row">
+          <div>
+            <label>Item description</label>
+            <textarea name="item_description" rows="1" class="page-25-description" required>{{ form_data.item_description if form_data else "" }}</textarea>
+          </div>
+          <div>
+            <label>Seller email</label>
+            <input type="email" name="seller_email" value="{{ form_data.seller_email if form_data else "" }}" required>
+          </div>
+        </div>
+        <div class="grid-2 page-25-price-row">
+          <div>
+            <label>Item price (PHP)</label>
+            <input type="number" name="item_price" min="0" max="10000" step="0.01" value="{{ form_data.item_price if form_data else "" }}" required>
+          </div>
+          <div>
+            <label>Shipping (PHP)</label>
+            <input type="number" name="shipping_price" min="0" step="0.01" value="{{ form_data.shipping_price if form_data else "" }}" required>
+          </div>
+        </div>
+        <div class="grid-4 page-25-measurements">
+          <div>
+            <label>Weight (kg)</label>
+            <input type="number" name="weight_kg" min="0" max="15" step="0.01" value="{{ form_data.weight_kg if form_data else "" }}" required>
+          </div>
+          <div>
+            <label>Length (cm)</label>
+            <input type="number" name="length_cm" min="1" max="50" step="0.01" value="{{ form_data.length_cm if form_data else "" }}" required>
+          </div>
+          <div>
+            <label>Width (cm)</label>
+            <input type="number" name="width_cm" min="1" max="50" step="0.01" value="{{ form_data.width_cm if form_data else "" }}" required>
+          </div>
+          <div>
+            <label>Height (cm)</label>
+            <input type="number" name="height_cm" min="1" max="50" step="0.01" value="{{ form_data.height_cm if form_data else "" }}" required>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <div class="page-25-action-row" aria-label="Create transaction navigation">
+    <button type="submit" form="page-25-create-form" class="btn page-25-send">Next</button>
+    <a class="btn page-25-send" href="{{ url_for('latest_invitation_preview') }}">Next / Preview</a>
+    <a class="btn page-25-home" href="{{ url_for('gateway_home') }}">Home</a>
+    <a class="btn page-25-back" href="{{ url_for('buyer_dashboard') }}">Back</a>
+    <a class="btn page-25-logout" href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</div>
+{% endblock %}
+
+
