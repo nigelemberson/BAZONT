@@ -1,0 +1,6 @@
+Changed files from Bazont19R baseline:
+app.py
+templates/invitation_preview.html
+version.txt
+forms/version.txt
+v25_PROOF_19S/*

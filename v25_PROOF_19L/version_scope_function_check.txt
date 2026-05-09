@@ -1,0 +1,10 @@
+SCOPE CHECK: PASS
+Target page: templates/invitation_preview.html only for Page 23 layout implementation.
+Header/progress/user pill not edited.
+Footer button labels/order retained: Home / Back to Payment / Logout.
+No image generation. No new features. No seller email section, subject line block, raw visible link, resend block, transaction table, or payment table added.
+
+FUNCTION CHECK: PASS BY TEMPLATE INSPECTION
+Email Seller action retained as mailto href.
+WhatsApp action retained as wa.me share href.
+Copy Invite Link action retained with navigator.clipboard.writeText and temporary Copied label returning to Copy Invite Link.

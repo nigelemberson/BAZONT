@@ -1,0 +1,4 @@
+VERSION CHECK: PASS
+version.txt = Bazont19L
+forms/version.txt = Bazont19L
+/__version source = version.txt

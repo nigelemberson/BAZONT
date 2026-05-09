@@ -1,0 +1,22 @@
+TO: r@r.com
+SUBJECT: Join BAZONT transaction TX-028229A7
+
+Hello,
+
+You are invited to join a BAZONT transaction as the seller.
+
+Transaction ID: TX-028229A7
+Description of the article: cat
+Total amount held by Bazont: PHP 4902.00
+
+Accept Invitation:
+http://127.0.0.1:5000/seller/join/ODaaSPJOUgZ3JS5oqRG1Weas1W75Ywqs
+
+Seller rule:
+Tracking must be uploaded within 3 days after buyer payment. If tracking is not uploaded in time, the transaction is cancelled and the buyer is refunded.
+
+Payment release rule:
+Bazont releases payment only after the courier confirms DELIVERED.
+
+Thank you,
+The BAZONT Team

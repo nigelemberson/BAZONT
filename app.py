@@ -3,6 +3,7 @@ import sqlite3
 import threading
 import time
 import secrets
+import html
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
@@ -38,6 +39,9 @@ RULE_LOOP_SECONDS = 20
 TRACKING_CHECK_SECONDS = 60  # 1 minute (test mode)
 AFTERSHIP_API_KEY = os.environ.get('AFTERSHIP_API_KEY', '').strip()
 AFTERSHIP_BASE_URL = 'https://api.aftership.com/v4/trackings'
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
+RESEND_FROM_EMAIL = os.environ.get('RESEND_FROM_EMAIL', 'Bazont <onboarding@resend.dev>').strip()
+RESEND_API_URL = 'https://api.resend.com/emails'
 COURIER_SLUGS = {
     'lbc': 'lbc-express',
     'lbc express': 'lbc-express',
@@ -391,16 +395,142 @@ def login_required(role=None):
 
 
 
+def seller_invite_link(tx):
+    return url_for('seller_join', token=tx['invite_token'], _external=True)
+
+
+def build_seller_invite_subject(tx):
+    return f"Join BAZONT transaction {tx['public_id']}"
+
+
+def build_seller_invite_plain_text(tx):
+    invite_link = seller_invite_link(tx)
+    return f"""Hello,
+
+You are invited to join a BAZONT transaction as the seller.
+
+Transaction ID: {tx['public_id']}
+Description of the article: {tx['item_description']}
+Total amount held by Bazont: PHP {tx['total_amount']:.2f}
+
+Accept Invitation:
+{invite_link}
+
+Seller rule:
+Tracking must be uploaded within {TRACKING_DEADLINE_DAYS} days after buyer payment. If tracking is not uploaded in time, the transaction is cancelled and the buyer is refunded.
+
+Payment release rule:
+Bazont releases payment only after the courier confirms DELIVERED.
+
+Thank you,
+The BAZONT Team
+"""
+
+
+def build_seller_invite_html(tx):
+    invite_link = seller_invite_link(tx)
+    public_id = html.escape(str(tx['public_id']))
+    item_description = html.escape(str(tx['item_description']))
+    total_amount = f"PHP {tx['total_amount']:.2f}"
+    safe_invite_link = html.escape(invite_link, quote=True)
+    return f"""<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#172033;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:28px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;width:94%;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #dbe4f0;box-shadow:0 10px 26px rgba(15,23,42,0.10);">
+            <tr>
+              <td style="background:#0f172a;padding:22px 28px;color:#ffffff;">
+                <div style="font-size:22px;font-weight:900;letter-spacing:0.8px;">BAZONT</div>
+                <div style="font-size:13px;color:#bfdbfe;margin-top:4px;font-weight:700;">Safe Transactions</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px;">
+                <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#0f172a;">You have a Bazont transaction invitation</h1>
+                <p style="margin:0 0 20px;font-size:16px;line-height:1.55;color:#334155;">Hello, you are invited to join a BAZONT transaction as the seller.</p>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe4f0;border-radius:14px;background:#f8fafc;margin:0 0 22px;">
+                  <tr><td style="padding:18px 20px;">
+                    <div style="font-size:13px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Transaction summary</div>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Transaction ID</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{public_id}</td></tr>
+                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Description of the article</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{item_description}</td></tr>
+                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Total amount held by Bazont</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{total_amount}</td></tr>
+                    </table>
+                  </td></tr>
+                </table>
+
+                <div style="text-align:center;margin:24px 0 22px;">
+                  <a href="{safe_invite_link}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:14px 28px;border-radius:999px;">Accept Invitation</a>
+                </div>
+
+                <p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#475569;">If the button above does not work, copy and paste this link into your browser:</p>
+                <p style="margin:0 0 20px;font-size:13px;line-height:1.45;color:#2563eb;word-break:break-all;">{safe_invite_link}</p>
+
+                <div style="border-top:1px solid #e2e8f0;padding-top:16px;margin-top:18px;font-size:14px;line-height:1.55;color:#475569;">
+                  <strong>Seller rule:</strong> Tracking must be uploaded within {TRACKING_DEADLINE_DAYS} days after buyer payment. If tracking is not uploaded in time, the transaction is cancelled and the buyer is refunded.<br><br>
+                  <strong>Payment release rule:</strong> Bazont releases payment only after the courier confirms DELIVERED.
+                </div>
+
+                <p style="margin:24px 0 0;font-size:15px;color:#334155;">Thank you,<br><strong>The BAZONT Team</strong></p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>"""
+
+
 def build_seller_invite_content(tx):
-    invite_link = url_for('seller_join', token=tx['invite_token'], _external=True)
-    return f"""TO: {tx['seller_email']}\nSUBJECT: Join BAZONT transaction {tx['public_id']}\n\nOpen this link to join as seller:\n{invite_link}\n\nTransaction: {tx['public_id']}\nItem: {tx['item_description']}\nItem price: PHP {tx['item_price']:.2f}\nShipping: PHP {tx['shipping_price']:.2f}\nTotal secured: PHP {tx['total_amount']:.2f}\nBuyer pays now (includes buyer fee share): PHP {tx_financials(tx)['buyer_pays']:.2f}\nSeller receives on delivery (after seller fee share): PHP {tx_financials(tx)['seller_receives']:.2f}\n\nTracking must be uploaded within {TRACKING_DEADLINE_DAYS} days after payment.\nPayment is released after courier confirms DELIVERED.\n"""
+    return f"TO: {tx['seller_email']}\nSUBJECT: {build_seller_invite_subject(tx)}\n\n{build_seller_invite_plain_text(tx)}"
 
 
 def send_seller_invite(tx):
-    content = build_seller_invite_content(tx)
-    outbox_file = app.config['EMAIL_OUTBOX_DIR'] / f"invite_{tx['public_id']}.txt"
-    outbox_file.write_text(content, encoding='utf-8')
+    plain_text = build_seller_invite_plain_text(tx)
+    html = build_seller_invite_html(tx)
+    subject = build_seller_invite_subject(tx)
 
+    # Always keep a local proof copy for testing and audit.
+    outbox_file = app.config['EMAIL_OUTBOX_DIR'] / f"invite_{tx['public_id']}.txt"
+    outbox_file.write_text(build_seller_invite_content(tx), encoding='utf-8')
+    html_outbox_file = app.config['EMAIL_OUTBOX_DIR'] / f"invite_{tx['public_id']}.html"
+    html_outbox_file.write_text(html, encoding='utf-8')
+
+    if not RESEND_API_KEY:
+        return False, 'Resend API key is not configured. Email preview was saved to the local outbox only.'
+    if requests is None:
+        return False, 'Python requests package is not available, so Bazont could not contact Resend.'
+
+    payload = {
+        'from': RESEND_FROM_EMAIL,
+        'to': [tx['seller_email']],
+        'subject': subject,
+        'html': html,
+        'text': plain_text,
+    }
+    headers = {
+        'Authorization': f'Bearer {RESEND_API_KEY}',
+        'Content-Type': 'application/json',
+    }
+    try:
+        response = requests.post(RESEND_API_URL, json=payload, headers=headers, timeout=20)
+        data = response.json() if response.content else {}
+    except Exception as exc:
+        return False, f'Resend email request failed: {exc}'
+
+    if 200 <= response.status_code < 300:
+        resend_id = data.get('id', 'sent') if isinstance(data, dict) else 'sent'
+        return True, f'Bazont email sent to seller. Resend ID: {resend_id}'
+
+    if isinstance(data, dict):
+        detail = data.get('message') or data.get('error') or str(data)
+    else:
+        detail = response.text
+    return False, f'Resend HTTP {response.status_code}: {detail}'
 
 
 
@@ -902,14 +1032,35 @@ def invitation_preview(public_id):
         return redirect(url_for('buyer_actions', public_id=public_id))
 
     if request.method == 'POST':
-        # Build 13C: seller invite is created only after buyer payment is funded.
-        send_seller_invite(tx)
-        log_audit(conn, tx['id'], 'system', 'email-outbox', 'SELLER_INVITE_CREATED', None, None, f"Funded invite prepared for {tx['seller_email']}")
+        ok, message = send_seller_invite(tx)
+        actor_ref = 'resend' if ok else 'email-outbox'
+        action = 'SELLER_INVITE_SENT' if ok else 'SELLER_INVITE_PREVIEW_CREATED'
+        log_audit(conn, tx['id'], 'system', actor_ref, action, None, None, message)
         conn.commit()
-        return redirect(url_for('courier_logs', public_id=public_id))
+        flash(message, 'success' if ok else 'error')
+        return redirect(url_for('invitation_preview', public_id=public_id))
 
     invite_content = build_seller_invite_content(tx)
     return render_template('invitation_preview.html', tx=tx, invite_content=invite_content, financials=tx_financials(tx))
+
+
+@app.route('/buyer/transactions/<public_id>/invitation-email-preview')
+@login_required(role='buyer')
+def invitation_email_preview(public_id):
+    user = current_user()
+    conn = get_db()
+    tx = conn.execute(
+        'SELECT * FROM transactions WHERE public_id = ? AND buyer_user_id = ?',
+        (public_id, user['id'])
+    ).fetchone()
+    if not tx:
+        abort(404)
+
+    if not tx['payment_received_at']:
+        flash('Buyer payment must be recorded before the seller invitation is available.', 'error')
+        return redirect(url_for('buyer_actions', public_id=public_id))
+
+    return build_seller_invite_html(tx), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 @app.route('/seller/join/<token>', methods=['GET', 'POST'])

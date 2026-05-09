@@ -1,2 +1,30 @@
-Bazont19D.zip
-V25 handover: Page 2 handshake layer replacement only. Page 1 left untouched. Existing Page 2 handshake overlay file replaced with operator-supplied transparent PNG at static/images/hs_overlay.png. Multilayer Page 2 preserved; shield, truck, background, text, navigation, and fullscreen behaviour untouched. Packaging checked: extracts at root, no nested ZIP.
+Bazont19N handover
+
+Build: Bazont19N
+Baseline used: Bazont19L(1).zip / current Page 23 simplified flow
+Scope: Page 23 invitation preview visual implementation only.
+
+Changes made:
+- Updated templates/invitation_preview.html CSS only.
+- Expanded Page 23 main panel to match the approved wide reference more closely.
+- Increased panel height/breathing room.
+- Enlarged invite buttons and spacing.
+- Added centered summary divider line.
+- Enlarged and aligned bottom navigation row.
+- Updated version.txt and forms/version.txt to Bazont19N.
+
+No changes made to:
+- app.py
+- routes
+- database
+- header/progress HTML
+- invite action URLs/logic
+
+Checks performed:
+- Python compile: PASS
+- package_check.py: PASS
+- ZIP extraction test: PASS
+- zip_check.py: PASS on final ZIP
+
+Note:
+The visual change is implemented in the real Page 23 template, not as an image/mockup.

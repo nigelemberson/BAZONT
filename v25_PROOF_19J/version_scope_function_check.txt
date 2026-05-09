@@ -1,0 +1,8 @@
+version.txt: PASS
+forms/version.txt: PASS
+No bottom Send Invite: PASS
+3 invite labels present: PASS
+Copy restores label: PASS
+No Resend Invitation: PASS
+MVP summary present: PASS
+OVERALL: PASS
