@@ -40,7 +40,7 @@ TRACKING_CHECK_SECONDS = 60  # 1 minute (test mode)
 AFTERSHIP_API_KEY = os.environ.get('AFTERSHIP_API_KEY', '').strip()
 AFTERSHIP_BASE_URL = 'https://api.aftership.com/v4/trackings'
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
-RESEND_FROM_EMAIL = os.environ.get('RESEND_FROM_EMAIL', 'Bazont <onboarding@resend.dev>').strip()
+RESEND_FROM_EMAIL = os.environ.get('RESEND_FROM_EMAIL', 'Bazont <noreply@bazont.com>').strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
 COURIER_SLUGS = {
     'lbc': 'lbc-express',
