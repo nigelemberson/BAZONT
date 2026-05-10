@@ -1,39 +1,23 @@
-Bazont19X.zip — final visible page map only
+Bazont20N.zip — visible page map after Pages 9-16 primary-flow removal and visible renumbering
 
-0. Welcome / /page0.html / Page 0
-1. Image intro / / / Page 1
-2. Intro / intro.html / Page 2
-3. Buyer creates transaction / /animation/?step=1 / Page 3
-4. Seller joins transaction / /animation/?step=2 / Page 4
-5. Buyer makes payment / /animation/?step=3 / Page 5
-6. Seller ships item / /animation/?step=4 / Page 6
-7. Courier confirms delivery / /animation/?step=5 / Page 7
-8. Platform releases payment / /animation/?step=6 / Page 8
-9. Forms register demo / forms/register.html / Page 9
-10. Forms login demo / forms/login.html / Page 10
-11. Forms create transaction demo / forms/create_transaction.html / Page 11
-12. Forms seller joins demo / forms/seller_joins.html / Page 12
-13. Forms buyer pays demo / forms/buyer_pays.html / Page 13
-14. Forms delivery confirmed demo / forms/delivery_confirmed.html / Page 14
-15. Forms payment released demo / forms/payment_released.html / Page 15
-16. Forms finish demo / forms/finish.html / Page 16
-17. Register / /register / Page 17
-18. Login / /login / Page 18
-19. Role select / /role-select / Page 19
-20. Buyer dashboard / /buyer/dashboard / Page 20
-21. Create new buyer transaction / /buyer/transactions/new / Page 21
-22. Invitation preview / /buyer/transactions/<public_id>/invitation-preview / Page 22
-23. Transaction detail / /transactions/<public_id> / Page 23
-24. Buyer transactions list / /buyer/transactions / Page 24
-25. Seller dashboard / /seller/dashboard / Page 25
-26. FAQ / /faq / Page 26
+NEW visible page numbers now shown to the user:
+1. Welcome / /page0.html / old Page 0 -> Page 1
+2. Image intro / /page1 / old Page 1 -> Page 2
+3. Intro / intro.html / old Page 2 -> Page 3
+4. Buyer creates transaction / /animation/?step=1 / old Page 3 -> Page 4
+5. Seller joins transaction / /animation/?step=2 / old Page 4 -> Page 5
+6. Buyer makes payment / /animation/?step=3 / old Page 5 -> Page 6
+7. Seller ships item / /animation/?step=4 / old Page 6 -> Page 7
+8. Courier confirms delivery / /animation/?step=5 / old Page 7 -> Page 8
+9. Platform releases payment / /animation/?step=6 / old Page 8 -> Page 9
+10. Register / /register / old Page 17 -> Page 10
+11. Login / /login / old Page 18 -> Page 11
+12. Role select / /role-select / old Page 19 -> Page 12
+13. Buyer dashboard / /buyer/dashboard / old Page 20 -> Page 13
+14. Create new buyer transaction / /buyer/transactions/new / old Page 21 -> Page 14
+15. Buyer actions/payment / /buyer/transactions/<public_id>/actions / old Page 22 -> Page 15
+16. Invitation preview and transaction detail / old Page 23 -> Page 16
+17. Courier logs / old Page 24 -> Page 17
 
-Confirmations:
-- Register is Page 17.
-- Login is Page 18.
-- Role select is Page 19.
-- Hidden/redirect/non-visible files/routes do not consume visible page numbers, including /app, live.html placeholder, and forms/index.html hidden/static fallback.
-- No duplicate visible page numbers in the labelled user-facing flow.
-- No missing visible page numbers in the labelled user-facing flow.
-- Appendix is not a visible route/page.
-- Routes, URLs, filenames, navigation logic, and layout were not changed.
+Old Pages 25+ were intentionally left untouched unless already outside the specified mapping.
+Version target: Bazont20N.zip

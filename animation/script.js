@@ -3,7 +3,7 @@ const steps = [
     title: "Buyer creates transaction",
     subtitle: "The buyer enters brief details and invites the seller to join the Platform.",
     caption: "Buyer creates transaction and contacts the seller by email, messenger, whatsapp etc.",
-    status: "Page 3",
+    status: "Page 4",
     setup() {
       show("cardCreate", "ringBuyer", "arrowLeft");
     }
@@ -12,7 +12,7 @@ const steps = [
     title: "Seller joins transaction",
     subtitle: "The seller receives the link and joins the transaction.",
     caption: "Seller joins transaction from the invite link.",
-    status: "Page 4",
+    status: "Page 5",
     setup() {
       if (pendingCreateToInviteTravel) {
         pendingCreateToInviteTravel = false;
@@ -26,7 +26,7 @@ const steps = [
     title: "Buyer makes payment",
     subtitle: "The platform protects the funds while delivery has not yet been confirmed.",
     caption: "Buyer makes payment. Funds are held securely until delivery is confirmed.",
-    status: "Page 5",
+    status: "Page 6",
     setup() {
       show("cardHold", "ringPlatform", "laneMoney", "moneyChip");
       const chip = document.getElementById("moneyChip");
@@ -37,7 +37,7 @@ const steps = [
     title: "Seller ships item",
     subtitle: "The item moves while the buyer’s funds remain protected in the platform's account.",
     caption: "Seller ships item. Funds remain protected until delivery is confirmed.",
-    status: "Page 6",
+    status: "Page 7",
     setup() {
       show("cardShip", "laneParcel", "parcelChip");
       const chip = document.getElementById("parcelChip");
@@ -49,7 +49,7 @@ const steps = [
     title: "Courier confirms delivery",
     subtitle: "Delivery is confirmed by the courier, (or by the buyer inside the platform).",
     caption: "Courier confirms delivery.",
-    status: "Page 7",
+    status: "Page 8",
     setup() {
       show("cardConfirm", "ringBuyer");
     }
@@ -58,7 +58,7 @@ const steps = [
     title: "Platform releases payment",
     subtitle: "After the courier confirms delivery, the platform releases the payment to the seller.",
     caption: "Platform releases payment to the seller.",
-    status: "Page 8",
+    status: "Page 9",
     setup() {
       show("cardRelease", "ringSeller", "laneMoney", "moneyChip");
       const chip = document.getElementById("moneyChip");
@@ -92,7 +92,7 @@ const captionBox = document.getElementById("captionBox");
 const demoStatus = document.getElementById("demoStatus");
 const stepItems = Array.from(document.querySelectorAll(".step-item"));
 
-const animationPageIds = ["3", "4", "5", "6", "7", "8"];
+const animationPageIds = ["4", "5", "6", "7", "8", "9"];
 const pageIdBadge = document.getElementById("page-id-badge");
 
 const sceneIds = [
@@ -147,7 +147,7 @@ nextBtn.addEventListener("click", () => {
     currentStep += 1;
     renderStep();
   } else {
-    window.location.href = "/forms/index.html";
+    window.location.href = "/register";
   }
 });
 

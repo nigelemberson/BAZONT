@@ -1,2 +1,6 @@
-version.txt: Bazont19X.zip
-forms/version.txt: Bazont19X.zip
+Version check for Bazont20N:
+version.txt = Bazont20N.zip
+forms/version.txt = Bazont20N.zip
+app.py DEFAULT_VERSION = Bazont20N.zip
+handover.txt = Bazont20N.zip
+visible footer/static version references = Bazont20N.zip

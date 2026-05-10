@@ -1,14 +1,24 @@
-Bazont19X handover
+Bazont20N handover
 
-Build: Bazont19X.zip
-Baseline used: uploaded Bazont19W ZIP
+Build: Bazont20N.zip
+Baseline: source ZIP supplied by user.
 
-Scope applied under F_B_C_v25_PLUS_PROOF:
-1. Updated visible/internal version references to Bazont19X.zip.
-2. Preserved local desktop email support: resend_api_key.txt, LOCAL_EMAIL_SETUP.txt, and local key loading.
-3. Preserved practical sender fallback: Bazont <noreply@bazont.com>.
-4. Removed automatic seller invitation email sending after buyer payment.
-5. Page 23 is now the first place the seller invitation email is sent.
-6. Added a visible Page 23 success confirmation banner with PHST timestamp and recipient email after clicking Send Invitation Email.
+Scope:
+- Page 10 Register presentation polish.
+- Page 12 Choose dashboard presentation polish.
+- Version references updated to Bazont20N.zip.
 
-Packaging: true flat ZIP, no wrapper folder.
+Changed:
+- templates/base.html
+- templates/register.html
+- templates/role_select.html
+- version references across text/html/python files
+
+Verification:
+- app.py compile pass
+- package_check.py pass
+- zip_check.py pass
+- true flat ZIP packaging
+- Flask HTML render pass for /register and /role-select
+
+Version: Bazont20N.zip

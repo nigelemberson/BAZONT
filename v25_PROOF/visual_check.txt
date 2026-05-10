@@ -1,0 +1,10 @@
+Visual check for Bazont20N:
+PASS - Page 10 generated successfully through Flask test client.
+PASS - Page 10 dead space reduced by moving bottom action row directly beneath the main panels.
+PASS - Page 10 right information panel no longer sparse; existing points are presented as balanced rows.
+PASS - Page 12 generated successfully through Flask test client.
+PASS - Page 12 dead space reduced by moving bottom navigation directly beneath the main choice panel.
+PASS - Page 12 dashboard buttons are presented inside balanced choice panels.
+PASS - Page numbers preserved: Register=10, Role=12.
+PASS - No route/navigation/workflow changes were made.
+NOTE - Browser screenshot capture was blocked by the container browser policy, so HTML render output was saved in v25_PROOF/page10_register_20N.html and v25_PROOF/page12_role_20N.html for inspection.

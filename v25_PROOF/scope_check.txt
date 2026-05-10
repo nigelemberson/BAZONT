@@ -1,10 +1,8 @@
-Allowed substantive file change:
-- templates/page1_intro.html
-
-Allowed metadata/version changes:
-- version.txt
-- forms/version.txt
-- page1_rendered.html stale version/render reference updated to avoid old 16P display
-
-Allowed v25_PLUS_PROOF addition:
-- v25_PROOF/ audit folder
+Scope check for Bazont20N:
+PASS - Page 10 presentation polish only.
+PASS - Page 12 presentation polish only.
+PASS - No image generation.
+PASS - No workflow change.
+PASS - No route change.
+PASS - No navigation behavior change.
+PASS - Version references updated to Bazont20N.zip.

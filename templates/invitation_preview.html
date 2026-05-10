@@ -3,104 +3,158 @@
 <style>
   body.invitation-preview-body .page-wrap > .flash.success { display: none !important; }
 
-  /* Bazont19S: Page 23 final approved share layout. */
+  /* Bazont20N: Page 23 wider, lower-scroll invitation preview layout. */
   body.invitation-preview-body .page-wrap {
-    margin-top: 8px !important;
-    padding-top: 8px !important;
+    margin-top: 6px !important;
+    padding-top: 4px !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
   }
 
   body.invitation-preview-body .stack.invitation-preview-page {
-    gap: 22px !important;
+    gap: 12px !important;
     align-items: center !important;
+    width: 100% !important;
   }
 
   body.invitation-preview-body .invitation-preview-panel {
-    width: min(980px, calc(100vw - 380px)) !important;
-    min-height: 430px !important;
-    margin: 8px auto 0 !important;
-    text-align: center !important;
-    padding: 30px 48px 28px !important;
+    width: min(1180px, calc(100vw - 96px)) !important;
+    margin: 4px auto 0 !important;
+    text-align: left !important;
+    padding: 20px 28px 22px !important;
     border-radius: 24px !important;
-    box-shadow: 0 16px 32px rgba(2, 6, 23, 0.20) !important;
+    box-shadow: 0 18px 36px rgba(2, 6, 23, 0.24) !important;
+  }
+
+  body.invitation-preview-body .invite-header-row {
     display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 18px !important;
+    margin: 0 0 14px !important;
   }
 
   body.invitation-preview-body .invite-title {
-    margin: 0 0 8px !important;
-    font-size: 1.58rem !important;
-    line-height: 1.12 !important;
-    text-align: center !important;
+    margin: 0 0 5px !important;
+    font-size: 1.55rem !important;
+    line-height: 1.08 !important;
+    text-align: left !important;
   }
 
   body.invitation-preview-body .invite-subtext {
-    margin: 0 0 18px !important;
-    font-size: 0.98rem !important;
+    margin: 0 !important;
+    font-size: 0.94rem !important;
     line-height: 1.22 !important;
     font-weight: 800 !important;
-    color: #e5edf8 !important;
-    text-align: center !important;
+    color: #dbeafe !important;
+    text-align: left !important;
   }
 
-  body.invitation-preview-body .invite-section-label {
-    margin: 0 0 10px !important;
-    font-size: 0.82rem !important;
-    line-height: 1.1 !important;
+  body.invitation-preview-body .invite-header-badge {
+    flex: 0 0 auto !important;
+    padding: 9px 13px !important;
+    border-radius: 999px !important;
+    background: rgba(37, 99, 235, 0.18) !important;
+    border: 1px solid rgba(147, 197, 253, 0.34) !important;
+    color: #bfdbfe !important;
     font-weight: 900 !important;
+    font-size: 0.76rem !important;
     letter-spacing: 0.035em !important;
     text-transform: uppercase !important;
-    color: rgba(226,232,240,0.74) !important;
-    text-align: center !important;
+    white-space: nowrap !important;
   }
-
 
   body.invitation-preview-body .email-sent-banner {
     width: 100% !important;
-    margin: 0 auto 16px !important;
-    padding: 12px 16px !important;
-    border-radius: 16px !important;
-    background: rgba(22, 163, 74, 0.20) !important;
-    border: 1px solid rgba(134, 239, 172, 0.60) !important;
-    color: #dcfce7 !important;
-    text-align: center !important;
-    font-weight: 900 !important;
-    line-height: 1.35 !important;
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.20) !important;
+    margin: 0 0 14px !important;
+    padding: 14px 16px !important;
+    border-radius: 20px !important;
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.96), rgba(21, 128, 61, 0.96)) !important;
+    border: 1px solid rgba(187, 247, 208, 0.68) !important;
+    color: #ffffff !important;
+    box-shadow: 0 14px 28px rgba(22, 163, 74, 0.24), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 13px !important;
+    text-align: left !important;
   }
 
-  body.invitation-preview-body .email-sent-banner .email-sent-main {
-    display: block !important;
-    font-size: 0.98rem !important;
+  body.invitation-preview-body .email-sent-icon {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.18) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 21px !important;
+    font-weight: 950 !important;
+    flex: 0 0 auto !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
   }
 
-  body.invitation-preview-body .email-sent-banner .email-sent-meta {
+  body.invitation-preview-body .email-sent-main {
     display: block !important;
-    margin-top: 4px !important;
+    font-size: 1.02rem !important;
+    line-height: 1.12 !important;
+    font-weight: 950 !important;
+  }
+
+  body.invitation-preview-body .email-sent-meta {
+    display: block !important;
+    margin-top: 3px !important;
+    font-size: 0.80rem !important;
+    line-height: 1.12 !important;
+    color: rgba(240, 253, 244, 0.92) !important;
+    font-weight: 800 !important;
+  }
+
+  body.invitation-preview-body .invite-layout-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr) !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+  }
+
+  body.invitation-preview-body .invite-card-panel {
+    border-radius: 22px !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(15, 23, 42, 0.40) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    padding: 16px !important;
+  }
+
+  body.invitation-preview-body .invite-section-label {
+    margin: 0 0 11px !important;
     font-size: 0.78rem !important;
-    color: rgba(220, 252, 231, 0.90) !important;
+    line-height: 1.1 !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.045em !important;
+    text-transform: uppercase !important;
+    color: rgba(226,232,240,0.78) !important;
+    text-align: left !important;
   }
 
   body.invitation-preview-body .bazont-primary-row {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: stretch !important;
-    gap: 22px !important;
-    margin: 0 auto 20px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin: 0 0 15px !important;
     width: 100% !important;
   }
 
   body.invitation-preview-body .bazont-primary-form { margin: 0 !important; }
 
   body.invitation-preview-body .bazont-primary-action {
-    width: 258px !important;
-    min-height: 74px !important;
-    padding: 12px 18px !important;
-    border: 1px solid rgba(255,255,255,0.14) !important;
+    width: 100% !important;
+    min-height: 66px !important;
+    padding: 12px 16px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
     border-radius: 18px !important;
     background: linear-gradient(135deg, #f97316, #ea580c) !important;
     color: #ffffff !important;
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.20) !important;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.22) !important;
     cursor: pointer !important;
     text-decoration: none !important;
     display: inline-flex !important;
@@ -117,15 +171,15 @@
 
   body.invitation-preview-body .primary-main {
     display: block !important;
-    font-size: 0.98rem !important;
-    line-height: 1.1 !important;
+    font-size: 0.96rem !important;
+    line-height: 1.08 !important;
     font-weight: 950 !important;
   }
 
   body.invitation-preview-body .primary-sub {
     display: block !important;
-    font-size: 0.72rem !important;
-    line-height: 1.15 !important;
+    font-size: 0.70rem !important;
+    line-height: 1.12 !important;
     font-weight: 800 !important;
     color: rgba(255,255,255,0.86) !important;
   }
@@ -134,28 +188,22 @@
     width: 100% !important;
     height: 1px !important;
     background: rgba(148, 163, 184, 0.20) !important;
-    margin: 2px auto 16px !important;
-  }
-
-  body.invitation-preview-body .invite-divider.after-methods {
-    margin: 18px auto 15px !important;
+    margin: 0 0 13px !important;
   }
 
   body.invitation-preview-body .invite-method-row {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: stretch !important;
-    gap: 14px !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(72px, 1fr)) !important;
+    gap: 9px !important;
     width: 100% !important;
-    margin: 0 auto !important;
-    flex-wrap: nowrap !important;
+    margin: 0 !important;
   }
 
   body.invitation-preview-body .invite-method {
-    width: 92px !important;
-    min-width: 92px !important;
-    height: 66px !important;
-    padding: 8px 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 62px !important;
+    padding: 8px 5px !important;
     border-radius: 16px !important;
     display: inline-flex !important;
     flex-direction: column !important;
@@ -172,23 +220,23 @@
   }
 
   body.invitation-preview-body .invite-method-icon {
-    width: 26px !important;
-    height: 26px !important;
+    width: 24px !important;
+    height: 24px !important;
     border-radius: 50% !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     background: rgba(255,255,255,0.18) !important;
     color: #ffffff !important;
-    font-size: 15px !important;
+    font-size: 14px !important;
     font-weight: 950 !important;
     line-height: 1 !important;
   }
 
   body.invitation-preview-body .invite-method-label {
-    font-size: 0.78rem !important;
+    font-size: 0.72rem !important;
     font-weight: 900 !important;
-    line-height: 1.05 !important;
+    line-height: 1.03 !important;
     white-space: nowrap !important;
   }
 
@@ -199,31 +247,55 @@
   body.invitation-preview-body .invite-copy { background: linear-gradient(135deg, #64748b, #334155) !important; }
 
   body.invitation-preview-body .invite-mvp-summary {
-    text-align: center !important;
-    margin: 0 auto !important;
+    text-align: left !important;
+    margin: 0 !important;
     width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  body.invitation-preview-body .invite-summary-heading {
+    margin: 0 0 12px !important;
+    color: #f8fafc !important;
+    font-size: 1.02rem !important;
+    font-weight: 950 !important;
+    line-height: 1.1 !important;
   }
 
   body.invitation-preview-body .invite-summary-line {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 13px !important;
-    flex-wrap: wrap !important;
-    margin: 0 !important;
-    color: #f8fafc !important;
-    font-size: 0.98rem !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    margin: 0 0 12px !important;
+    color: #dbeafe !important;
+    font-size: 0.90rem !important;
     font-weight: 800 !important;
+    line-height: 1.2 !important;
   }
 
-  body.invitation-preview-body .invite-summary-line strong { color: #ffffff !important; }
-  body.invitation-preview-body .invite-summary-separator { color: rgba(148, 163, 184, 0.85) !important; font-weight: 800 !important; }
+  body.invitation-preview-body .invite-summary-line strong {
+    color: #ffffff !important;
+    font-size: 1.00rem !important;
+    line-height: 1.16 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.invitation-preview-body .invite-amount-held {
+    color: #22c55e !important;
+    font-size: 1.22rem !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.01em !important;
+  }
+
+  body.invitation-preview-body .invite-summary-separator { display: none !important; }
 
   body.invitation-preview-body .invite-mvp-note {
-    text-align: center !important;
-    font-weight: 800 !important;
-    font-size: 0.88rem !important;
-    margin: 10px 0 0 !important;
+    text-align: left !important;
+    font-weight: 900 !important;
+    font-size: 0.86rem !important;
+    margin: 2px 0 0 !important;
     color: #8ee6aa !important;
   }
 
@@ -233,7 +305,7 @@
     align-items: center !important;
     width: auto !important;
     max-width: 100% !important;
-    gap: 14px !important;
+    gap: 12px !important;
     margin: 0 auto !important;
   }
 
@@ -242,13 +314,13 @@
     align-items: center !important;
     justify-content: center !important;
     width: auto !important;
-    min-width: 142px !important;
-    min-height: 42px !important;
-    padding: 10px 18px !important;
+    min-width: 136px !important;
+    min-height: 40px !important;
+    padding: 9px 17px !important;
     border-radius: 999px !important;
     text-decoration: none !important;
     font-weight: 800 !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     border: 1px solid rgba(255,255,255,0.12) !important;
     box-shadow: 0 8px 16px rgba(15, 23, 42, 0.20) !important;
   }
@@ -256,21 +328,26 @@
   body.invitation-preview-body .page-22-home { background: linear-gradient(135deg, #22c55e, #16a34a) !important; color: #fff !important; }
   body.invitation-preview-body .page-22-back { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; color: #fff !important; }
   body.invitation-preview-body .page-22-logout { background: linear-gradient(135deg, #ef4444, #dc2626) !important; color: #fff !important; }
+  body.invitation-preview-body .page-22-next-disabled { background: linear-gradient(180deg, #9ca3af, #6b7280) !important; color: #e5e7eb !important; opacity: 0.62 !important; cursor: not-allowed !important; pointer-events: none !important; box-shadow: none !important; border: 1px solid rgba(255,255,255,0.16) !important; }
+  body.invitation-preview-body .page-22-next-active { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: #ffffff !important; }
 
-  @media (max-width: 1220px) {
-    body.invitation-preview-body .invitation-preview-panel { width: calc(100vw - 64px) !important; }
+  @media (max-width: 1080px) {
+    body.invitation-preview-body .invitation-preview-panel { width: calc(100vw - 48px) !important; }
+    body.invitation-preview-body .invite-layout-grid { grid-template-columns: 1fr !important; }
+    body.invitation-preview-body .invite-mvp-summary { justify-content: flex-start !important; }
   }
 
-  @media (max-width: 820px) {
+  @media (max-width: 760px) {
+    body.invitation-preview-body .page-wrap { padding-left: 12px !important; padding-right: 12px !important; }
     body.invitation-preview-body .invitation-preview-panel {
-      width: calc(100vw - 32px) !important;
-      min-height: 0 !important;
-      padding: 24px 16px !important;
+      width: calc(100vw - 24px) !important;
+      padding: 18px 14px !important;
     }
-    body.invitation-preview-body .bazont-primary-row { flex-direction: column !important; align-items: center !important; }
-    body.invitation-preview-body .bazont-primary-action { width: min(100%, 280px) !important; }
-    body.invitation-preview-body .invite-method-row { flex-wrap: wrap !important; }
-    body.invitation-preview-body .page-22-bottom-actions { flex-direction: column !important; gap: 12px !important; }
+    body.invitation-preview-body .invite-header-row { flex-direction: column !important; gap: 10px !important; }
+    body.invitation-preview-body .email-sent-banner { align-items: flex-start !important; }
+    body.invitation-preview-body .bazont-primary-row { grid-template-columns: 1fr !important; }
+    body.invitation-preview-body .invite-method-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    body.invitation-preview-body .page-22-bottom-actions { flex-direction: column !important; gap: 10px !important; }
     body.invitation-preview-body .page-22-bottom-actions .btn { width: min(100%, 220px) !important; }
   }
 </style>
@@ -278,70 +355,91 @@
 {% set total_text = 'PHP %.2f'|format(tx['total_amount']) %}
 {% set invite_text = 'Bazont invitation for ' ~ tx['item_description'] ~ '. Total amount held by Bazont: ' ~ total_text ~ '. Open this link: ' ~ invite_url %}
 {% set email_sent = request.args.get('email_sent') == '1' %}
+{% set next_unlocked = email_sent %}
 {% set sent_at = request.args.get('sent_at', '') %}
 {% set recipient = request.args.get('recipient', tx['seller_email']) %}
 <div class="stack invitation-preview-page">
   <section class="panel invitation-preview-panel">
-    <h3 class="section-title invite-title">Invitation preview</h3>
-    <p class="invite-subtext">Send a professional Bazont invitation email to the seller.</p>
+    <div class="invite-header-row">
+      <div>
+        <h3 class="section-title invite-title">Invitation preview</h3>
+        <p class="invite-subtext">Send a professional Bazont invitation email to the seller.</p>
+      </div>
+    </div>
 
     {% if email_sent %}
     <div class="email-sent-banner" role="status" aria-live="polite">
-      <span class="email-sent-main">Invitation email sent successfully.</span>
-      <span class="email-sent-meta">Sent{% if sent_at %}: {{ sent_at }}{% endif %}{% if recipient %} · Recipient: {{ recipient }}{% endif %}</span>
+      <span class="email-sent-icon">✓</span>
+      <span>
+        <span class="email-sent-main">Invitation email sent successfully.</span>
+        <span class="email-sent-meta">Sent{% if sent_at %}: {{ sent_at }}{% endif %}{% if recipient %} · Recipient: {{ recipient }}{% endif %}</span>
+      </span>
     </div>
     {% endif %}
 
-    <p class="invite-section-label">Send invitation by Bazont Email</p>
-    <div class="bazont-primary-row" aria-label="Bazont email actions">
-      <form class="bazont-primary-form" method="post" id="sendInvitationForm">
-        <button class="bazont-primary-action" type="submit">
-          <span class="primary-main">Send Invitation Email</span>
-          <span class="primary-sub">Send via Bazont Email (Recommended)</span>
-        </button>
-      </form>
-      <a class="bazont-primary-action preview" target="_blank" href="{{ url_for('invitation_email_preview', public_id=tx['public_id']) }}">
-        <span class="primary-main">Preview Email</span>
-        <span class="primary-sub">Preview the email before sending</span>
-      </a>
-    </div>
+    <div class="invite-layout-grid">
+      <div class="invite-card-panel">
+        <p class="invite-section-label">Send invitation by Bazont Email</p>
+        <div class="bazont-primary-row" aria-label="Bazont email actions">
+          <form class="bazont-primary-form" method="post" id="sendInvitationForm">
+            <button class="bazont-primary-action" type="submit">
+              <span class="primary-main">Send Invitation Email</span>
+              <span class="primary-sub">Send via Bazont Email (Recommended)</span>
+            </button>
+          </form>
+          <a class="bazont-primary-action preview" target="_blank" href="{{ url_for('invitation_email_preview', public_id=tx['public_id']) }}">
+            <span class="primary-main">Preview Email</span>
+            <span class="primary-sub">Preview the email before sending</span>
+          </a>
+        </div>
 
-    <div class="invite-divider" aria-hidden="true"></div>
+        <div class="invite-divider" aria-hidden="true"></div>
 
-    <p class="invite-section-label">Fallback share methods</p>
-    <div class="invite-method-row" aria-label="Seller invite fallback methods">
-      <a class="invite-method invite-whatsapp" target="_blank" href="https://wa.me/?text={{ invite_text|urlencode }}" aria-label="Send invitation with WhatsApp">
-        <span class="invite-method-icon">W</span><span class="invite-method-label">WhatsApp</span>
-      </a>
-      <a class="invite-method invite-facebook" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ invite_url|urlencode }}" aria-label="Share invitation with Facebook">
-        <span class="invite-method-icon">f</span><span class="invite-method-label">Facebook</span>
-      </a>
-      <a class="invite-method invite-telegram" target="_blank" href="https://t.me/share/url?url={{ invite_url|urlencode }}&text={{ invite_text|urlencode }}" aria-label="Send invitation with Telegram">
-        <span class="invite-method-icon">T</span><span class="invite-method-label">Telegram</span>
-      </a>
-      <a class="invite-method invite-viber" href="viber://forward?text={{ invite_text|urlencode }}" aria-label="Send invitation with Viber">
-        <span class="invite-method-icon">V</span><span class="invite-method-label">Viber</span>
-      </a>
-      <button class="invite-method invite-copy" type="button" onclick='copyInviteLink(this, {{ invite_url|tojson }})' aria-label="Copy seller invitation link">
-        <span class="invite-method-icon">🔗</span><span class="invite-method-label">Copy Link</span>
-      </button>
-    </div>
+        <p class="invite-section-label">Fallback share methods</p>
+        <div class="invite-method-row" aria-label="Seller invite fallback methods">
+          <a class="invite-method invite-whatsapp" target="_blank" href="https://wa.me/?text={{ invite_text|urlencode }}" aria-label="Send invitation with WhatsApp">
+            <span class="invite-method-icon">W</span><span class="invite-method-label">WhatsApp</span>
+          </a>
+          <a class="invite-method invite-facebook" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ invite_url|urlencode }}" aria-label="Share invitation with Facebook">
+            <span class="invite-method-icon">f</span><span class="invite-method-label">Facebook</span>
+          </a>
+          <a class="invite-method invite-telegram" target="_blank" href="https://t.me/share/url?url={{ invite_url|urlencode }}&text={{ invite_text|urlencode }}" aria-label="Send invitation with Telegram">
+            <span class="invite-method-icon">T</span><span class="invite-method-label">Telegram</span>
+          </a>
+          <a class="invite-method invite-viber" href="viber://forward?text={{ invite_text|urlencode }}" aria-label="Send invitation with Viber">
+            <span class="invite-method-icon">V</span><span class="invite-method-label">Viber</span>
+          </a>
+          <button class="invite-method invite-copy" type="button" onclick='copyInviteLink(this, {{ invite_url|tojson }})' aria-label="Copy seller invitation link">
+            <span class="invite-method-icon">🔗</span><span class="invite-method-label">Copy Link</span>
+          </button>
+        </div>
+      </div>
 
-    <div class="invite-divider after-methods" aria-hidden="true"></div>
-
-    <div class="invite-mvp-summary" aria-label="Transaction summary">
-      <p class="invite-summary-line">
-        <span>Transaction: <strong>{{ tx['item_description'] }}</strong></span>
-        <span class="invite-summary-separator">|</span>
-        <span>Total amount held by Bazont: <strong>{{ total_text }}</strong></span>
-      </p>
-      <p class="invite-mvp-note">Buyer payment secured by Bazont.</p>
+      <div class="invite-card-panel">
+        <div class="invite-mvp-summary" aria-label="Transaction summary">
+          <p class="invite-summary-heading">Transaction summary</p>
+          <p class="invite-summary-line">
+            <span>Transaction</span>
+            <strong>{{ tx['item_description'] }}</strong>
+          </p>
+          <p class="invite-summary-line">
+            <span>Total amount held by Bazont</span>
+            <strong class="invite-amount-held">{{ total_text }}</strong>
+          </p>
+          <p class="invite-mvp-note">Buyer payment secured by Bazont.</p>
+        </div>
+      </div>
     </div>
   </section>
 
   <div class="page-22-bottom-actions" aria-label="Invitation preview navigation">
     <a class="btn page-22-home" href="{{ url_for('gateway_home') }}">Home</a>
     <a class="btn page-22-back" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Back to Payment</a>
+    {% if next_unlocked %}
+    <a class="btn page-22-next-active" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next</a>
+    {% else %}
+    <span class="btn page-22-next-disabled" aria-disabled="true" title="Send the seller invitation email before continuing">Next</span>
+    {% endif %}
     <a class="btn page-22-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 </div>

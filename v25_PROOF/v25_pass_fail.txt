@@ -1,2 +1,12 @@
-PASS
-Page 1 only. No image generation. Standalone shield moved 5px left. Dashed line and X removed. Version files updated to Bazont19X.zip.
+Bazont20N v25 verification result: PASS
+
+Verification performed:
+- app.py compile pass.
+- package_check.py pass.
+- zip_check.py pass.
+- true flat ZIP verified.
+- Static/template rendered check: initial Page 16 invitation preview shows disabled Next and no active Next anchor.
+- Static/template rendered check: email_sent=1 state shows active Next anchor and no disabled Next span.
+- Grep check: obsolete "Page 16 · Invite" label absent.
+- Grep check: old Page 2 wording with "only" absent from visible/support files.
+- Grep check: stale Bazont20L references absent from text files.

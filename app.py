@@ -21,7 +21,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont19X.zip'
+DEFAULT_VERSION = 'Bazont20N.zip'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -429,27 +429,37 @@ def build_seller_invite_subject(tx):
 
 def build_seller_invite_plain_text(tx):
     invite_link = seller_invite_link(tx)
-    return f"""Hello,
+    return f"""You have a Bazont Transaction Invitation.
 
-You are invited to join a BAZONT transaction as the seller.
+You are invited to join a BAZONT transaction as the seller of:
 
 Transaction ID: {tx['public_id']}
 Description of the article: {tx['item_description']}
 Total amount held by Bazont: PHP {tx['total_amount']:.2f}
 
-Accept Invitation:
+Accept invitation:
 {invite_link}
 
-Seller rule:
-Tracking must be uploaded within {TRACKING_DEADLINE_DAYS} days after buyer payment. If tracking is not uploaded in time, the transaction is cancelled and the buyer is refunded.
+Seller rule: Tracking number from a reputable courier must be uploaded within 3 days. If tracking is not uploaded in time, the transaction is auto cancelled and the buyer is refunded.
 
-Payment release rule:
-Bazont releases payment only after the courier confirms DELIVERED.
+Payment release rule: Bazont releases payment after the courier confirms your item has been DELIVERED.
 
 Thank you,
 The BAZONT Team
 """
 
+
+
+def _html_fallback_link_block(invite_link, safe_invite_link):
+    # Gmail can collapse raw localhost/debug links behind "Show quoted text".
+    # Keep the visual email clean; for live public links, retain a short fallback line.
+    lowered = invite_link.lower()
+    if '127.0.0.1' in lowered or 'localhost' in lowered:
+        return ''
+    return f"""
+                <p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#475569;">If the button above does not work, paste this secure invitation link into your browser:</p>
+                <p style="margin:0 0 20px;font-size:13px;line-height:1.45;color:#2563eb;word-break:break-all;"><a href="{safe_invite_link}" style="color:#2563eb;text-decoration:none;">{safe_invite_link}</a></p>
+"""
 
 def build_seller_invite_html(tx):
     invite_link = seller_invite_link(tx)
@@ -457,23 +467,24 @@ def build_seller_invite_html(tx):
     item_description = html.escape(str(tx['item_description']))
     total_amount = f"PHP {tx['total_amount']:.2f}"
     safe_invite_link = html.escape(invite_link, quote=True)
+    fallback_link_block = _html_fallback_link_block(invite_link, safe_invite_link)
     return f"""<!doctype html>
 <html>
   <body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#172033;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:28px 0;">
       <tr>
         <td align="center">
-          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;width:94%;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #dbe4f0;box-shadow:0 10px 26px rgba(15,23,42,0.10);">
+          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;width:94%;background:#ffffff;border-radius:18px;border:1px solid #dbe4f0;box-shadow:0 10px 26px rgba(15,23,42,0.10);">
             <tr>
-              <td style="background:#0f172a;padding:22px 28px;color:#ffffff;">
+              <td style="background:#0f172a;padding:22px 28px;color:#ffffff;border-radius:18px 18px 0 0;">
                 <div style="font-size:22px;font-weight:900;letter-spacing:0.8px;">BAZONT</div>
                 <div style="font-size:13px;color:#bfdbfe;margin-top:4px;font-weight:700;">Safe Transactions</div>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px;">
-                <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#0f172a;">You have a Bazont transaction invitation</h1>
-                <p style="margin:0 0 20px;font-size:16px;line-height:1.55;color:#334155;">Hello, you are invited to join a BAZONT transaction as the seller.</p>
+              <td style="padding:28px 28px 38px;">
+                <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#0f172a;">You have a Bazont Transaction Invitation.</h1>
+                <p style="margin:0 0 20px;font-size:16px;line-height:1.55;color:#334155;">You are invited to join a BAZONT transaction as the seller of:</p>
 
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe4f0;border-radius:14px;background:#f8fafc;margin:0 0 22px;">
                   <tr><td style="padding:18px 20px;">
@@ -481,7 +492,7 @@ def build_seller_invite_html(tx):
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Transaction ID</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{public_id}</td></tr>
                       <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Description of the article</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{item_description}</td></tr>
-                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Total amount held by Bazont</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{total_amount}</td></tr>
+                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Total amount held by Bazont</td><td style="padding:7px 0;color:#16a34a;font-size:14px;font-weight:900;text-align:right;">{total_amount}</td></tr>
                     </table>
                   </td></tr>
                 </table>
@@ -490,15 +501,20 @@ def build_seller_invite_html(tx):
                   <a href="{safe_invite_link}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:14px 28px;border-radius:999px;">Accept Invitation</a>
                 </div>
 
-                <p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#475569;">If the button above does not work, copy and paste this link into your browser:</p>
-                <p style="margin:0 0 20px;font-size:13px;line-height:1.45;color:#2563eb;word-break:break-all;">{safe_invite_link}</p>
+                {fallback_link_block}
 
-                <div style="border-top:1px solid #e2e8f0;padding-top:16px;margin-top:18px;font-size:14px;line-height:1.55;color:#475569;">
-                  <strong>Seller rule:</strong> Tracking must be uploaded within {TRACKING_DEADLINE_DAYS} days after buyer payment. If tracking is not uploaded in time, the transaction is cancelled and the buyer is refunded.<br><br>
-                  <strong>Payment release rule:</strong> Bazont releases payment only after the courier confirms DELIVERED.
+                <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-top:16px;font-size:14px;line-height:1.48;color:#475569;">
+                  <strong>Seller rule:</strong> Tracking number from a reputable courier must be uploaded within {TRACKING_DEADLINE_DAYS} days. If tracking is not uploaded in time, the transaction is auto cancelled and the buyer is refunded.<br><br>
+                  <strong>Payment release rule:</strong> Bazont releases payment after the courier confirms your item has been DELIVERED.
                 </div>
 
-                <p style="margin:24px 0 0;font-size:15px;color:#334155;">Thank you,<br><strong>The BAZONT Team</strong></p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:14px;">
+                  <tr>
+                    <td style="font-size:15px;line-height:1.35;color:#334155;padding:0 0 8px;">
+                      Thank you,<br><strong>The BAZONT Team</strong>
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </table>
@@ -773,7 +789,7 @@ def animation_files(filename):
 @app.route('/forms')
 @app.route('/forms/')
 def forms_index():
-    return send_from_directory(BASE_DIR / 'forms', 'register.html')
+    return redirect(url_for('register'))
 
 
 @app.route('/forms/<path:filename>')
@@ -1025,17 +1041,36 @@ def new_transaction():
 @app.route('/buyer/transactions/latest/invitation-preview')
 @login_required(role='buyer')
 def latest_invitation_preview():
-    # Build 13L: flow lock. Page 21 helper must not bypass payment.
-    # Correct order: 21 Create -> 22 Pay -> 23 Invite -> 24 Courier.
+    # Build 20A: Page 21 Next / Preview must open Page 22 payment/actions, not Page 23.
+    # This route creates a safe draft test transaction when needed and never sends seller email.
     user = current_user()
     conn = get_db()
     tx = conn.execute(
         'SELECT * FROM transactions WHERE buyer_user_id = ? ORDER BY id DESC LIMIT 1',
         (user['id'],)
     ).fetchone()
+
     if not tx:
-        flash('Create a transaction first.', 'error')
-        return redirect(url_for('new_transaction'))
+        seller_email = 'seller.test@bazont.local'
+        if user['email'].lower() == seller_email:
+            seller_email = 'seller.preview@bazont.local'
+        public_id = 'TX-' + secrets.token_hex(4).upper()
+        invite_token = secrets.token_urlsafe(24)
+        now = now_iso()
+        conn.execute(
+            '''INSERT INTO transactions (
+                public_id, buyer_user_id, seller_email, item_description, item_price, shipping_price, total_amount,
+                weight_kg, length_cm, width_cm, height_cm, invite_token, invite_sent_at,
+                status, hold_status, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'INVITED', 'NOT_FUNDED', ?, ?)''',
+            (public_id, user['id'], seller_email, 'Preview test transaction', 8500.0, 300.0, 8800.0,
+             1.0, 15.0, 15.0, 15.0, invite_token, now, now, now)
+        )
+        tx_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
+        log_audit(conn, tx_id, 'buyer', user['email'], 'PREVIEW_TEST_TRANSACTION_CREATED', None, 'INVITED', 'Page 21 Next / Preview created a test transaction and opened Page 22. Seller email not sent.')
+        conn.commit()
+        return redirect(url_for('buyer_actions', public_id=public_id))
+
     return redirect(url_for('buyer_actions', public_id=tx['public_id']))
 
 
@@ -1073,8 +1108,12 @@ def invitation_preview(public_id):
         flash(message, 'error')
         return redirect(url_for('invitation_preview', public_id=public_id))
 
+    invitation_sent = conn.execute(
+        "SELECT 1 FROM audit_log WHERE transaction_id = ? AND action = 'SELLER_INVITE_SENT' LIMIT 1",
+        (tx['id'],)
+    ).fetchone() is not None
     invite_content = build_seller_invite_content(tx)
-    return render_template('invitation_preview.html', tx=tx, invite_content=invite_content, financials=tx_financials(tx))
+    return render_template('invitation_preview.html', tx=tx, invite_content=invite_content, financials=tx_financials(tx), invitation_sent=invitation_sent)
 
 
 @app.route('/buyer/transactions/<public_id>/invitation-email-preview')

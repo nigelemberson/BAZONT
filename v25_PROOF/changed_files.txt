@@ -1,7 +1,12 @@
-templates/page1_intro.html
-version.txt
-forms/version.txt
-handover.txt
-v25_PROOF/changed_files.txt
-v25_PROOF/version_check.txt
-v25_PROOF/v25_pass_fail.txt
+Bazont20N changed files:
+- templates/base.html
+  - Added scoped Page 10 / Page 12 presentation polish CSS only.
+  - Moved Page 10 and Page 12 bottom action rows into the visual content flow to reduce disconnection/dead space.
+  - Improved Page 10 panel proportions, spacing rhythm, and right information panel styling.
+  - Improved Page 12 dashboard choice layout with balanced option panels.
+- templates/register.html
+  - Added scoped classes to the existing registration information list for improved presentation.
+- templates/role_select.html
+  - Rebalanced dashboard choice presentation while preserving existing Buyer/Seller routes.
+- version.txt / forms/version.txt / app.py / visible references
+  - Version references updated to Bazont20N.zip.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ VERSION }}</title>
+  <title>Bazont20N.zip</title>
   <style>
     :root {
       --bg1: #081120;
@@ -494,11 +494,11 @@
 
   body.role-select-page .page-wrap { padding-bottom: 86px; }
   body.buyer-dashboard-page .navlinks a[href='/'],
-  body.buyer-dashboard-page .navlinks a[href="{{ url_for('gateway_home') }}"],
+  body.buyer-dashboard-page .navlinks a[href="/"],
   body.new-transaction-page .navlinks a[href='/'],
-  body.new-transaction-page .navlinks a[href="{{ url_for('gateway_home') }}"],
+  body.new-transaction-page .navlinks a[href="/"],
   body.transaction-detail-page .navlinks a[href='/'],
-  body.transaction-detail-page .navlinks a[href="{{ url_for('gateway_home') }}"] {
+  body.transaction-detail-page .navlinks a[href="/"] {
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: #ffffff;
     border: none;
@@ -1624,45 +1624,60 @@
 
 </style>
 </head>
-<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
-{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','courier_logs':'17','courier_status':'25','transaction_detail':'16','buyer_transactions':'26','seller_dashboard':'27'} %}
-{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'invitation_preview', 'transaction_detail', 'buyer_actions', 'courier_logs', 'courier_status', 'buyer_transactions'] %}
-{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'courier_logs':'17', 'courier_status':'25', 'transaction_detail':'16', 'buyer_transactions':'26'} %}
-{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('25','Status')] %}
-{% if request.endpoint in PAGE_IDS %}<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">{{ PAGE_IDS[request.endpoint] }}</div>{% endif %}
+<body class="register-page endpoint-register">
+
+
+
+
+<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">10</div>
   <div class="shell">
-    {% if request.endpoint in NORMALISED_PAGES %}
+    
     <div class="topbar">
-      <div class="brand header-left"><img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b"><div class="header-title"><div class="brand-title brand-name">BAZONT</div><div class="brand-sub subtitle">Safe Transactions</div></div></div>
+      <div class="brand header-left"><img src="file:///mnt/data/baz_work/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b"><div class="header-title"><div class="brand-title brand-name">BAZONT</div><div class="brand-sub subtitle">Safe Transactions</div></div></div>
       <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
-      {% if current_user %}<span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span>{% endif %}
+      <span class="navchip">test@bazont.local • buyer</span>
     </div>
-    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ (((ACTIVE_PAGES[request.endpoint]|int) - 9) / 8 * 100)|round(2) }}%"></div></div></div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:12.5%"></div></div></div>
     <div class="steps">
-      {% for page_no, label in FLOW_PAGES %}<div class="step{% if page_no == ACTIVE_PAGES[request.endpoint] %} active{% endif %}">{{ page_no }}<br>{{ label }}</div>{% endfor %}
+      <div class="step active">10<br>Register</div><div class="step">11<br>Login</div><div class="step">12<br>Role</div><div class="step">13<br>Dashboard</div><div class="step">14<br>Create</div><div class="step">15<br>Pay</div><div class="step">16<br>Invite</div><div class="step">17<br>Courier</div><div class="step">25<br>Status</div>
     </div>
-    {% else %}
-    <header class="topbar">
-      {% if request.endpoint == 'register' %}
-      <div class="register-brand"><img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b"><div class="header-title"><div class="brand-title brand-name">BAZONT</div><div class="brand-sub subtitle">Safe Transactions</div></div></div>
-      <div class="register-tagline">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
-      {% else %}
-      <div><div class="brand-title" style="font-size:clamp(2.7rem,3.2vw,3.4rem); font-weight:900; letter-spacing:0.01em;">BAZONT</div><div class="brand-sub">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div></div>
-      <nav class="navlinks">{% if request.endpoint != 'live_home' %}<a href="{{ url_for('gateway_home') }}">Home</a>{% endif %}{% if current_user %}{% if current_user['role'] == 'buyer' %}<a href="{{ url_for('buyer_dashboard') }}">Buyer dashboard</a>{% else %}<a href="{{ url_for('seller_dashboard') }}">Seller dashboard</a>{% endif %}<a href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span>{% else %}<a href="{{ url_for('login') }}">Login</a><a href="{{ url_for('register') }}">Register</a>{% endif %}</nav>
-      {% endif %}
-    </header>
-    {% if request.endpoint == 'register' %}<div class="register-accent-line" aria-hidden="true"></div>{% endif %}
-    {% endif %}
+    
 
     <main class="page-wrap">
-      {% set FLASH_MESSAGES = get_flashed_messages(with_categories=true) %}
-      {% for category, message in FLASH_MESSAGES %}
-        {% if not (request.endpoint == 'transaction_detail' and category == 'success' and message == 'Invitation sent.') %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endif %}
-      {% endfor %}
-      {% block content %}{% endblock %}
-      <div class="page-version-fixed">{{ VERSION }}</div>
+      
+      
+      
+<div class="grid-2 register-flow-grid">
+  <section class="hero-card">
+    <h1 class="hero-title">Register</h1>
+    <p class="hero-subtitle">Create your account to enter the real Bazont flow.</p>
+    <form id="real-register-form" method="post" style="margin-top: 18px;">
+      <label>Email</label>
+      <input type="email" name="email" required>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <input type="hidden" name="role" value="buyer">
+    </form>
+  </section>
+  <section class="action-card register-info-card">
+    <h3 class="section-title">What registration does</h3>
+    <ul class="register-info-list">
+      <li>Buyer can create transactions and record payment.</li>
+      <li>Seller can access assigned transactions and upload tracking.</li>
+      <li class="register-info-highlight">After registration login is via Home page</li>
+    </ul>
+  </section>
+</div>
+<div class="register-action-row" aria-label="Register page navigation">
+  <a class="btn btn-secondary" href="/">Home</a>
+  <a class="btn btn-secondary" href="/animation/?step=6">Back</a>
+  <div class="register-login-stack">
+    <button class="btn btn-primary" type="submit" form="real-register-form">Register</button>
+    <a class="btn btn-secondary go-login-btn" href="/login">Go to Login</a>
+  </div>
+</div>
+
+      <div class="page-version-fixed">Bazont20N.zip</div>
     </main>
   </div>
 
