@@ -1,3 +1,0 @@
-nested_wrapper_folder: False
-root_items_count: 37
-root_sample: ['app.py', 'handover.txt', 'index.html', 'intro.bak', 'intro.html', 'live.html', 'moneyplatform.db', 'package_check.py', 'page0.html', 'page1_preview.html', 'page1_render_check.html', 'page1_rendered.html', 'page1_screenshot.png', 'page_id_map.txt', 'required_paths.txt', 'requirements.txt', 'server.log', 'style.css', 'version.txt', 'zip_check.py']

@@ -1,5 +1,0 @@
-Changed files vs Bazont19P baseline:
-app.py
-templates/invitation_preview.html
-version.txt
-forms/version.txt

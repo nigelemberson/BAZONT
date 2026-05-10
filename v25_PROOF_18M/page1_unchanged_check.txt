@@ -1,8 +1,0 @@
-Page 1 unchanged hash check:
-templates/page1_intro.html: UNCHANGED
-page1_rendered.html: UNCHANGED
-page1_preview.html: UNCHANGED
-page1_render_check.html: UNCHANGED
-page1_screenshot.png: UNCHANGED
-static/images/page1_background.png: UNCHANGED
-static/images/page1_intro_generated.png: UNCHANGED

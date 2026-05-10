@@ -1,5 +1,0 @@
-ZIP CHECK: PASS
-ZIP file: Bazont18Z.zip
-ZIP entries found: 148
-Explicit folders found: 22
-Manifest entries checked: 72

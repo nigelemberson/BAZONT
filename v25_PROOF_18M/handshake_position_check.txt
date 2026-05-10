@@ -1,5 +1,0 @@
-Handshake object mask source bbox: (84, 1, 1215, 437)
-Requested move: LEFT 40 px, DOWN 60 px
-Expected moved bbox: (44, 61, 1175, 497)
-No clipping: True
-Package/clipboard lower elements not moved by edit region: region limited to y < 440; box/clipboard remain below this region.

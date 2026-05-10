@@ -1,6 +1,0 @@
-handshake img present: True
-shield left: 68.0%
-handshake left: 68.0%
-handshake top formula: calc(8.2% + min(14vw, 220px) + 12px)
-center rule: both shield and handshake use left:68.0%; handshake uses transform:translateX(-50%) to center under shield midpoint
-handshake size rule: width:auto; height:auto; max-width:none; natural asset size retained

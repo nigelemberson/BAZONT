@@ -1,9 +1,0 @@
-Bazont18Z v25 checks
-PASS: Page 1 HTML/render-check/screenshot files unchanged from Bazont18Y.
-PASS: Only handshake composition/CSS position plus version/handover metadata changed.
-PASS: Handshake overlay reduced from 350x275 to 300x115 and lower-right artifact removed.
-PASS: Right sleeve/arm extended using existing handshake image material only.
-PASS: Handshake remains centered under the shield via same 68% midpoint; moved upward for cleaner truck separation.
-PASS: Package check passed.
-PASS: ZIP extracts correctly.
-PASS: No nested ZIP found.

@@ -1,7 +1,0 @@
-Bazont18X v25 proof summary
-PASS: Page 1 checked unchanged by checksum for page1 files.
-PASS: Only requested Page 2 handshake placement code changed, with version files/handover/proof.
-PASS: Existing handshake asset used: static/images/hs_overlay.png.
-PASS: No artwork regenerated. No new visual assets added.
-PASS: Shield/text/background/navigation/buttons/fullscreen code not edited.
-PASS: Visible version updated to Bazont18X.zip.

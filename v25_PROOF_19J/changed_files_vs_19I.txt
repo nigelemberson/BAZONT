@@ -1,4 +1,0 @@
-Files /mnt/data/compare19I/forms/version.txt and /mnt/data/work19J/forms/version.txt differ
-Files /mnt/data/compare19I/handover.txt and /mnt/data/work19J/handover.txt differ
-Files /mnt/data/compare19I/templates/invitation_preview.html and /mnt/data/work19J/templates/invitation_preview.html differ
-Files /mnt/data/compare19I/version.txt and /mnt/data/work19J/version.txt differ

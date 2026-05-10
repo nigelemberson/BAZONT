@@ -1,30 +1,14 @@
-Bazont19N handover
+Bazont19X handover
 
-Build: Bazont19N
-Baseline used: Bazont19L(1).zip / current Page 23 simplified flow
-Scope: Page 23 invitation preview visual implementation only.
+Build: Bazont19X.zip
+Baseline used: uploaded Bazont19W ZIP
 
-Changes made:
-- Updated templates/invitation_preview.html CSS only.
-- Expanded Page 23 main panel to match the approved wide reference more closely.
-- Increased panel height/breathing room.
-- Enlarged invite buttons and spacing.
-- Added centered summary divider line.
-- Enlarged and aligned bottom navigation row.
-- Updated version.txt and forms/version.txt to Bazont19N.
+Scope applied under F_B_C_v25_PLUS_PROOF:
+1. Updated visible/internal version references to Bazont19X.zip.
+2. Preserved local desktop email support: resend_api_key.txt, LOCAL_EMAIL_SETUP.txt, and local key loading.
+3. Preserved practical sender fallback: Bazont <noreply@bazont.com>.
+4. Removed automatic seller invitation email sending after buyer payment.
+5. Page 23 is now the first place the seller invitation email is sent.
+6. Added a visible Page 23 success confirmation banner with PHST timestamp and recipient email after clicking Send Invitation Email.
 
-No changes made to:
-- app.py
-- routes
-- database
-- header/progress HTML
-- invite action URLs/logic
-
-Checks performed:
-- Python compile: PASS
-- package_check.py: PASS
-- ZIP extraction test: PASS
-- zip_check.py: PASS on final ZIP
-
-Note:
-The visual change is implemented in the real Page 23 template, not as an image/mockup.
+Packaging: true flat ZIP, no wrapper folder.

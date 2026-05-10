@@ -1,4 +1,0 @@
-version.txt:
-Bazont19R.zip
-forms/version.txt:
-Bazont19R.zip

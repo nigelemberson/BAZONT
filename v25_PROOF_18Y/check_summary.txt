@@ -1,8 +1,0 @@
-Bazont18Y v25 checks
-Baseline: Bazont18X.zip
-Output: Bazont18Y.zip
-Scope: Page 2 handshake overlay composition only, plus required version/handover/proof metadata.
-Handshake: existing hs_overlay.png composition adjusted; final PNG natural size is 350px wide, approximately 62.5% of Bazont18X 560px width.
-Right arm: extended visually using only existing pixels from the right edge of hs_overlay.png; no new asset added.
-Position: intro.html retained Page 2 handshake center at the same shield midpoint left coordinate.
-Page 1: no Page 1 template/render files intentionally edited.

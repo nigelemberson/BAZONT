@@ -1,3 +1,0 @@
-version.txt: Bazont18X.zip
-forms/version.txt: Bazont18X.zip
-intro visible version: Bazont18X.zip

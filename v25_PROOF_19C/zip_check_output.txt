@@ -1,5 +1,0 @@
-ZIP CHECK: PASS
-ZIP file: Bazont19C.zip
-ZIP entries found: 175
-Explicit folders found: 25
-Manifest entries checked: 72

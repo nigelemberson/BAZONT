@@ -1,5 +1,0 @@
-Files /mnt/data/compare19J/forms/version.txt and /mnt/data/work19K/forms/version.txt differ
-Files /mnt/data/compare19J/handover.txt and /mnt/data/work19K/handover.txt differ
-Files /mnt/data/compare19J/templates/invitation_preview.html and /mnt/data/work19K/templates/invitation_preview.html differ
-Only in /mnt/data/work19K: v25_PROOF_19K
-Files /mnt/data/compare19J/version.txt and /mnt/data/work19K/version.txt differ

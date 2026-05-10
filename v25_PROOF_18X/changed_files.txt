@@ -1,4 +1,0 @@
-forms/version.txt
-handover.txt
-intro.html
-version.txt

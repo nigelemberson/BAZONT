@@ -1,7 +1,0 @@
-Bazont19R v25 summary
-Page 23 + email-send logic only
-Added Resend-backed Send Bazont Email POST flow.
-Gmail compose removed as primary method.
-Fallback share methods preserved: WhatsApp, Facebook, Telegram, Viber, Copy Link.
-package_check PASS
-zip extraction test PASS

@@ -1,5 +1,0 @@
-PASS
-Python AST parse: PASS
-Page 1 unchanged: PASS
-No nested ZIP: checked after packaging
-Page 2 background/image layers present: PASS

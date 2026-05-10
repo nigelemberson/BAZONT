@@ -1,5 +1,0 @@
-page1_preview.html: UNCHANGED
-page1_render_check.html: UNCHANGED
-page1_rendered.html: UNCHANGED
-page1_screenshot.png: UNCHANGED
-PASS

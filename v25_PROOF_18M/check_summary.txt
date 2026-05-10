@@ -1,8 +1,0 @@
-Bazont18W v25 checks
-Baseline: Bazont18W.zip
-Output: Bazont18W.zip
-One change: handshake foreground overlay moved LEFT 40px and DOWN 60px.
-Page 1 unchanged: True
-No clipping: True
-No image regeneration; edited existing foreground overlay PNG only.
-Version updated to Bazont18W.zip in version.txt, forms/version.txt, and Page 2 visible footer.

@@ -1,4 +1,0 @@
-nested_zip_count: 0
-wrapper_folder_detected: False
-root_contains_app_py: True
-root_contains_version_txt: True

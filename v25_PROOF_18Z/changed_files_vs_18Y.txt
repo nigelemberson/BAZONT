@@ -1,5 +1,0 @@
-forms/version.txt: CHANGED
-handover.txt: CHANGED
-intro.html: CHANGED
-static/images/hs_overlay.png: CHANGED
-version.txt: CHANGED

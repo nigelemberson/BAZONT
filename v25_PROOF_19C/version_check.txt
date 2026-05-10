@@ -1,3 +1,0 @@
-version.txt: Bazont19C.zip
-forms/version.txt: Bazont19C.zip
-intro visible fallback Bazont19C: True

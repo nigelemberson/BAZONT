@@ -1,2 +1,0 @@
-version.txt: Bazont18W.zip
-forms/version.txt: Bazont18W.zip

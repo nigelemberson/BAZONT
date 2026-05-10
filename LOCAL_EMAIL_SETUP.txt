@@ -1,0 +1,16 @@
+LOCAL EMAIL SETUP
+
+1. Open:
+resend_api_key.txt
+
+2. Replace:
+PASTE_YOUR_RESEND_API_KEY_HERE
+
+with your REAL Resend API key.
+
+3. Save.
+
+4. Run:
+python app.py
+
+Local desktop Bazont can now send real emails without Render deployment.

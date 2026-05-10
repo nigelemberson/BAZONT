@@ -1,6 +1,0 @@
-version.txt: Bazont19B.zip
-forms/version.txt: Bazont19B.zip
-intro visible version: Bazont19B.zip
-new hs_overlay.png size: 430x141, mode RGBA, alpha (0, 255)
-multilayer check: PASS - intro.html still references separate shield, handshake, items/truck, background layers
-handshake src check: PASS - /static/images/hs_overlay.png

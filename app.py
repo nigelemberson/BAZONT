@@ -21,7 +21,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont16E.zip'
+DEFAULT_VERSION = 'Bazont19X.zip'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -40,8 +40,28 @@ TRACKING_CHECK_SECONDS = 60  # 1 minute (test mode)
 AFTERSHIP_API_KEY = os.environ.get('AFTERSHIP_API_KEY', '').strip()
 AFTERSHIP_BASE_URL = 'https://api.aftership.com/v4/trackings'
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
-RESEND_FROM_EMAIL = os.environ.get('RESEND_FROM_EMAIL', 'Bazont <noreply@bazont.com>').strip()
+RESEND_FROM_EMAIL = os.environ.get(
+    'RESEND_FROM_EMAIL',
+    'Bazont <noreply@bazont.com>'
+).strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
+
+LOCAL_RESEND_KEY_FILE = 'resend_api_key.txt'
+if not AFTERSHIP_API_KEY and os.path.exists(LOCAL_RESEND_KEY_FILE):
+    try:
+        with open(LOCAL_RESEND_KEY_FILE, 'r', encoding='utf-8') as f:
+            AFTERSHIP_API_KEY = f.read().strip()
+    except Exception:
+        pass
+
+if not RESEND_API_KEY and os.path.exists(LOCAL_RESEND_KEY_FILE):
+    try:
+        with open(LOCAL_RESEND_KEY_FILE, 'r', encoding='utf-8') as f:
+            RESEND_API_KEY = f.read().strip()
+    except Exception:
+        pass
+
+
 COURIER_SLUGS = {
     'lbc': 'lbc-express',
     'lbc express': 'lbc-express',
@@ -169,6 +189,10 @@ def now_ph():
 
 def now_iso():
     return now_ph().isoformat()
+
+
+def now_ph_display():
+    return now_ph().strftime('%Y-%m-%d %H:%M:%S PHST')
 
 
 def db_connect():
@@ -1033,11 +1057,20 @@ def invitation_preview(public_id):
 
     if request.method == 'POST':
         ok, message = send_seller_invite(tx)
+        sent_at_display = now_ph_display()
         actor_ref = 'resend' if ok else 'email-outbox'
         action = 'SELLER_INVITE_SENT' if ok else 'SELLER_INVITE_PREVIEW_CREATED'
         log_audit(conn, tx['id'], 'system', actor_ref, action, None, None, message)
         conn.commit()
-        flash(message, 'success' if ok else 'error')
+        if ok:
+            return redirect(url_for(
+                'invitation_preview',
+                public_id=public_id,
+                email_sent='1',
+                sent_at=sent_at_display,
+                recipient=tx['seller_email']
+            ))
+        flash(message, 'error')
         return redirect(url_for('invitation_preview', public_id=public_id))
 
     invite_content = build_seller_invite_content(tx)
@@ -1145,10 +1178,9 @@ def transaction_detail(public_id):
                 if tx_after_payment['status'] == 'INVITED':
                     set_status(conn, tx_after_payment, 'PAID', 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx_after_payment = refresh_tx(conn, tx['id'])
-                send_seller_invite(tx_after_payment)
-                log_audit(conn, tx['id'], 'system', 'email-outbox', 'SELLER_INVITE_CREATED_AFTER_PAYMENT', None, None, f"Funded invite prepared for {tx['seller_email']}")
+                log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 23 for {tx['seller_email']}")
                 conn.commit()
-                flash('Full payment recorded and funded seller invitation prepared.', 'success')
+                flash('Full payment recorded. Send the seller invitation from Page 23.', 'success')
                 process_rules()
             return redirect(url_for('invitation_preview', public_id=public_id))
 
@@ -1238,10 +1270,9 @@ def buyer_actions(public_id):
                 if tx_after_payment['status'] == 'INVITED':
                     set_status(conn, tx_after_payment, 'PAID', 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx_after_payment = refresh_tx(conn, tx['id'])
-                send_seller_invite(tx_after_payment)
-                log_audit(conn, tx['id'], 'system', 'email-outbox', 'SELLER_INVITE_CREATED_AFTER_PAYMENT', None, None, f"Funded invite prepared for {tx['seller_email']}")
+                log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 23 for {tx['seller_email']}")
                 conn.commit()
-                flash('Full payment recorded and funded seller invitation prepared.', 'success')
+                flash('Full payment recorded. Send the seller invitation from Page 23.', 'success')
                 process_rules()
             return redirect(url_for('invitation_preview', public_id=public_id))
 

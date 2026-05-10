@@ -1,2 +1,2 @@
 PASS
-Page 1 only. No image generation. Standalone shield moved 5px left. Dashed line and X removed. Version files updated to Bazont18W.zip.
+Page 1 only. No image generation. Standalone shield moved 5px left. Dashed line and X removed. Version files updated to Bazont19X.zip.

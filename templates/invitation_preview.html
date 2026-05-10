@@ -54,6 +54,33 @@
     text-align: center !important;
   }
 
+
+  body.invitation-preview-body .email-sent-banner {
+    width: 100% !important;
+    margin: 0 auto 16px !important;
+    padding: 12px 16px !important;
+    border-radius: 16px !important;
+    background: rgba(22, 163, 74, 0.20) !important;
+    border: 1px solid rgba(134, 239, 172, 0.60) !important;
+    color: #dcfce7 !important;
+    text-align: center !important;
+    font-weight: 900 !important;
+    line-height: 1.35 !important;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.20) !important;
+  }
+
+  body.invitation-preview-body .email-sent-banner .email-sent-main {
+    display: block !important;
+    font-size: 0.98rem !important;
+  }
+
+  body.invitation-preview-body .email-sent-banner .email-sent-meta {
+    display: block !important;
+    margin-top: 4px !important;
+    font-size: 0.78rem !important;
+    color: rgba(220, 252, 231, 0.90) !important;
+  }
+
   body.invitation-preview-body .bazont-primary-row {
     display: flex !important;
     justify-content: center !important;
@@ -250,14 +277,24 @@
 {% set invite_url = url_for('seller_join', token=tx['invite_token'], _external=True) %}
 {% set total_text = 'PHP %.2f'|format(tx['total_amount']) %}
 {% set invite_text = 'Bazont invitation for ' ~ tx['item_description'] ~ '. Total amount held by Bazont: ' ~ total_text ~ '. Open this link: ' ~ invite_url %}
+{% set email_sent = request.args.get('email_sent') == '1' %}
+{% set sent_at = request.args.get('sent_at', '') %}
+{% set recipient = request.args.get('recipient', tx['seller_email']) %}
 <div class="stack invitation-preview-page">
   <section class="panel invitation-preview-panel">
     <h3 class="section-title invite-title">Invitation preview</h3>
     <p class="invite-subtext">Send a professional Bazont invitation email to the seller.</p>
 
+    {% if email_sent %}
+    <div class="email-sent-banner" role="status" aria-live="polite">
+      <span class="email-sent-main">Invitation email sent successfully.</span>
+      <span class="email-sent-meta">Sent{% if sent_at %}: {{ sent_at }}{% endif %}{% if recipient %} · Recipient: {{ recipient }}{% endif %}</span>
+    </div>
+    {% endif %}
+
     <p class="invite-section-label">Send invitation by Bazont Email</p>
     <div class="bazont-primary-row" aria-label="Bazont email actions">
-      <form class="bazont-primary-form" method="post">
+      <form class="bazont-primary-form" method="post" id="sendInvitationForm">
         <button class="bazont-primary-action" type="submit">
           <span class="primary-main">Send Invitation Email</span>
           <span class="primary-sub">Send via Bazont Email (Recommended)</span>
@@ -317,5 +354,21 @@
     if (label) { label.innerText = 'Copied'; }
     setTimeout(function () { if (label) { label.innerText = 'Copy Link'; } }, 1200);
   }
+
+  (function () {
+    var form = document.getElementById('sendInvitationForm');
+    if (!form) { return; }
+    form.addEventListener('submit', function () {
+      var button = form.querySelector('button[type="submit"]');
+      if (!button) { return; }
+      button.disabled = true;
+      button.style.opacity = '0.72';
+      button.style.cursor = 'wait';
+      var main = button.querySelector('.primary-main');
+      var sub = button.querySelector('.primary-sub');
+      if (main) { main.innerText = 'Sending…'; }
+      if (sub) { sub.innerText = 'Please wait'; }
+    });
+  })();
 </script>
 {% endblock %}

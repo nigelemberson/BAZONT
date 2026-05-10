@@ -1,5 +1,0 @@
-forms/version.txt
-handover.txt
-intro.html
-static/images/hs_overlay.png
-version.txt
