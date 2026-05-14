@@ -2093,11 +2093,79 @@
     text-align:center !important;
   }
 
+
+/* Bazont22Y: Page 18 seller-join cleanup only. */
+body.seller-join-clean-page .shell { max-width: 1480px; padding-top: 16px; }
+body.seller-join-clean-page .topbar {
+  min-height: 86px;
+  padding: 18px 28px;
+  border-radius: 22px;
+}
+body.seller-join-clean-page .topbar .brand-title { font-size: 2.1rem !important; }
+body.seller-join-clean-page .topbar .brand-sub { font-size: 1.08rem !important; margin-top: 4px; }
+body.seller-join-clean-page .topbar .navlinks { display: none !important; }
+body.seller-join-clean-page .page-wrap { margin-top: 22px; padding-top: 0; }
+body.seller-join-clean-page .seller-join-layout {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.82fr);
+  gap: 22px;
+  align-items: stretch;
+}
+body.seller-join-clean-page .seller-join-panel,
+body.seller-join-clean-page .seller-summary-panel {
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.30);
+  padding: 34px 38px;
+}
+body.seller-join-clean-page .seller-join-title {
+  font-size: clamp(2.2rem, 3vw, 3.1rem);
+  line-height: 1.08;
+  margin: 0 0 16px;
+  color: #f8fafc;
+}
+body.seller-join-clean-page .seller-join-subtitle {
+  font-size: 1.45rem;
+  line-height: 1.45;
+  color: #dbeafe;
+  margin: 0 0 22px;
+}
+body.seller-join-clean-page .seller-join-form label { font-size: 1.05rem; font-weight: 700; color: #f8fafc; }
+body.seller-join-clean-page .seller-join-form input {
+  padding: 13px 15px !important;
+  font-size: 1.05rem !important;
+  margin: 8px 0 18px !important;
+}
+body.seller-join-clean-page .seller-join-button {
+  width: 230px !important;
+  min-width: 230px !important;
+  max-width: 230px !important;
+  padding: 13px 22px !important;
+  font-size: 1.05rem !important;
+  background: linear-gradient(180deg, #22c55e, #16a34a) !important;
+  box-shadow: 0 14px 30px rgba(34,197,94,0.30) !important;
+}
+body.seller-join-clean-page .seller-summary-panel .section-title { font-size: 2rem; margin-bottom: 16px; }
+body.seller-join-clean-page .seller-summary-panel th,
+body.seller-join-clean-page .seller-summary-panel td {
+  padding: 13px 16px !important;
+  font-size: 1.05rem !important;
+}
+body.seller-join-clean-page .seller-summary-panel th { width: 52%; }
+body.seller-join-clean-page .seller-join-bottom-actions { display: none !important; }
+@media (max-width: 900px) {
+  body.seller-join-clean-page .seller-join-layout { grid-template-columns: 1fr; }
+  body.seller-join-clean-page .seller-join-button { width: 100% !important; max-width: none !important; }
+}
+
 </style>
 </head>
-<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
+<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
 {% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','courier_logs':'17','seller_join':'18','courier_status':'25','transaction_detail':'16A','buyer_transactions':'26','seller_dashboard':'27'} %}
-{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'seller_join', 'courier_status', 'buyer_transactions'] %}
+{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'courier_status', 'buyer_transactions'] %}
 {% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'16', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'25', 'buyer_transactions':'26'} %}
 {% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('25','Status')] %}
 {% if request.endpoint in PAGE_IDS %}<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">{{ PAGE_IDS[request.endpoint] }}</div>{% endif %}

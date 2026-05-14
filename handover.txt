@@ -1,4 +1,4 @@
-Bazont22X.zip
+Bazont22Y.zip
 
 Changes:
 - Public URL transition for seller invitation links.
