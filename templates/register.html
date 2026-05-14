@@ -1,8 +1,72 @@
+
+<style>
+  /* Bazont22L - Page 10 vertical rebalance + compact buttons */
+
+  body.register-page .info-panel,
+  body.register-page .what-registration-does,
+  body.register-page .right-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    min-height: 300px !important;
+  }
+
+  body.register-page .info-panel li,
+  body.register-page .what-registration-does li,
+  body.register-page .right-panel li {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  body.register-page .bottom-nav,
+  body.register-page .nav-row,
+  body.register-page .action-row {
+    gap: 12px !important;
+    margin-top: 26px !important;
+  }
+
+  body.register-page .btn,
+  body.register-page button,
+  body.register-page .nav-btn {
+    width: auto !important;
+    min-width: unset !important;
+    max-width: fit-content !important;
+    padding: 10px 20px !important;
+    min-height: 42px !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+  }
+</style>
+
+
+<style>
+  /* Bazont22L - Page 10 tighter button widths */
+  body.register-page .bottom-nav,
+  body.register-page .nav-row,
+  body.register-page .action-row {
+    gap: 14px !important;
+  }
+
+  body.register-page .btn,
+  body.register-page button,
+  body.register-page .nav-btn {
+    width: auto !important;
+    min-width: 0 !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+</style>
+
 {% extends 'base.html' %}
 {% block content %}
 <div class="grid-2 register-flow-grid">
   <section class="hero-card">
-    <h1 class="hero-title">Register</h1>
+    <h1 class="hero-title">Register <span class="free-note">It’s FREE!</span></h1>
     <p class="hero-subtitle">Create your account to enter the real Bazont flow.</p>
     <form id="real-register-form" method="post" style="margin-top: 18px;">
       <label>Email</label>
@@ -15,18 +79,77 @@
   <section class="action-card register-info-card">
     <h3 class="section-title">What registration does</h3>
     <ul class="register-info-list">
-      <li>Buyer can create transactions and record payment.</li>
-      <li>Seller can access assigned transactions and upload tracking.</li>
-      <li class="register-info-highlight">After registration login is via Home page</li>
+      <li>Buyer can create transactions, record payment and monitor tracking.</li>
+      <li>Seller can access transactions, see payments and upload tracking number.</li>
     </ul>
   </section>
 </div>
 <div class="register-action-row" aria-label="Register page navigation">
   <a class="btn btn-secondary" href="/">Home</a>
   <a class="btn btn-secondary" href="/animation/?step=6">Back</a>
-  <div class="register-login-stack">
-    <button class="btn btn-primary" type="submit" form="real-register-form">Register</button>
-    <a class="btn btn-secondary go-login-btn" href="/login">Go to Login</a>
-  </div>
+  <button class="btn btn-primary" type="submit" form="real-register-form">Register</button>
+  <a class="btn btn-secondary go-login-btn" href="/login">Go to Login</a>
 </div>
 {% endblock %}
+
+
+<style>
+  /* Bazont22L - Page 10 actual rendered fix */
+  body.register-page .register-info-list > :nth-child(n+3),
+  body.register-page .register-info-card .info-list > :nth-child(n+3),
+  body.register-page .register-info-card li:nth-child(n+3),
+  body.register-page .register-flow-grid .info-card li:nth-child(n+3),
+  body.register-page .register-flow-grid .panel li:nth-child(n+3),
+  body.register-page .register-flow-grid .panel .pill:nth-child(n+3),
+  body.register-page .register-flow-grid .panel .bullet-row:nth-child(n+3) {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.register-page .register-info-list,
+  body.register-page .register-info-card .info-list,
+  body.register-page .register-flow-grid .info-card ul,
+  body.register-page .register-flow-grid .panel ul {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    min-height: 190px !important;
+    gap: 22px !important;
+  }
+
+  body.register-page .register-action-row,
+  body.register-page .register-nav,
+  body.register-page .bottom-nav,
+  body.register-page .nav-row,
+  body.register-page .action-row {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 44px !important;
+  }
+
+  body.register-page .register-action-row .btn,
+  body.register-page .register-action-row a,
+  body.register-page .register-action-row button,
+  body.register-page .bottom-nav .btn,
+  body.register-page .bottom-nav a,
+  body.register-page .nav-row .btn,
+  body.register-page .nav-row a,
+  body.register-page .action-row .btn,
+  body.register-page .action-row a,
+  body.register-page .btn {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    flex: 0 0 150px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+</style>
+

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bazont20N.zip</title>
+  <title>Bazont22X.zip</title>
   <style>
     :root {
       --bg1: #081120;
@@ -1029,8 +1029,8 @@
     body.invitation-preview-body .invite-grid,
     body.invitation-preview-body .page-22-bottom-actions { grid-template-columns: 1fr; }
     body.invitation-preview-body .invite-line { grid-template-columns: 1fr; gap: 3px; }
-    body.invitation-preview-body .invite-card p { display:block; }
-    body.invitation-preview-body .invite-card p strong { display:block; text-align:left; margin-top:2px; }
+    body.invitation-preview-body .invite-card p { display:inline-block; }
+    body.invitation-preview-body .invite-card p strong { display:inline-block; text-align:left; margin-top:2px; }
   }
 
   /* Build 11Y: Page 21 temporary preview button and Page 22 inner panel width only. */
@@ -1491,7 +1491,7 @@
     
 
 
-  /* Bazont20N: Page 10 and Page 12 presentation polish only. */
+  /* Bazont22L: Page 10 and Page 12 presentation polish only. */
   body.register-page .page-wrap,
   body.role-select-page .page-wrap {
     max-width: 1120px;
@@ -1518,7 +1518,7 @@
     line-height: 1.34 !important;
   }
   body.register-page .register-flow-grid form { margin-top: 14px !important; }
-  body.register-page .register-flow-grid label { display:block; margin-top: 2px; }
+  body.register-page .register-flow-grid label { display:inline-block; margin-top: 2px; }
   body.register-page .register-flow-grid input {
     padding: 14px 16px !important;
     margin: 6px 0 12px !important;
@@ -1671,9 +1671,22 @@
   <a class="btn role-logout" href="/logout">Logout</a>
 </div>
 
-      <div class="page-version-fixed">Bazont20N.zip</div>
+      <div class="page-version-fixed">Bazont22X.zip</div>
     </main>
   </div>
 
 </body>
 </html>
+
+.dashboard-card button,
+.dashboard-card .btn,
+.dashboard-actions button{
+    width:auto !important;
+    min-width:unset !important;
+    max-width:max-content !important;
+    padding-left:40px !important;
+    padding-right:40px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    display:block !important;
+}

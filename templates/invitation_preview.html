@@ -3,7 +3,7 @@
 <style>
   body.invitation-preview-body .page-wrap > .flash.success { display: none !important; }
 
-  /* Bazont20N: Page 23 wider, lower-scroll invitation preview layout. */
+  /* Bazont22L: Page 23 wider, lower-scroll invitation preview layout. */
   body.invitation-preview-body .page-wrap {
     margin-top: 6px !important;
     padding-top: 4px !important;
@@ -350,11 +350,202 @@
     body.invitation-preview-body .page-22-bottom-actions { flex-direction: column !important; gap: 10px !important; }
     body.invitation-preview-body .page-22-bottom-actions .btn { width: min(100%, 220px) !important; }
   }
+
+  /* Bazont22L - Page 16 move composition down ~50px */
+  body.invitation-preview-body .page-wrap {
+    margin-top: 50px !important;
+  }
+
+
+  /* Bazont22L - Page 16 presentation rebalance */
+  body.invitation-preview-body .page-wrap {
+    margin-top: 34px !important;
+  }
+
+  body.invitation-preview-body .hero-card,
+  body.invitation-preview-body .panel {
+    border-radius: 24px !important;
+  }
+
+  body.invitation-preview-body .hero-card {
+    padding-top: 24px !important;
+    padding-bottom: 22px !important;
+    margin-bottom: 14px !important;
+  }
+
+  body.invitation-preview-body .hero-title {
+    line-height: 1.06 !important;
+    margin-bottom: 8px !important;
+  }
+
+  body.invitation-preview-body .hero-subtitle {
+    line-height: 1.42 !important;
+  }
+
+  body.invitation-preview-body .panel {
+    padding-top: 22px !important;
+    padding-bottom: 20px !important;
+  }
+
+  body.invitation-preview-body .share-toolbar,
+  body.invitation-preview-body .share-row,
+  body.invitation-preview-body .share-buttons {
+    gap: 12px !important;
+    margin-top: 14px !important;
+    margin-bottom: 10px !important;
+  }
+
+  body.invitation-preview-body .btn,
+  body.invitation-preview-body button {
+    min-height: 44px !important;
+    padding: 11px 20px !important;
+    border-radius: 14px !important;
+  }
+
+  body.invitation-preview-body .bottom-nav,
+  body.invitation-preview-body .nav-row,
+  body.invitation-preview-body .invite-nav {
+    margin-top: 18px !important;
+  }
+
+
+  /* Bazont22L - Page 16 use remaining lower space; typography closer to Pages 13/14 */
+  body.invitation-preview-body .page-wrap {
+    margin-top: 28px !important;
+    padding-bottom: 40px !important;
+  }
+
+  body.invitation-preview-body .hero-title {
+    font-size: 2.35rem !important;
+    line-height: 1.04 !important;
+  }
+
+  body.invitation-preview-body .hero-subtitle {
+    font-size: 1.08rem !important;
+    line-height: 1.5 !important;
+  }
+
+  body.invitation-preview-body .panel,
+  body.invitation-preview-body .panel p,
+  body.invitation-preview-body .panel li,
+  body.invitation-preview-body label {
+    font-size: 1.02rem !important;
+    line-height: 1.45 !important;
+  }
+
+  body.invitation-preview-body .btn,
+  body.invitation-preview-body button {
+    font-size: 1rem !important;
+  }
+
+
+  /* Bazont22L - Page 16 use lower 50px: move page body/buttons down and add breathing height */
+  body.invitation-preview-body .page-wrap {
+    margin-top: 42px !important;
+    padding-bottom: 8px !important;
+  }
+
+  body.invitation-preview-body .hero-card {
+    padding-top: 30px !important;
+    padding-bottom: 28px !important;
+    margin-bottom: 18px !important;
+  }
+
+  body.invitation-preview-body .panel {
+    padding-top: 26px !important;
+    padding-bottom: 26px !important;
+  }
+
+  body.invitation-preview-body .share-toolbar,
+  body.invitation-preview-body .share-row,
+  body.invitation-preview-body .share-buttons {
+    margin-top: 18px !important;
+    margin-bottom: 14px !important;
+  }
+
+  body.invitation-preview-body .bottom-nav,
+  body.invitation-preview-body .nav-row,
+  body.invitation-preview-body .invite-nav,
+  body.invitation-preview-body .page-actions {
+    margin-top: 34px !important;
+  }
+
+
+  /* Bazont22L - remove Preview Email scroller */
+  body.invitation-preview-body .preview-email,
+  body.invitation-preview-body .email-preview,
+  body.invitation-preview-body .preview-panel,
+  body.invitation-preview-body .email-body-preview,
+  body.invitation-preview-body .preview-content {
+    max-height: none !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    overflow: visible !important;
+  }
+
+
+  /* Bazont22W - development-only seller route access after invitation sent */
+  .seller-dev-access-panel {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    border-radius: 16px;
+    background: rgba(37, 99, 235, 0.10);
+  }
+
+  .seller-dev-access-panel .seller-dev-access-title {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #93c5fd;
+  }
+
+  .seller-dev-access-panel .seller-dev-access-copy {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #dbeafe;
+  }
+
+  .seller-dev-access-panel .seller-dev-access-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    text-decoration: none;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+  }
+
+
+  .email-failed-banner {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    margin: 12px 0 14px;
+    padding: 14px 18px;
+    border: 1px solid rgba(248, 113, 113, 0.85);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(153, 27, 27, 0.98), rgba(220, 38, 38, 0.88));
+    color: #ffffff;
+    box-shadow: 0 16px 32px rgba(127, 29, 29, 0.28);
+  }
+
 </style>
-{% set invite_url = url_for('seller_join', token=tx['invite_token'], _external=True) %}
+{% set invite_url = seller_invite_link(tx) %}
 {% set total_text = 'PHP %.2f'|format(tx['total_amount']) %}
 {% set invite_text = 'Bazont invitation for ' ~ tx['item_description'] ~ '. Total amount held by Bazont: ' ~ total_text ~ '. Open this link: ' ~ invite_url %}
-{% set email_sent = request.args.get('email_sent') == '1' %}
+{% set email_delivery = request.args.get('email_delivery', '') %}
+{% set email_message = request.args.get('email_message', '') %}
+{% set email_sent = (request.args.get('email_sent') == '1' and email_delivery == 'SENT') or invitation_sent %}
+{% set email_failed = (email_delivery == 'FAILED') %}
 {% set next_unlocked = email_sent %}
 {% set sent_at = request.args.get('sent_at', '') %}
 {% set recipient = request.args.get('recipient', tx['seller_email']) %}
@@ -367,13 +558,31 @@
       </div>
     </div>
 
+    {% if email_failed %}
+    <div class="email-failed-banner" role="alert" aria-live="assertive">
+      <span class="email-sent-icon">!</span>
+      <span>
+        <span class="email-sent-main">Invitation email failed.</span>
+        <span class="email-sent-meta">Delivery: FAILED{% if recipient %} · Recipient: {{ recipient }}{% endif %}{% if email_message %} · Reason: {{ email_message }}{% endif %}</span>
+      </span>
+    </div>
+    {% endif %}
+
     {% if email_sent %}
     <div class="email-sent-banner" role="status" aria-live="polite">
       <span class="email-sent-icon">✓</span>
       <span>
         <span class="email-sent-main">Invitation email sent successfully.</span>
-        <span class="email-sent-meta">Sent{% if sent_at %}: {{ sent_at }}{% endif %}{% if recipient %} · Recipient: {{ recipient }}{% endif %}</span>
+        <span class="email-sent-meta">Delivery: SENT · Sent{% if sent_at %}: {{ sent_at }}{% endif %}{% if recipient %} · Recipient: {{ recipient }}{% endif %}{% if email_message %} · Provider: {{ email_message }}{% endif %}</span>
       </span>
+    </div>
+    {% endif %}
+
+    {% if email_sent %}
+    <div class="seller-dev-access-panel" role="region" aria-label="Seller route development access">
+      <p class="seller-dev-access-title">Development seller access</p>
+      <p class="seller-dev-access-copy">Use this button to open the seller invitation route directly during testing.</p>
+      <a class="seller-dev-access-button" href="{{ invite_url }}" target="_blank" rel="noopener">Open Seller Join Route</a>
     </div>
     {% endif %}
 
@@ -436,7 +645,7 @@
     <a class="btn page-22-home" href="{{ url_for('gateway_home') }}">Home</a>
     <a class="btn page-22-back" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Back to Payment</a>
     {% if next_unlocked %}
-    <a class="btn page-22-next-active" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next</a>
+    <a class="btn page-22-next-active" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Next</a>
     {% else %}
     <span class="btn page-22-next-disabled" aria-disabled="true" title="Send the seller invitation email before continuing">Next</span>
     {% endif %}
@@ -466,6 +675,15 @@
       var sub = button.querySelector('.primary-sub');
       if (main) { main.innerText = 'Sending…'; }
       if (sub) { sub.innerText = 'Please wait'; }
+      window.setTimeout(function () {
+        if (button.disabled) {
+          button.disabled = false;
+          button.style.opacity = '1';
+          button.style.cursor = 'pointer';
+          if (main) { main.innerText = 'Send Invitation Email'; }
+          if (sub) { sub.innerText = 'Retry / check email outbox'; }
+        }
+      }, 12000);
     });
   })();
 </script>

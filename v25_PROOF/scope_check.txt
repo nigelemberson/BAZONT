@@ -1,8 +1,8 @@
-Scope check for Bazont20N:
+Scope check for Bazont22L:
 PASS - Page 10 presentation polish only.
 PASS - Page 12 presentation polish only.
 PASS - No image generation.
 PASS - No workflow change.
 PASS - No route change.
 PASS - No navigation behavior change.
-PASS - Version references updated to Bazont20N.zip.
+PASS - Version references updated to Bazont22X.zip.

@@ -808,14 +808,14 @@
   }
   body.register-page .register-login-stack .btn,
   body.register-page .register-login-stack button {
-    width: 100%;
+    width: auto;
     text-align: center;
   }
   body.register-page .register-login-stack .go-login-btn {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(180deg, #fb923c, #ea580c);
     color: #ffffff;
     border: none;
-    box-shadow: 0 0 10px rgba(59,130,246,0.5);
+    box-shadow: 0 14px 30px rgba(234,88,12,0.35);
   }
 
   /* Build 11I: Pages 19-24 normalised to Page 18/Page 19 master width and header system. */
@@ -1029,8 +1029,8 @@
     body.invitation-preview-body .invite-grid,
     body.invitation-preview-body .page-22-bottom-actions { grid-template-columns: 1fr; }
     body.invitation-preview-body .invite-line { grid-template-columns: 1fr; gap: 3px; }
-    body.invitation-preview-body .invite-card p { display:block; }
-    body.invitation-preview-body .invite-card p strong { display:block; text-align:left; margin-top:2px; }
+    body.invitation-preview-body .invite-card p { display:inline-block; }
+    body.invitation-preview-body .invite-card p strong { display:inline-block; text-align:left; margin-top:2px; }
   }
 
   /* Build 11Y: Page 21 temporary preview button and Page 22 inner panel width only. */
@@ -1491,7 +1491,7 @@
     
 
 
-  /* Bazont20N: Page 10 and Page 12 presentation polish only. */
+  /* Bazont22L: Page 10 presentation compactness polish only. */
   body.register-page .page-wrap,
   body.role-select-page .page-wrap {
     max-width: 1120px;
@@ -1501,27 +1501,35 @@
 
   body.register-page .register-flow-grid {
     grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
-    gap: 18px;
+    gap: 12px;
     align-items: stretch;
   }
   body.register-page .register-flow-grid .hero-card,
   body.register-page .register-flow-grid .action-card {
-    min-height: 318px;
-    padding: 28px 30px !important;
+    min-height: 250px;
+    padding: 17px 24px !important;
   }
   body.register-page .register-flow-grid .hero-title {
-    font-size: 2.55rem !important;
-    margin-bottom: 8px !important;
+    font-size: 2.34rem !important;
+    margin: 0 0 2px !important;
+  }
+
+  body.register-page .free-note {
+    color: #ef4444;
+    font-size: 0.42em;
+    font-weight: 900;
+    white-space: nowrap;
   }
   body.register-page .register-flow-grid .hero-subtitle {
-    font-size: 1.22rem !important;
-    line-height: 1.34 !important;
+    font-size: 1.06rem !important;
+    line-height: 1.18 !important;
+    margin: 0 !important;
   }
-  body.register-page .register-flow-grid form { margin-top: 14px !important; }
-  body.register-page .register-flow-grid label { display:block; margin-top: 2px; }
+  body.register-page .register-flow-grid form { margin-top: 6px !important; }
+  body.register-page .register-flow-grid label { display:inline-block; margin-top: 0; }
   body.register-page .register-flow-grid input {
-    padding: 14px 16px !important;
-    margin: 6px 0 12px !important;
+    padding: 10px 16px !important;
+    margin: 3px 0 6px !important;
   }
   body.register-page .register-info-card {
     display: flex;
@@ -1531,25 +1539,25 @@
   body.register-page .register-info-list {
     list-style: none;
     padding: 0;
-    margin: 14px 0 0;
+    margin: 8px 0 0;
     display: grid;
-    gap: 12px;
+    gap: 6px;
   }
   body.register-page .register-info-list li {
     margin: 0 !important;
-    padding: 13px 15px 13px 42px;
+    padding: 8px 14px 8px 40px;
     border-radius: 16px;
     background: rgba(255,255,255,0.055);
     border: 1px solid rgba(255,255,255,0.09);
     position: relative;
-    font-size: 1.04rem !important;
-    line-height: 1.34 !important;
+    font-size: 1rem !important;
+    line-height: 1.28 !important;
   }
   body.register-page .register-info-list li::before {
     content: '•';
     position: absolute;
     left: 18px;
-    top: 10px;
+    top: 8px;
     color: #ffd36b;
     font-size: 1.45rem;
     line-height: 1;
@@ -1558,7 +1566,15 @@
     color: #ffd36b;
     background: rgba(255,211,107,0.09) !important;
   }
-  body.register-page .register-action-row,
+  body.register-page .register-action-row {
+    position: relative !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 900px !important;
+    max-width: 100% !important;
+    margin: 14px auto 0 !important;
+  }
   body.role-select-page .role-action-row {
     position: relative !important;
     left: auto !important;
@@ -1566,9 +1582,16 @@
     transform: none !important;
     width: 900px !important;
     max-width: 100% !important;
-    margin: 30px auto 0 !important;
+    margin: 24px auto 0 !important;
   }
-  body.register-page .register-login-stack { gap: 10px !important; }
+  body.register-page .register-login-stack { flex-direction: row !important; align-items: center !important; gap: 12px !important; }
+
+  body.register-page .register-action-row .go-login-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 14px 30px rgba(239,68,68,0.28);
+  }
 
   body.role-select-page .role-choice-card {
     padding: 38px 44px 36px !important;
@@ -1622,13 +1645,461 @@
     body.role-select-page .role-choice-grid { grid-template-columns: 1fr; }
   }
 
+
+  /* Bazont22L: Page 10 presentation repair only — CSS kept inside <style>. */
+  body.register-page .shell {
+    max-width: 1220px !important;
+    padding: 24px 24px 18px !important;
+  }
+  body.register-page .page-wrap {
+    max-width: 1120px !important;
+    margin: 14px auto 0 !important;
+    padding: 0 !important;
+  }
+  body.register-page .register-flow-grid {
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr) !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+    margin: 0 !important;
+  }
+  body.register-page .register-flow-grid .hero-card,
+  body.register-page .register-flow-grid .action-card {
+    min-height: 270px !important;
+    padding: 28px 30px !important;
+    border-radius: 26px !important;
+    background: rgba(15, 23, 42, 0.66) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    box-shadow: 0 20px 46px rgba(0,0,0,0.26) !important;
+  }
+  body.register-page .register-flow-grid .hero-title {
+    font-size: 2.7rem !important;
+    line-height: 1.04 !important;
+    margin: 0 0 6px !important;
+    letter-spacing: -0.02em !important;
+  }
+  body.register-page .free-note {
+    color: #ef4444 !important;
+    font-size: 0.34em !important;
+    font-weight: 900 !important;
+    margin-left: 8px !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+  }
+  body.register-page .register-flow-grid .hero-subtitle {
+    font-size: 1.16rem !important;
+    line-height: 1.3 !important;
+    margin: 0 0 14px !important;
+    color: #dbeafe !important;
+  }
+  body.register-page .register-flow-grid form { margin-top: 0 !important; }
+  body.register-page .register-flow-grid label {
+    display: block !important;
+    margin: 0 0 5px !important;
+    font-size: 1.08rem !important;
+    line-height: 1.1 !important;
+    font-weight: 900 !important;
+  }
+  body.register-page .register-flow-grid input {
+    padding: 14px 16px !important;
+    margin: 0 0 12px !important;
+    font-size: 1.06rem !important;
+    border-radius: 16px !important;
+    background: rgba(255,255,255,0.085) !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+  }
+  body.register-page .register-info-card .section-title {
+    font-size: 1.82rem !important;
+    line-height: 1.12 !important;
+    margin: 0 0 18px !important;
+    letter-spacing: -0.015em !important;
+  }
+  body.register-page .register-info-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: grid !important;
+    gap: 10px !important;
+  }
+  body.register-page .register-info-list li {
+    position: relative !important;
+    margin: 0 !important;
+    padding: 13px 16px 13px 42px !important;
+    border-radius: 16px !important;
+    background: rgba(255,255,255,0.065) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    font-size: 1.03rem !important;
+    line-height: 1.28 !important;
+  }
+  body.register-page .register-info-list li::before {
+    content: '•' !important;
+    position: absolute !important;
+    left: 20px !important;
+    top: 12px !important;
+    color: #ffd36b !important;
+    font-size: 1.4rem !important;
+    line-height: 1 !important;
+  }
+  body.register-page .register-info-highlight {
+    color: #ffd36b !important;
+    background: rgba(255,211,107,0.10) !important;
+  }
+  body.register-page .register-action-row {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 16px 0 0 !important;
+    padding: 16px !important;
+    border-radius: 24px !important;
+    background: rgba(15, 23, 42, 0.58) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    box-shadow: 0 18px 42px rgba(0,0,0,0.22) !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1.15fr 1.15fr !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+  body.register-page .register-action-row .btn,
+  body.register-page .register-action-row button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 58px !important;
+    padding: 14px 18px !important;
+    border-radius: 999px !important;
+    font-size: 1.18rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  body.register-page .register-action-row .btn-primary,
+  body.register-page .register-action-row button.btn-primary {
+    background: linear-gradient(180deg, #fb923c, #ea580c) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: 0 16px 34px rgba(234,88,12,0.40) !important;
+  }
+  body.register-page .register-action-row .go-login-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 16px 34px rgba(239,68,68,0.30) !important;
+  }
+  @media (max-width: 960px) {
+    body.register-page .register-flow-grid,
+    body.register-page .register-action-row { grid-template-columns: 1fr !important; }
+  }
+
+
+  /* Bazont22L: Page 10 vertical balance and lighter action bar only. */
+  body.register-page {
+    overflow: hidden !important;
+  }
+  body.register-page .shell {
+    max-width: 1200px !important;
+    min-height: 100vh !important;
+    padding: 30px 24px 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  body.register-page .topbar {
+    min-height: 58px !important;
+    align-items: center !important;
+  }
+  body.register-page .brand .header-icon {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  body.register-page .brand-title {
+    font-size: 1.85rem !important;
+  }
+  body.register-page .brand-sub {
+    font-size: 1.03rem !important;
+  }
+  body.register-page .demo-status {
+    font-size: 1.04rem !important;
+    font-weight: 800 !important;
+  }
+  body.register-page .steps {
+    margin-top: 16px !important;
+    gap: 8px !important;
+  }
+  body.register-page .step {
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+  }
+  body.register-page .page-wrap {
+    width: 100% !important;
+    max-width: 1120px !important;
+    margin: 18px auto 0 !important;
+    padding: 0 !important;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  body.register-page .register-flow-grid {
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr) !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+  }
+  body.register-page .register-flow-grid .hero-card,
+  body.register-page .register-flow-grid .action-card {
+    min-height: 308px !important;
+    padding: 30px 32px !important;
+    border-radius: 26px !important;
+  }
+  body.register-page .register-flow-grid .hero-title {
+    font-size: 2.68rem !important;
+    margin-bottom: 8px !important;
+  }
+  body.register-page .register-flow-grid .hero-subtitle {
+    font-size: 1.16rem !important;
+    margin-bottom: 18px !important;
+  }
+  body.register-page .register-flow-grid label {
+    font-size: 1.08rem !important;
+    margin-bottom: 6px !important;
+  }
+  body.register-page .register-flow-grid input {
+    padding: 13px 16px !important;
+    margin: 0 0 15px !important;
+    border-radius: 16px !important;
+  }
+  body.register-page .register-info-card {
+    justify-content: flex-start !important;
+  }
+  body.register-page .register-info-card .section-title {
+    font-size: 1.82rem !important;
+    margin-bottom: 20px !important;
+  }
+  body.register-page .register-info-list {
+    gap: 12px !important;
+  }
+  body.register-page .register-info-list li {
+    padding: 14px 16px 14px 42px !important;
+    font-size: 1.02rem !important;
+    line-height: 1.3 !important;
+  }
+  body.register-page .register-action-row {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 18px 0 0 !important;
+    padding: 12px 16px !important;
+    border-radius: 22px !important;
+    background: rgba(15, 23, 42, 0.42) !important;
+    border: 1px solid rgba(255,255,255,0.09) !important;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18) !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1.05fr 1.05fr !important;
+    gap: 14px !important;
+    align-items: center !important;
+  }
+  body.register-page .register-action-row .btn,
+  body.register-page .register-action-row button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 48px !important;
+    padding: 11px 16px !important;
+    font-size: 1.04rem !important;
+    font-weight: 850 !important;
+    border-radius: 999px !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.22) !important;
+  }
+  body.register-page .register-action-row a[href="/"]:not(.btn-back) {
+    box-shadow: 0 0 9px rgba(34,197,94,0.36) !important;
+  }
+  body.register-page .register-action-row a.btn-secondary:not([href="/"]) {
+    box-shadow: 0 0 9px rgba(59,130,246,0.32) !important;
+  }
+  body.register-page .register-action-row .btn-primary,
+  body.register-page .register-action-row button.btn-primary {
+    box-shadow: 0 10px 22px rgba(234,88,12,0.30) !important;
+  }
+  body.register-page .register-action-row .go-login-btn {
+    box-shadow: 0 10px 22px rgba(239,68,68,0.24) !important;
+  }
+
+
+
+  /* Bazont22L: Page 10 vertical distribution only — keep top anchor, stretch middle, lower lighter buttons. */
+  body.register-page .page-wrap {
+    margin-top: 18px !important;
+  }
+  body.register-page .register-flow-grid {
+    gap: 20px !important;
+  }
+  body.register-page .register-flow-grid .hero-card,
+  body.register-page .register-flow-grid .action-card {
+    min-height: 350px !important;
+    padding-top: 38px !important;
+    padding-bottom: 38px !important;
+  }
+  body.register-page .register-flow-grid .hero-subtitle {
+    margin-bottom: 28px !important;
+  }
+  body.register-page .register-flow-grid input {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    margin-bottom: 22px !important;
+  }
+  body.register-page .register-info-card .section-title {
+    margin-bottom: 28px !important;
+  }
+  body.register-page .register-info-list {
+    gap: 17px !important;
+  }
+  body.register-page .register-info-list li {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+  }
+  body.register-page .register-action-row {
+    margin-top: 44px !important;
+    padding: 10px 14px !important;
+    background: rgba(15, 23, 42, 0.34) !important;
+    box-shadow: 0 9px 24px rgba(0,0,0,0.15) !important;
+  }
+  body.register-page .register-action-row .btn,
+  body.register-page .register-action-row button {
+    min-height: 44px !important;
+    padding: 9px 14px !important;
+    font-size: 0.98rem !important;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18) !important;
+  }
+  body.register-page .register-action-row .btn-primary,
+  body.register-page .register-action-row button.btn-primary {
+    box-shadow: 0 8px 18px rgba(234,88,12,0.24) !important;
+  }
+  body.register-page .register-action-row .go-login-btn {
+    box-shadow: 0 8px 18px rgba(239,68,68,0.20) !important;
+  }
+
+  /* Bazont22L: Page 12 vertical balance to match Page 10 approach — keep top anchor, use more middle space, lower lighter buttons. */
+  body.role-select-page .shell {
+    max-width: 1220px !important;
+    padding: 24px 24px 18px !important;
+  }
+  body.role-select-page .page-wrap {
+    max-width: 1120px !important;
+    margin: 18px auto 0 !important;
+    padding: 0 !important;
+  }
+  body.role-select-page .role-choice-card {
+    min-height: 350px !important;
+    padding: 38px 44px !important;
+    border-radius: 26px !important;
+  }
+  body.role-select-page .role-choice-intro {
+    margin-bottom: 30px !important;
+  }
+  body.role-select-page .role-choice-card .hero-title {
+    font-size: 2.68rem !important;
+    margin-bottom: 8px !important;
+  }
+  body.role-select-page .role-choice-card .hero-subtitle {
+    font-size: 1.16rem !important;
+    line-height: 1.35 !important;
+  }
+  body.role-select-page .role-choice-grid {
+    gap: 20px !important;
+    align-items: stretch !important;
+  }
+  body.role-select-page .role-choice-option {
+    min-height: 206px !important;
+    padding: 26px 28px !important;
+    border-radius: 24px !important;
+  }
+  body.role-select-page .role-choice-label {
+    font-size: 1.28rem !important;
+  }
+  body.role-select-page .role-choice-option p {
+    font-size: 1.04rem !important;
+    line-height: 1.45 !important;
+    margin: 14px 0 22px !important;
+  }
+  body.role-select-page .role-choice-option .btn {
+    min-height: 44px !important;
+    padding: 9px 14px !important;
+    font-size: 0.98rem !important;
+    border-radius: 999px !important;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18) !important;
+  }
+  body.role-select-page .role-action-row {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 44px 0 0 !important;
+    padding: 10px 14px !important;
+    border-radius: 22px !important;
+    background: rgba(15, 23, 42, 0.34) !important;
+    border: 1px solid rgba(255,255,255,0.09) !important;
+    box-shadow: 0 9px 24px rgba(0,0,0,0.15) !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 14px !important;
+    align-items: center !important;
+  }
+  body.role-select-page .role-action-row .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 9px 14px !important;
+    font-size: 0.98rem !important;
+    font-weight: 850 !important;
+    border-radius: 999px !important;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18) !important;
+  }
+
+
+  /* Bazont22L - Page 10 base-level rendered fix */
+  body.endpoint-register .register-flow-grid .panel li:nth-child(n+3),
+  body.endpoint-register .register-flow-grid .info-card li:nth-child(n+3),
+  body.endpoint-register .register-flow-grid .panel .bullet-row:nth-child(n+3),
+  body.endpoint-register .register-flow-grid .panel .pill:nth-child(n+3) {
+    display:none !important;
+    height:0 !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    overflow:hidden !important;
+  }
+  body.endpoint-register .register-action-row .btn,
+  body.endpoint-register .register-nav .btn,
+  body.endpoint-register .bottom-nav .btn,
+  body.endpoint-register .nav-row .btn,
+  body.endpoint-register .action-row .btn,
+  body.endpoint-register .btn {
+    width:150px !important;
+    min-width:150px !important;
+    max-width:150px !important;
+    flex:0 0 150px !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+    justify-content:center !important;
+    text-align:center !important;
+  }
+
 </style>
 </head>
 <body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
-{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','courier_logs':'17','courier_status':'25','transaction_detail':'16','buyer_transactions':'26','seller_dashboard':'27'} %}
-{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'invitation_preview', 'transaction_detail', 'buyer_actions', 'courier_logs', 'courier_status', 'buyer_transactions'] %}
-{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'courier_logs':'17', 'courier_status':'25', 'transaction_detail':'16', 'buyer_transactions':'26'} %}
-{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('25','Status')] %}
+{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','courier_logs':'17','seller_join':'18','courier_status':'25','transaction_detail':'16A','buyer_transactions':'26','seller_dashboard':'27'} %}
+{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'seller_join', 'courier_status', 'buyer_transactions'] %}
+{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'16', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'25', 'buyer_transactions':'26'} %}
+{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('25','Status')] %}
 {% if request.endpoint in PAGE_IDS %}<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">{{ PAGE_IDS[request.endpoint] }}</div>{% endif %}
   <div class="shell">
     {% if request.endpoint in NORMALISED_PAGES %}
@@ -1637,7 +2108,7 @@
       <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
       {% if current_user %}<span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span>{% endif %}
     </div>
-    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ (((ACTIVE_PAGES[request.endpoint]|int) - 9) / 8 * 100)|round(2) }}%"></div></div></div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ [100, ((((ACTIVE_PAGES[request.endpoint]|int) - 9) / 16 * 100)|round(2))]|min }}%"></div></div></div>
     <div class="steps">
       {% for page_no, label in FLOW_PAGES %}<div class="step{% if page_no == ACTIVE_PAGES[request.endpoint] %} active{% endif %}">{{ page_no }}<br>{{ label }}</div>{% endfor %}
     </div>

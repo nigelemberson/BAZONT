@@ -1,4 +1,4 @@
-Visual check for Bazont20N:
+Visual check for Bazont22L:
 PASS - Page 10 generated successfully through Flask test client.
 PASS - Page 10 dead space reduced by moving bottom action row directly beneath the main panels.
 PASS - Page 10 right information panel no longer sparse; existing points are presented as balanced rows.

@@ -11,7 +11,7 @@
   body.buyer-dashboard-page .grid-2 { gap: 26px; grid-template-columns: 1.7fr 0.8fr; align-items: center; }
   body.buyer-dashboard-page .hero-title { font-size: 2.35rem; margin-bottom: 14px; }
   body.buyer-dashboard-page .hero-subtitle { font-size: 1.16rem; line-height: 1.48; margin-bottom: 0; }
-  body.buyer-dashboard-page .actions .btn { padding: 11px 18px; font-size: 1rem; min-width: 260px; width: 260px; height: 46px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; text-align: center; }
+  body.buyer-dashboard-page .actions .btn { padding: 11px 18px; font-size: 1rem; min-width: 0; width: 260px; height: 46px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; text-align: center; }
   body.buyer-dashboard-page .grid-4 { gap: 10px; }
   body.buyer-dashboard-page .stat-card { padding: 14px 16px; border-radius: 18px; }
   body.buyer-dashboard-page .tiny { font-size: 0.94rem; line-height: 1.25; }
@@ -23,26 +23,59 @@
   body.buyer-dashboard-page th { font-size: 0.9rem; }
   body.buyer-dashboard-page .footer { margin-top: 12px; padding-top: 10px; font-size: 0.95rem; }
   body.buyer-dashboard-page .buyer-action-highlight { color: #ffcf5a; }
-  body.buyer-dashboard-page .buyer-text-block { display: block; margin-top: 16px; }
+  body.buyer-dashboard-page .buyer-dashboard-title-green { color: #22c55e !important; }
+  body.buyer-dashboard-page .buyer-deposit-blue { color: #3b82f6 !important; }
+  body.buyer-dashboard-page .buyer-seller-red { color: #ef4444 !important; }
+  body.buyer-dashboard-page .buyer-text-block { display: block; margin-top: 22px; }
   body.buyer-dashboard-page .buyer-text-block:first-child { margin-top: 0; }
-  body.buyer-dashboard-page .buyer-text-line { display: block; margin-top: 4px; }
+  body.buyer-dashboard-page .buyer-text-line { display: block; margin-top: 10px; }
   body.buyer-dashboard-page .dashboard-actions { justify-content: center; align-items: flex-end; gap: 16px; margin-top: 0; flex-direction: column; align-self: center; }
 
     
+
+
+  /* Bazont22W - Page 13 layout only: keep top anchored, spread middle content, lower bottom nav */
+  body.buyer-dashboard-page .page-wrap {
+    margin-top: 10px !important;
+    padding-top: 0 !important;
+  }
+  body.buyer-dashboard-page .stack {
+    gap: 18px !important;
+  }
+  body.buyer-dashboard-page .hero-card {
+    padding-top: 38px !important;
+    padding-bottom: 38px !important;
+    min-height: 320px !important;
+  }
+  body.buyer-dashboard-page .hero-subtitle {
+    line-height: 1.62 !important;
+  }
+  body.buyer-dashboard-page .dashboard-actions {
+    gap: 28px !important;
+  }
+  body.buyer-dashboard-page .buyer-dashboard-bottom-actions {
+    margin-top: 92px !important;
+  }
+  body.buyer-dashboard-page .buyer-dashboard-bottom-actions .btn {
+    padding: 14px 24px !important;
+    font-size: 18px !important;
+    min-width: 0 !important;
+    width: auto !important;
+    min-height: auto !important;
+  }
+
+
 
 </style>
 <div class="stack">
   <section class="hero-card">
     <div class="grid-2">
       <div>
-        <h1 class="hero-title">Buyer dashboard</h1>
+        <h1 class="hero-title buyer-dashboard-title-green">Buyer dashboard</h1>
         <p class="hero-subtitle">
-          <span class="buyer-text-block">You are now logged in as Buyer.</span>
-          <span class="buyer-text-block">Your next step is to:
-            <span class="buyer-action-highlight buyer-text-line">Create a new transaction or open an existing one.</span>
-          </span>
-          <span class="buyer-text-block">To secure the deal, the Buyer deposits the item price and shipping cost on the platform.</span>
-          <span class="buyer-text-block">The Seller then has 3 days to enter a valid shipping number.
+          <span class="buyer-action-highlight buyer-text-block">Create a new transaction or open an existing one.</span>
+          <span class="buyer-text-block buyer-deposit-blue">To secure the deal, the Buyer deposits the item price and shipping cost on the platform.</span>
+          <span class="buyer-text-block buyer-seller-red">The Seller then has 3 days to enter a valid shipping number.
             <span class="buyer-text-line">If this is not provided, a FULL refund is issued automatically.</span>
           </span>
         </p>

@@ -37,11 +37,118 @@
 
     
 
+
+  /* Bazont22L - Page 15 fit without scroller: compact vertical layout only */
+  body.endpoint-buyer-actions .shell {
+    padding-top: 10px !important;
+    padding-bottom: 8px !important;
+  }
+  body.endpoint-buyer-actions .topbar {
+    min-height: 56px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+  body.endpoint-buyer-actions .progress-wrap {
+    margin: 8px 0 5px !important;
+  }
+  body.endpoint-buyer-actions .steps {
+    margin-bottom: 8px !important;
+  }
+  body.endpoint-buyer-actions .page-wrap {
+    margin-top: 4px !important;
+  }
+  body.endpoint-buyer-actions .ba-stack {
+    gap: 8px !important;
+  }
+  body.endpoint-buyer-actions .ba-hero {
+    padding: 12px 22px !important;
+  }
+  body.endpoint-buyer-actions .ba-hero .hero-title {
+    font-size: 2.05rem !important;
+    margin-bottom: 3px !important;
+    line-height: 1.05 !important;
+  }
+  body.endpoint-buyer-actions .ba-hero .hero-subtitle {
+    font-size: 1.0rem !important;
+    line-height: 1.18 !important;
+  }
+  body.endpoint-buyer-actions .ba-grid {
+    gap: 12px !important;
+  }
+  body.endpoint-buyer-actions .ba-panel {
+    padding: 14px 20px !important;
+  }
+  body.endpoint-buyer-actions .ba-panel .section-title {
+    margin-bottom: 5px !important;
+    font-size: 1.25rem !important;
+  }
+  body.endpoint-buyer-actions .ba-subtitle {
+    font-size: 1.0rem !important;
+    margin-bottom: 5px !important;
+  }
+  body.endpoint-buyer-actions .ba-table th,
+  body.endpoint-buyer-actions .ba-table td {
+    padding: 5px 10px !important;
+    font-size: 0.94rem !important;
+  }
+  body.endpoint-buyer-actions .ba-note {
+    margin-top: 9px !important;
+    font-size: 0.96rem !important;
+    line-height: 1.22 !important;
+  }
+  body.endpoint-buyer-actions .ba-note p {
+    margin-bottom: 3px !important;
+  }
+  body.endpoint-buyer-actions .ba-methods {
+    gap: 7px !important;
+    margin: 4px 0 5px !important;
+  }
+  body.endpoint-buyer-actions .ba-method {
+    padding: 7px 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.96rem !important;
+  }
+  body.endpoint-buyer-actions .ba-form label {
+    font-size: 0.9rem !important;
+  }
+  body.endpoint-buyer-actions .ba-form input {
+    margin-top: 2px !important;
+    margin-bottom: 6px !important;
+    padding: 7px 10px !important;
+    min-height: 34px !important;
+  }
+  body.endpoint-buyer-actions .ba-form-row {
+    gap: 10px !important;
+  }
+  body.endpoint-buyer-actions .ba-pay-row {
+    gap: 16px !important;
+    margin-top: 2px !important;
+  }
+  body.endpoint-buyer-actions .ba-pay-row button {
+    padding: 10px 14px !important;
+    min-height: 42px !important;
+    font-size: 1rem !important;
+  }
+  body.endpoint-buyer-actions .ba-secure {
+    margin-top: 7px !important;
+    font-size: 0.92rem !important;
+  }
+  body.endpoint-buyer-actions .ba-nav {
+    margin-top: 2px !important;
+    gap: 14px !important;
+  }
+  body.endpoint-buyer-actions .ba-nav .btn {
+    min-width: 160px !important;
+    padding: 10px 18px !important;
+    min-height: 42px !important;
+    font-size: 0.98rem !important;
+  }
+
 </style>
 <div class="ba-stack">
   <section class="hero-card ba-hero">
     <h1 class="hero-title">Transaction {{ tx['public_id'] }}</h1>
-    <p class="hero-subtitle">Shared transaction page for buyer and seller. Seller must upload tracking within {{ TRACKING_DEADLINE_DAYS }} days after payment.<br>Delivered status causes release of funds to seller. <span class="ba-status-inline">Status: <span class="ba-status-blue">{{ 'NOT YET INVITED' if tx['status'] == 'INVITED' and not tx['payment_received_at'] else tx['status'].replace('_', ' ') }}</span> <span class="ba-dot">•</span> Payment: <span class="ba-status-gold">{{ 'FUNDED' if tx['payment_received_at'] else 'NOT YET FUNDED' }}</span></span></p>
+    <p class="hero-subtitle">Shared transaction page for buyer and seller. Seller must upload tracking within {{ TRACKING_DEADLINE_DAYS }} days after payment.<br>Delivered status causes release of funds to seller. <span class="ba-status-inline">Status: <span class="ba-status-blue">{{ 'CREATED' if tx['status'] == 'CREATED' and not tx['payment_received_at'] else tx['status'].replace('_', ' ') }}</span> <span class="ba-dot">•</span> Payment: <span class="ba-status-gold">{{ 'FUNDED' if tx['payment_received_at'] else 'NOT YET FUNDED' }}</span></span></p>
   </section>
 
   <div class="ba-grid">
@@ -78,7 +185,7 @@
         </div>
         <div class="ba-pay-row">
           <button class="ba-pay" type="submit" name="action" value="pay" {% if tx['payment_received_at'] or tx['status'] == 'CANCELLED' %}disabled{% endif %}>Pay</button>
-          {% if tx['status'] == 'INVITED' and tx['hold_status'] == 'NOT_FUNDED' and not tx['payment_received_at'] %}
+          {% if tx['status'] == 'CREATED' and tx['hold_status'] == 'NOT_FUNDED' and not tx['payment_received_at'] %}
           <button class="ba-cancel" type="submit" name="action" value="cancel" formnovalidate>Cancel transaction</button>
           {% endif %}
         </div>
@@ -88,8 +195,9 @@
   </div>
 
   <div class="ba-nav">
-    <a class="btn ba-back-blue" href="{{ url_for('new_transaction') }}">← Back</a>
+    <a class="btn ba-back-blue" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">← Back</a>
     <a class="btn" href="{{ url_for('invitation_preview', public_id=tx['public_id']) }}">Next → Invitation Preview</a>
+    <a class="btn ba-logout buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 </div>
 {% endblock %}

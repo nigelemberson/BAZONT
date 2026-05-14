@@ -1,5 +1,93 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<style>
+  /* Bazont22L - Page 12 structural nav match to Page 11.
+     Keep workflow/routes unchanged; make lower nav bar and buttons use
+     the same clean sizing model as Page 11. */
+  body.role-select-page .role-action-row {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+
+    width: 100% !important;
+    max-width: none !important;
+    margin: 32px 0 0 0 !important;
+    padding: 14px 16px !important;
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 44px !important;
+
+    border-radius: 22px !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    background: rgba(255,255,255,0.045) !important;
+    box-shadow: none !important;
+    z-index: auto !important;
+  }
+
+  body.role-select-page .role-action-row .btn {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    flex: 0 0 150px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
+
+
+  /* Bazont22L - Page 12: make the two dashboard choice buttons text-sized,
+     with approximately 40px breathing room each side. */
+  body.role-select-page .role-choice-option > a.btn,
+  body.role-select-page .role-choice-option > a.btn.secondary {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 40px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    align-self: flex-start !important;
+  }
+
+
+  /* Bazont22L - exact Page 12 colour fix: seller CTA orange, logout Bazont red. */
+  body.role-select-page .role-choice-option.role-choice-seller > a.btn.secondary {
+    background: linear-gradient(180deg, #fb923c, #ea580c) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 14px 30px rgba(234,88,12,0.35) !important;
+  }
+
+  body.role-select-page .role-action-row a.btn.role-logout {
+    background: linear-gradient(180deg, #ff4d4d, #dc2626) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 14px 30px rgba(220,38,38,0.35) !important;
+  }
+
+</style>
+
 <section class="hero-card role-choice-card">
   <div class="role-choice-intro">
     <h1 class="hero-title">Choose dashboard</h1>

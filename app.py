@@ -21,7 +21,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont20N.zip'
+DEFAULT_VERSION = 'Bazont22X'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -45,6 +45,9 @@ RESEND_FROM_EMAIL = os.environ.get(
     'Bazont <noreply@bazont.com>'
 ).strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
+# Bazont22X: public invite links must not use localhost/127.0.0.1.
+# Set BAZONT_PUBLIC_BASE_URL on Render if the live URL differs.
+PUBLIC_BASE_URL = os.environ.get('BAZONT_PUBLIC_BASE_URL', 'https://bazont.com').strip().rstrip('/')
 
 LOCAL_RESEND_KEY_FILE = 'resend_api_key.txt'
 if not AFTERSHIP_API_KEY and os.path.exists(LOCAL_RESEND_KEY_FILE):
@@ -175,12 +178,15 @@ app.config['EMAIL_OUTBOX_DIR'].mkdir(exist_ok=True)
 LOGIN_REQUIRED = True
 TEST_USER_EMAIL = 'test@bazont.local'
 TEST_USER_ROLE = 'buyer'
+DEV_RESET_VERSION = 'Bazont22W'
+DEV_RESET_MARKER = DATA_DIR / f'.{DEV_RESET_VERSION}_dev_data_reset_done'
 
 
 def bootstrap_runtime():
     # Prepare persistent directories and database for both local runs and WSGI imports.
     app.config['EMAIL_OUTBOX_DIR'].mkdir(exist_ok=True)
     init_db()
+    run_one_time_development_reset()
 
 
 def now_ph():
@@ -304,18 +310,77 @@ def init_db():
     for column, col_type in migrations.items():
         if column not in cols:
             conn.execute(f'ALTER TABLE transactions ADD COLUMN {column} {col_type}')
+
+    # Build 22Q: normalize older state names to the new authoritative transaction state engine.
+    conn.execute("UPDATE transactions SET status = 'CREATED' WHERE status = 'INVITED'")
+    conn.execute("UPDATE transactions SET status = 'BUYER_PAID' WHERE status = 'PAID'")
+    conn.execute("UPDATE transactions SET status = 'PAYMENT_RELEASED' WHERE status = 'RELEASED'")
+    conn.execute("UPDATE transactions SET status = 'AUTO_REFUNDED' WHERE status = 'REFUNDED'")
     conn.commit()
     conn.close()
 
 
-VALID_TRANSITIONS = {
-    'INVITED': {'PAID', 'REFUNDED', 'CANCELLED'},
-    'PAID': {'TRACKING_SUBMITTED', 'REFUNDED', 'RELEASED'},
-    'TRACKING_SUBMITTED': {'RELEASED', 'REFUNDED'},
-    'RELEASED': set(),
-    'REFUNDED': set(),
-    'CANCELLED': set(),
+def run_one_time_development_reset():
+    """Bazont22W cleanup: clear stale development transactions/invites once.
+
+    This preserves registered accounts and configuration, but removes old
+    transactions, audit rows, courier rows, and local invite proof files so
+    the next test run starts cleanly.
+    """
+    if DEV_RESET_MARKER.exists():
+        return
+    conn = db_connect()
+    try:
+        conn.execute('DELETE FROM courier_events')
+        conn.execute('DELETE FROM audit_log')
+        conn.execute('DELETE FROM transactions')
+        conn.commit()
+    finally:
+        conn.close()
+    outbox_dir = app.config['EMAIL_OUTBOX_DIR']
+    for path in outbox_dir.glob('invite_*'):
+        if path.is_file():
+            try:
+                path.unlink()
+            except OSError:
+                pass
+    DEV_RESET_MARKER.write_text(now_iso(), encoding='utf-8')
+
+
+TX_CREATED = 'CREATED'
+TX_BUYER_PAID = 'BUYER_PAID'
+TX_INVITE_SENT = 'INVITE_SENT'
+TX_SELLER_ACCEPTED = 'SELLER_ACCEPTED'
+TX_TRACKING_SUBMITTED = 'TRACKING_SUBMITTED'
+TX_DELIVERED = 'DELIVERED'
+TX_PAYMENT_RELEASED = 'PAYMENT_RELEASED'
+TX_AUTO_REFUNDED = 'AUTO_REFUNDED'
+TX_CANCELLED = 'CANCELLED'
+
+TX_TERMINAL_STATES = {TX_PAYMENT_RELEASED, TX_AUTO_REFUNDED, TX_CANCELLED}
+
+LEGACY_STATUS_MAP = {
+    'INVITED': TX_CREATED,
+    'PAID': TX_BUYER_PAID,
+    'RELEASED': TX_PAYMENT_RELEASED,
+    'REFUNDED': TX_AUTO_REFUNDED,
 }
+
+VALID_TRANSITIONS = {
+    TX_CREATED: {TX_BUYER_PAID, TX_CANCELLED},
+    TX_BUYER_PAID: {TX_INVITE_SENT, TX_TRACKING_SUBMITTED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
+    TX_INVITE_SENT: {TX_SELLER_ACCEPTED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
+    TX_SELLER_ACCEPTED: {TX_TRACKING_SUBMITTED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
+    TX_TRACKING_SUBMITTED: {TX_DELIVERED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
+    TX_DELIVERED: {TX_PAYMENT_RELEASED},
+    TX_PAYMENT_RELEASED: set(),
+    TX_AUTO_REFUNDED: set(),
+    TX_CANCELLED: set(),
+}
+
+
+def canonical_status(status):
+    return LEGACY_STATUS_MAP.get(status, status)
 
 
 def log_audit(conn, transaction_id, actor_type, actor_ref, action, from_state=None, to_state=None, details=''):
@@ -328,7 +393,7 @@ def log_audit(conn, transaction_id, actor_type, actor_ref, action, from_state=No
 
 
 def set_status(conn, tx, new_status, actor_type, actor_ref, action, details=''):
-    current = tx['status']
+    current = canonical_status(tx['status'])
     if current == new_status:
         return
     if new_status not in VALID_TRANSITIONS.get(current, set()):
@@ -337,16 +402,16 @@ def set_status(conn, tx, new_status, actor_type, actor_ref, action, details=''):
     hold_status = tx['hold_status']
     released_at = tx['released_at']
     refunded_at = tx['refunded_at']
-    if new_status == 'PAID':
+    if new_status == TX_BUYER_PAID:
         hold_status = 'FUNDED'
-    elif new_status == 'TRACKING_SUBMITTED':
+    elif new_status == TX_TRACKING_SUBMITTED:
         hold_status = 'FUNDED'
-    elif new_status == 'RELEASED':
+    elif new_status == TX_PAYMENT_RELEASED:
         hold_status = 'RELEASED'
         released_at = now_iso()
-    elif new_status == 'REFUNDED':
+    elif new_status == TX_AUTO_REFUNDED:
         hold_status = 'REFUNDED'
-    elif new_status == 'CANCELLED':
+    elif new_status == TX_CANCELLED:
         hold_status = 'CANCELLED'
 
     conn.execute(
@@ -369,14 +434,18 @@ def current_user():
     if not user_id:
         return None
     conn = get_db()
-    return conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if user is None:
+        session.clear()
+        return None
+    return user
 
 
 @app.context_processor
 def inject_globals():
     return {
         'current_user': current_user(),
-        'VERSION': get_version(),
+        'VERSION': (get_version() if get_version().endswith('.zip') else get_version() + '.zip'),
         'MAX_ITEM_PRICE': MAX_ITEM_PRICE,
         'MAX_WEIGHT': MAX_WEIGHT,
         'MAX_DIM': MAX_DIM,
@@ -420,7 +489,19 @@ def login_required(role=None):
 
 
 def seller_invite_link(tx):
-    return url_for('seller_join', token=tx['invite_token'], _external=True)
+    """Return the public seller invitation URL.
+
+    Bazont22X rule: emailed invitation links must be public internet URLs,
+    never localhost/127.0.0.1, because seller devices are external to the
+    buyer's local Flask session.
+    """
+    token = tx['invite_token']
+    return f"{PUBLIC_BASE_URL}{url_for('seller_join', token=token)}"
+
+
+@app.context_processor
+def inject_public_invite_helpers():
+    return {'seller_invite_link': seller_invite_link, 'PUBLIC_BASE_URL': PUBLIC_BASE_URL}
 
 
 def build_seller_invite_subject(tx):
@@ -469,48 +550,48 @@ def build_seller_invite_html(tx):
     safe_invite_link = html.escape(invite_link, quote=True)
     fallback_link_block = _html_fallback_link_block(invite_link, safe_invite_link)
     return f"""<!doctype html>
-<html>
-  <body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#172033;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:28px 0;">
+<html style="height:100%;overflow:hidden;">
+  <body style="margin:0;padding:0;background:#f4f7fb;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#172033;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:20px 0;">
       <tr>
         <td align="center">
-          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;width:94%;background:#ffffff;border-radius:18px;border:1px solid #dbe4f0;box-shadow:0 10px 26px rgba(15,23,42,0.10);">
+          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;width:94%;background:#ffffff;border-radius:18px;border:1px solid #dbe4f0;box-shadow:0 10px 26px rgba(15,23,42,0.10);max-height:96vh;">
             <tr>
-              <td style="background:#0f172a;padding:22px 28px;color:#ffffff;border-radius:18px 18px 0 0;">
-                <div style="font-size:22px;font-weight:900;letter-spacing:0.8px;">BAZONT</div>
+              <td style="background:#0f172a;padding:18px 28px;color:#ffffff;border-radius:18px 18px 0 0;">
+                <div style="font-size:21px;font-weight:900;letter-spacing:0.8px;">BAZONT</div>
                 <div style="font-size:13px;color:#bfdbfe;margin-top:4px;font-weight:700;">Safe Transactions</div>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px 28px 38px;">
-                <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#0f172a;">You have a Bazont Transaction Invitation.</h1>
-                <p style="margin:0 0 20px;font-size:16px;line-height:1.55;color:#334155;">You are invited to join a BAZONT transaction as the seller of:</p>
+              <td style="padding:26px 28px 28px;">
+                <h1 style="margin:0 0 12px;font-size:23px;line-height:1.22;color:#0f172a;">You have a Bazont Transaction Invitation.</h1>
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.48;color:#334155;">You are invited to join a BAZONT transaction as the seller of:</p>
 
-                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe4f0;border-radius:14px;background:#f8fafc;margin:0 0 22px;">
-                  <tr><td style="padding:18px 20px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #dbe4f0;border-radius:14px;background:#f8fafc;margin:0 0 18px;">
+                  <tr><td style="padding:16px 20px;">
                     <div style="font-size:13px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Transaction summary</div>
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Transaction ID</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{public_id}</td></tr>
-                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Description of the article</td><td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{item_description}</td></tr>
-                      <tr><td style="padding:7px 0;color:#64748b;font-size:14px;font-weight:700;">Total amount held by Bazont</td><td style="padding:7px 0;color:#16a34a;font-size:14px;font-weight:900;text-align:right;">{total_amount}</td></tr>
+                      <tr><td style="padding:6px 0;color:#64748b;font-size:14px;font-weight:700;">Transaction ID</td><td style="padding:6px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{public_id}</td></tr>
+                      <tr><td style="padding:6px 0;color:#64748b;font-size:14px;font-weight:700;">Description of the article</td><td style="padding:6px 0;color:#0f172a;font-size:14px;font-weight:900;text-align:right;">{item_description}</td></tr>
+                      <tr><td style="padding:6px 0;color:#64748b;font-size:14px;font-weight:700;">Total amount held by Bazont</td><td style="padding:6px 0;color:#16a34a;font-size:14px;font-weight:900;text-align:right;">{total_amount}</td></tr>
                     </table>
                   </td></tr>
                 </table>
 
-                <div style="text-align:center;margin:24px 0 22px;">
-                  <a href="{safe_invite_link}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:14px 28px;border-radius:999px;">Accept Invitation</a>
+                <div style="text-align:center;margin:20px 0 18px;">
+                  <a href="{safe_invite_link}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:13px 28px;border-radius:999px;">Accept Invitation</a>
                 </div>
 
                 {fallback_link_block}
 
-                <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-top:16px;font-size:14px;line-height:1.48;color:#475569;">
+                <div style="border-top:1px solid #e2e8f0;padding-top:12px;margin-top:14px;font-size:14px;line-height:1.42;color:#475569;">
                   <strong>Seller rule:</strong> Tracking number from a reputable courier must be uploaded within {TRACKING_DEADLINE_DAYS} days. If tracking is not uploaded in time, the transaction is auto cancelled and the buyer is refunded.<br><br>
                   <strong>Payment release rule:</strong> Bazont releases payment after the courier confirms your item has been DELIVERED.
                 </div>
 
-                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:14px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:12px;">
                   <tr>
-                    <td style="font-size:15px;line-height:1.35;color:#334155;padding:0 0 8px;">
+                    <td style="font-size:15px;line-height:1.35;color:#334155;padding:0 0 4px;">
                       Thank you,<br><strong>The BAZONT Team</strong>
                     </td>
                   </tr>
@@ -557,7 +638,7 @@ def send_seller_invite(tx):
         'Content-Type': 'application/json',
     }
     try:
-        response = requests.post(RESEND_API_URL, json=payload, headers=headers, timeout=20)
+        response = requests.post(RESEND_API_URL, json=payload, headers=headers, timeout=8)
         data = response.json() if response.content else {}
     except Exception as exc:
         return False, f'Resend email request failed: {exc}'
@@ -600,7 +681,11 @@ def assign_seller_to_transaction(conn, tx, seller, actor_type='system', actor_re
     if tx['seller_user_id'] and tx['seller_user_id'] != seller['id']:
         raise ValueError('This transaction is already assigned to another seller.')
     conn.execute('UPDATE transactions SET seller_user_id = ?, updated_at = ? WHERE id = ?', (seller['id'], now_iso(), tx['id']))
-    log_audit(conn, tx['id'], actor_type, actor_ref, 'SELLER_JOINED', None, None, details)
+    tx_now = refresh_tx(conn, tx['id'])
+    if tx_now['status'] in (TX_INVITE_SENT, TX_BUYER_PAID):
+        set_status(conn, tx_now, TX_SELLER_ACCEPTED, actor_type, actor_ref, 'SELLER_ACCEPTED', details)
+    else:
+        log_audit(conn, tx['id'], actor_type, actor_ref, 'SELLER_JOINED', None, None, details)
 
 
 def ensure_test_login():
@@ -667,7 +752,7 @@ def check_due_tracking():
             if tag and tag.upper() in ALLOWED_DELIVERED_STATUSES:
                 latest_tx = refresh_tx(conn, tx['id'])
                 try:
-                    set_status(conn, latest_tx, 'RELEASED', 'system', 'aftership', 'AUTO_RELEASE_DELIVERED', 'AfterShip reported DELIVERED.')
+                    set_status(conn, latest_tx, TX_PAYMENT_RELEASED, 'system', 'aftership', 'AUTO_RELEASE_DELIVERED', 'AfterShip reported DELIVERED.')
                 except ValueError:
                     pass
         if changed:
@@ -680,7 +765,7 @@ def process_rules():
     conn = db_connect()
     try:
         rows = conn.execute(
-            "SELECT * FROM transactions WHERE status IN ('INVITED', 'PAID', 'TRACKING_SUBMITTED')"
+            "SELECT * FROM transactions WHERE status IN ('CREATED', 'BUYER_PAID', 'INVITE_SENT', 'SELLER_ACCEPTED', 'TRACKING_SUBMITTED', 'DELIVERED')"
         ).fetchall()
         current_time = now_ph()
         changed = False
@@ -689,18 +774,18 @@ def process_rules():
             payment_received_at = datetime.fromisoformat(tx['payment_received_at']) if tx['payment_received_at'] else None
             tracking_submitted_at = datetime.fromisoformat(tx['tracking_submitted_at']) if tx['tracking_submitted_at'] else None
 
-            if tx['status'] == 'INVITED' and payment_received_at:
+            if tx['status'] == TX_CREATED and payment_received_at:
                 try:
-                    set_status(conn, tx, 'PAID', 'system', 'rule-engine', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
+                    set_status(conn, tx, TX_BUYER_PAID, 'system', 'rule-engine', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx = refresh_tx(conn, tx['id'])
                     changed = True
                 except ValueError:
                     pass
 
-            if tx['status'] == 'PAID' and payment_received_at and current_time >= payment_received_at + timedelta(days=TRACKING_DEADLINE_DAYS):
+            if tx['status'] in (TX_BUYER_PAID, TX_INVITE_SENT, TX_SELLER_ACCEPTED) and payment_received_at and current_time >= payment_received_at + timedelta(days=TRACKING_DEADLINE_DAYS):
                 if not tx['tracking_number']:
                     try:
-                        set_status(conn, tx, 'REFUNDED', 'system', 'rule-engine', 'AUTO_REFUND_NO_TRACKING', f'No tracking uploaded within {TRACKING_DEADLINE_DAYS} days of payment.')
+                        set_status(conn, tx, TX_AUTO_REFUNDED, 'system', 'rule-engine', 'AUTO_REFUND_NO_TRACKING', f'No tracking uploaded within {TRACKING_DEADLINE_DAYS} days of payment.')
                         tx = refresh_tx(conn, tx['id'])
                         changed = True
                     except ValueError:
@@ -711,14 +796,14 @@ def process_rules():
                 (tx['id'],)
             ).fetchone()
             if latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
-                if tx['status'] in ('PAID', 'TRACKING_SUBMITTED'):
+                if tx['status'] in (TX_BUYER_PAID, TX_INVITE_SENT, TX_SELLER_ACCEPTED, TX_TRACKING_SUBMITTED, TX_DELIVERED):
                     try:
-                        set_status(conn, tx, 'RELEASED', 'system', 'rule-engine', 'AUTO_RELEASE_DELIVERED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
+                        set_status(conn, tx, TX_PAYMENT_RELEASED, 'system', 'rule-engine', 'AUTO_RELEASE_DELIVERED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
                         changed = True
                     except ValueError:
                         pass
 
-            if tx['status'] == 'TRACKING_SUBMITTED' and latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
+            if tx['status'] == TX_TRACKING_SUBMITTED and latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
                 pass
 
         if changed:
@@ -1024,12 +1109,12 @@ def new_transaction():
                 public_id, buyer_user_id, seller_email, item_description, item_price, shipping_price, total_amount,
                 weight_kg, length_cm, width_cm, height_cm, invite_token, invite_sent_at,
                 status, hold_status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'INVITED', 'NOT_FUNDED', ?, ?)''',
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CREATED', 'NOT_FUNDED', ?, ?)''',
             (public_id, user['id'], seller_email, item_description, item_price, shipping_price, total_amount,
              weight_kg, length_cm, width_cm, height_cm, invite_token, now, now, now)
         )
         tx_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
-        log_audit(conn, tx_id, 'buyer', user['email'], 'TRANSACTION_CREATED', None, 'INVITED', 'Buyer created transaction.')
+        log_audit(conn, tx_id, 'buyer', user['email'], 'TRANSACTION_CREATED', None, TX_CREATED, 'Buyer created transaction.')
         tx = conn.execute('SELECT * FROM transactions WHERE id = ?', (tx_id,)).fetchone()
         conn.commit()
         flash('Transaction created. The buyer must now complete payment before the seller invitation is sent.', 'success')
@@ -1062,12 +1147,12 @@ def latest_invitation_preview():
                 public_id, buyer_user_id, seller_email, item_description, item_price, shipping_price, total_amount,
                 weight_kg, length_cm, width_cm, height_cm, invite_token, invite_sent_at,
                 status, hold_status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'INVITED', 'NOT_FUNDED', ?, ?)''',
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CREATED', 'NOT_FUNDED', ?, ?)''',
             (public_id, user['id'], seller_email, 'Preview test transaction', 8500.0, 300.0, 8800.0,
              1.0, 15.0, 15.0, 15.0, invite_token, now, now, now)
         )
         tx_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
-        log_audit(conn, tx_id, 'buyer', user['email'], 'PREVIEW_TEST_TRANSACTION_CREATED', None, 'INVITED', 'Page 21 Next / Preview created a test transaction and opened Page 22. Seller email not sent.')
+        log_audit(conn, tx_id, 'buyer', user['email'], 'PREVIEW_TEST_TRANSACTION_CREATED', None, TX_CREATED, 'Page 21 Next / Preview created a test transaction and opened Page 22. Seller email not sent.')
         conn.commit()
         return redirect(url_for('buyer_actions', public_id=public_id))
 
@@ -1098,15 +1183,26 @@ def invitation_preview(public_id):
         log_audit(conn, tx['id'], 'system', actor_ref, action, None, None, message)
         conn.commit()
         if ok:
+            tx_now = refresh_tx(conn, tx['id'])
+            if tx_now['status'] == TX_BUYER_PAID:
+                set_status(conn, tx_now, TX_INVITE_SENT, 'system', actor_ref, 'SELLER_INVITE_SENT_STATE', message)
+                conn.commit()
             return redirect(url_for(
                 'invitation_preview',
                 public_id=public_id,
                 email_sent='1',
+                email_delivery='SENT',
+                email_message=message,
                 sent_at=sent_at_display,
                 recipient=tx['seller_email']
             ))
-        flash(message, 'error')
-        return redirect(url_for('invitation_preview', public_id=public_id))
+        return redirect(url_for(
+            'invitation_preview',
+            public_id=public_id,
+            email_delivery='FAILED',
+            email_message=message,
+            recipient=tx['seller_email']
+        ))
 
     invitation_sent = conn.execute(
         "SELECT 1 FROM audit_log WHERE transaction_id = ? AND action = 'SELLER_INVITE_SENT' LIMIT 1",
@@ -1141,12 +1237,32 @@ def seller_join(token):
     tx = conn.execute('SELECT * FROM transactions WHERE invite_token = ?', (token,)).fetchone()
     if not tx:
         abort(404)
-    if tx['status'] == 'CANCELLED':
+    if tx['status'] == TX_CANCELLED:
         flash('This transaction has been cancelled.', 'error')
         return redirect(url_for('login'))
     user = current_user()
     if user and user['role'] == 'buyer':
-        flash('Seller join page is not available while viewing as buyer.', 'error')
+        # Development-safe seller handover: the invitation link must be testable
+        # in the same browser after the buyer sends it.  End the buyer session
+        # and show the seller join form instead of bouncing back to courier.
+        session.pop('user_id', None)
+        flash('Buyer session ended for seller invitation testing. Join below as the seller for this transaction.', 'success')
+        user = None
+    elif user and user['role'] == 'seller':
+        # Bazont22W: cross-device invite acceptance.
+        # If the seller is already logged in on PC2/phone and clicks the email
+        # invitation, accept the invite directly when the logged-in email matches
+        # the transaction seller email.  Do not ask for another password.
+        seller_email = tx['seller_email'].strip().lower()
+        if user['email'].strip().lower() != seller_email:
+            flash('This invitation is for a different seller email. Please log out and use the invited seller account.', 'error')
+            return render_template('seller_join.html', tx=tx)
+        if tx['seller_user_id'] and tx['seller_user_id'] != user['id']:
+            flash('This transaction is already assigned to another seller.', 'error')
+            return redirect(url_for('seller_dashboard'))
+        assign_seller_to_transaction(conn, tx, user, 'seller', user['email'], 'Seller accepted email invitation from an existing seller session.')
+        conn.commit()
+        flash('Invitation accepted. Seller account linked to transaction.', 'success')
         return redirect(url_for('courier_logs', public_id=tx['public_id']))
     if request.method == 'POST':
         seller_email = tx['seller_email'].lower()
@@ -1214,20 +1330,20 @@ def transaction_detail(public_id):
                 )
                 log_audit(conn, tx['id'], 'buyer', user['email'], 'FULL_PAYMENT_RECEIVED', tx['status'], tx['status'], f"Buyer paid PHP {tx_financials(tx)['buyer_pays']:.2f}. Platform holds PHP {tx_financials(tx)['platform_holds']:.2f}.")
                 tx_after_payment = refresh_tx(conn, tx['id'])
-                if tx_after_payment['status'] == 'INVITED':
-                    set_status(conn, tx_after_payment, 'PAID', 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
+                if tx_after_payment['status'] == TX_CREATED:
+                    set_status(conn, tx_after_payment, TX_BUYER_PAID, 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx_after_payment = refresh_tx(conn, tx['id'])
-                log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 23 for {tx['seller_email']}")
+                log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 16 for {tx['seller_email']}")
                 conn.commit()
-                flash('Full payment recorded. Send the seller invitation from Page 23.', 'success')
+                flash('Full payment recorded. Send the seller invitation from Page 16.', 'success')
                 process_rules()
             return redirect(url_for('invitation_preview', public_id=public_id))
 
         if action == 'cancel' and user['id'] == tx['buyer_user_id']:
-            if tx['status'] != 'INVITED' or tx['hold_status'] != 'NOT_FUNDED' or tx['payment_received_at']:
+            if tx['status'] != TX_CREATED or tx['hold_status'] != 'NOT_FUNDED' or tx['payment_received_at']:
                 flash('Cancel is allowed only for unfunded invite-stage transactions.', 'error')
                 return redirect(url_for('transaction_detail', public_id=public_id))
-            set_status(conn, tx, 'CANCELLED', 'buyer', user['email'], 'TRANSACTION_CANCELLED', 'Buyer cancelled unfunded invite-stage transaction.')
+            set_status(conn, tx, TX_CANCELLED, 'buyer', user['email'], 'TRANSACTION_CANCELLED', 'Buyer cancelled unfunded invite-stage transaction.')
             conn.commit()
             flash('Transaction cancelled.', 'success')
             return redirect(url_for('role_select'))
@@ -1241,7 +1357,7 @@ def transaction_detail(public_id):
             if not tx['payment_received_at']:
                 flash('Buyer payment must be recorded before seller tracking can be submitted.', 'error')
                 return redirect(url_for('transaction_detail', public_id=public_id))
-            if tx['status'] not in ('PAID', 'TRACKING_SUBMITTED'):
+            if tx['status'] not in (TX_SELLER_ACCEPTED, TX_TRACKING_SUBMITTED):
                 flash('Tracking cannot be submitted in the current state.', 'error')
                 return redirect(url_for('transaction_detail', public_id=public_id))
             conn.execute(
@@ -1251,8 +1367,8 @@ def transaction_detail(public_id):
                 (tracking_number, courier_name, now_iso(), now_iso(), tx['id'])
             )
             tx = refresh_tx(conn, tx['id'])
-            if tx['status'] == 'PAID':
-                set_status(conn, tx, 'TRACKING_SUBMITTED', 'seller', user['email'], 'TRACKING_SUBMITTED', f'{courier_name} / {tracking_number}')
+            if tx['status'] == TX_SELLER_ACCEPTED:
+                set_status(conn, tx, TX_TRACKING_SUBMITTED, 'seller', user['email'], 'TRACKING_SUBMITTED', f'{courier_name} / {tracking_number}')
             else:
                 log_audit(conn, tx['id'], 'seller', user['email'], 'TRACKING_UPDATED', tx['status'], tx['status'], f'{courier_name} / {tracking_number}')
             conn.commit()
@@ -1265,7 +1381,7 @@ def transaction_detail(public_id):
 
     audit = conn.execute('SELECT * FROM audit_log WHERE transaction_id = ? ORDER BY id DESC', (tx['id'],)).fetchall()
     courier_events = conn.execute('SELECT * FROM courier_events WHERE transaction_id = ? ORDER BY id DESC', (tx['id'],)).fetchall()
-    invite_link = url_for('seller_join', token=tx['invite_token'], _external=True) if user['id'] == tx['buyer_user_id'] else None
+    invite_link = seller_invite_link(tx) if user['id'] == tx['buyer_user_id'] else None
     return render_template('transaction_detail.html', tx=tx, audit=audit, courier_events=courier_events, invite_link=invite_link)
 
 
@@ -1306,20 +1422,20 @@ def buyer_actions(public_id):
                 )
                 log_audit(conn, tx['id'], 'buyer', user['email'], 'FULL_PAYMENT_RECEIVED', tx['status'], tx['status'], f"Buyer paid PHP {tx_financials(tx)['buyer_pays']:.2f}. Platform holds PHP {tx_financials(tx)['platform_holds']:.2f}.")
                 tx_after_payment = refresh_tx(conn, tx['id'])
-                if tx_after_payment['status'] == 'INVITED':
-                    set_status(conn, tx_after_payment, 'PAID', 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
+                if tx_after_payment['status'] == TX_CREATED:
+                    set_status(conn, tx_after_payment, TX_BUYER_PAID, 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx_after_payment = refresh_tx(conn, tx['id'])
-                log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 23 for {tx['seller_email']}")
+                log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 16 for {tx['seller_email']}")
                 conn.commit()
-                flash('Full payment recorded. Send the seller invitation from Page 23.', 'success')
+                flash('Full payment recorded. Send the seller invitation from Page 16.', 'success')
                 process_rules()
             return redirect(url_for('invitation_preview', public_id=public_id))
 
         if action == 'cancel' and user['id'] == tx['buyer_user_id']:
-            if tx['status'] != 'INVITED' or tx['hold_status'] != 'NOT_FUNDED' or tx['payment_received_at']:
+            if tx['status'] != TX_CREATED or tx['hold_status'] != 'NOT_FUNDED' or tx['payment_received_at']:
                 flash('Cancel is allowed only for unfunded invite-stage transactions.', 'error')
                 return redirect(url_for('buyer_actions', public_id=public_id))
-            set_status(conn, tx, 'CANCELLED', 'buyer', user['email'], 'TRANSACTION_CANCELLED', 'Buyer cancelled unfunded invite-stage transaction.')
+            set_status(conn, tx, TX_CANCELLED, 'buyer', user['email'], 'TRANSACTION_CANCELLED', 'Buyer cancelled unfunded invite-stage transaction.')
             conn.commit()
             flash('Transaction cancelled.', 'success')
             return redirect(url_for('role_select'))
@@ -1349,7 +1465,7 @@ def courier_logs(public_id):
         if not tx['payment_received_at']:
             flash('Buyer payment must be recorded before seller tracking can be submitted.', 'error')
             return redirect(url_for('courier_logs', public_id=public_id))
-        if tx['status'] not in ('PAID', 'TRACKING_SUBMITTED'):
+        if tx['status'] not in (TX_SELLER_ACCEPTED, TX_TRACKING_SUBMITTED):
             flash('Tracking cannot be submitted in the current transaction state.', 'error')
             return redirect(url_for('courier_logs', public_id=public_id))
 
@@ -1377,8 +1493,8 @@ def courier_logs(public_id):
              api_message, aftership_id, submitted_at, tracking_next_check_iso(), submitted_at, tx['id'])
         )
         tx = refresh_tx(conn, tx['id'])
-        if tx['status'] == 'PAID':
-            set_status(conn, tx, 'TRACKING_SUBMITTED', 'seller', user['email'], 'TRACKING_SUBMITTED', f'{courier_name} / {tracking_number}. {api_message}')
+        if tx['status'] == TX_SELLER_ACCEPTED:
+            set_status(conn, tx, TX_TRACKING_SUBMITTED, 'seller', user['email'], 'TRACKING_SUBMITTED', f'{courier_name} / {tracking_number}. {api_message}')
         else:
             log_audit(conn, tx['id'], 'seller', user['email'], 'TRACKING_UPDATED', tx['status'], tx['status'], f'{courier_name} / {tracking_number}. {api_message}')
         conn.execute(

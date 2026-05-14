@@ -5,6 +5,172 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Forms Demo - Login</title>
   <link rel="stylesheet" href="/forms/style.css">
+
+<style>
+/* Bazont22L - Page 11 right panel styled to match Page 10 */
+body.login-page .info-panel,
+body.login-page .right-panel,
+body.login-page .login-info-card,
+body.login-page .panel-right {
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 26px !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.24) !important;
+  backdrop-filter: blur(6px) !important;
+  padding: 24px !important;
+}
+
+body.login-page .info-panel h2,
+body.login-page .right-panel h2,
+body.login-page .login-info-card h2,
+body.login-page .panel-right h2 {
+  font-size: 1.6rem !important;
+  margin-bottom: 16px !important;
+}
+
+body.login-page .info-panel p,
+body.login-page .right-panel p,
+body.login-page .login-info-card p,
+body.login-page .panel-right p,
+body.login-page .info-panel li,
+body.login-page .right-panel li {
+  font-size: 1.03rem !important;
+  line-height: 1.5 !important;
+}
+</style>
+
+
+<style>
+/* Bazont22L - Page 11 right panel rebuilt like Page 10 stacked mini panels */
+body.login-page .login-security-panel,
+body .login-security-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-evenly !important;
+  gap: 24px !important;
+  min-height: 330px !important;
+  padding: 26px !important;
+}
+
+body.login-page .login-security-panel h2,
+body .login-security-panel h2 {
+  margin: 0 0 4px !important;
+  font-size: 1.65rem !important;
+}
+
+body.login-page .login-security-mini,
+body .login-security-mini {
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,0.075) !important;
+  padding: 18px 20px !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.16) !important;
+}
+
+body.login-page .login-security-mini strong,
+body .login-security-mini strong {
+  display: block !important;
+  font-size: 1.18rem !important;
+  font-weight: 900 !important;
+  margin-bottom: 8px !important;
+}
+
+body.login-page .buyer-mini strong,
+body .buyer-mini strong {
+  color: #22c55e !important;
+}
+
+body.login-page .seller-mini strong,
+body .seller-mini strong {
+  color: #3b82f6 !important;
+}
+
+body.login-page .login-security-mini p,
+body .login-security-mini p {
+  margin: 0 !important;
+  font-size: 1.04rem !important;
+  line-height: 1.45 !important;
+  color: #eaf2ff !important;
+}
+</style>
+
+
+<style>
+/* Bazont22L - Page 11 structural nav cleanup.
+   Purpose: remove fixed-bottom inherited .nav behavior and make the
+   login nav bar align to the two-panel content width, like Page 10. */
+.login-nav-wrap {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  margin: 32px 0 0 0 !important;
+  box-sizing: border-box !important;
+}
+
+.login-nav-wrap > .nav {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 14px 16px !important;
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 44px !important;
+
+  border-radius: 22px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  background: rgba(255,255,255,0.045) !important;
+  box-shadow: none !important;
+  z-index: auto !important;
+}
+
+.login-nav-wrap > .nav .btn,
+.login-nav-wrap > .nav a.btn,
+.login-nav-wrap > .nav button.btn,
+.login-nav-wrap > .nav form {
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  flex: 0 0 150px !important;
+  margin: 0 !important;
+}
+
+.login-nav-wrap > .nav .btn,
+.login-nav-wrap > .nav a.btn,
+.login-nav-wrap > .nav button.btn {
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.login-nav-wrap > .nav form button {
+  width: 100% !important;
+}
+
+.login-nav-wrap > .nav form[action="/test-login"] button {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 0 16px rgba(239,68,68,0.45) !important;
+}
+</style>
+
 </head>
 <body>
   <div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">11</div>
@@ -48,23 +214,29 @@
           <div class="hint" id="login-hint">Enter your registered email address and password to log into the live platform.</div>
         </form>
       </div>
-      <div class="card">
-        <h2>Purpose of this page</h2>
-        <p>This confirms the account exists.</p>
-        <p><strong style="color:#22c55e;">The Buyer</strong><br>
-        The buyer can now log into the platform and create a transaction.</p>
-        <p><strong style="color:#3b82f6;">The Seller</strong><br>
-        The seller can now log into the platform, review the transaction, and proceed with the sale.</p>
-      </div>
-    </div>
+      <div class="card login-security-panel">
+        <h2>Security</h2>
 
-    <div class="nav">
-      <a class="btn btn-secondary" href="/">Home</a>
-      <a class="btn btn-secondary" id="login-back" href="/register">← Back</a>
-      <form method="post" action="/test-login" style="margin: 0;">
-        <button class="btn btn-primary" type="submit">Test Login</button>
-      </form>
-      <a class="btn btn-primary" id="login-next" href="#">Next →</a>
+        <div class="login-security-mini buyer-mini">
+          <strong>The Buyer</strong>
+          <p>The buyer can now log into the platform and create a transaction.</p>
+        </div>
+
+        <div class="login-security-mini seller-mini">
+          <strong>The Seller</strong>
+          <p>The seller can now log into the platform, review the transaction, and proceed with the sale.</p>
+        </div>
+      </div>
+      <div class="login-nav-wrap">
+        <div class="nav">
+          <a class="btn btn-secondary" href="/">Home</a>
+          <a class="btn btn-secondary" id="login-back" href="/register">← Back</a>
+          <form method="post" action="/test-login" style="margin: 0;">
+            <button class="btn btn-primary" type="submit">Test Login</button>
+          </form>
+          <a class="btn btn-primary" id="login-next" href="#">Next →</a>
+        </div>
+      </div>
     </div>
   </div>
   <script src="/forms/script.js"></script>

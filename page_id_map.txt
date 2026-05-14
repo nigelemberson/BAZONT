@@ -1,4 +1,4 @@
-Bazont20N.zip — visible page map after Pages 9-16 primary-flow removal and visible renumbering
+Bazont22X.zip — visible page map after Pages 9-16 primary-flow removal and visible renumbering
 
 NEW visible page numbers now shown to the user:
 1. Welcome / /page0.html / old Page 0 -> Page 1
@@ -20,4 +20,4 @@ NEW visible page numbers now shown to the user:
 17. Courier logs / old Page 24 -> Page 17
 
 Old Pages 25+ were intentionally left untouched unless already outside the specified mapping.
-Version target: Bazont20N.zip
+Version target: Bazont22X.zip

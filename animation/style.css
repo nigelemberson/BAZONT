@@ -1051,3 +1051,44 @@ body.fit-step-page .ghost-btn { padding: 11px 18px; font-size: 17px; }
 .header-left { display: flex; align-items: center; gap: 10px; }
 .header-title { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
 .logo-b { height: 48px; width: auto; object-fit: contain; border-radius: 6px; }
+
+
+
+/* Bazont22L - Pages 4-9: keep right panel visually identical to Page 8 */
+body.fit-step-page .info-panel {
+  padding: 18px !important;
+  gap: 12px !important;
+  border-radius: 26px !important;
+}
+
+body.fit-step-page .info-panel .caption-box {
+  padding: 16px !important;
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+}
+
+body.fit-step-page .info-panel .step-list {
+  gap: 10px !important;
+}
+
+body.fit-step-page .info-panel .step-item {
+  padding: 12px 14px !important;
+  font-size: 16px !important;
+  border-radius: 16px !important;
+}
+
+body.fit-step-page .info-panel .step-item > span {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+body.fit-step-page .info-panel .controls {
+  gap: 12px !important;
+}
+
+body.fit-step-page .info-panel .primary-btn,
+body.fit-step-page .info-panel .ghost-btn {
+  padding: 12px 22px !important;
+  font-size: 18px !important;
+}
+

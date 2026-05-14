@@ -3,7 +3,7 @@ const steps = [
     title: "Buyer creates transaction",
     subtitle: "The buyer enters brief details and invites the seller to join the Platform.",
     caption: "Buyer creates transaction and contacts the seller by email, messenger, whatsapp etc.",
-    status: "Page 4",
+    status: "",
     setup() {
       show("cardCreate", "ringBuyer", "arrowLeft");
     }
@@ -12,7 +12,7 @@ const steps = [
     title: "Seller joins transaction",
     subtitle: "The seller receives the link and joins the transaction.",
     caption: "Seller joins transaction from the invite link.",
-    status: "Page 5",
+    status: "",
     setup() {
       if (pendingCreateToInviteTravel) {
         pendingCreateToInviteTravel = false;
@@ -26,7 +26,7 @@ const steps = [
     title: "Buyer makes payment",
     subtitle: "The platform protects the funds while delivery has not yet been confirmed.",
     caption: "Buyer makes payment. Funds are held securely until delivery is confirmed.",
-    status: "Page 6",
+    status: "",
     setup() {
       show("cardHold", "ringPlatform", "laneMoney", "moneyChip");
       const chip = document.getElementById("moneyChip");
@@ -37,7 +37,7 @@ const steps = [
     title: "Seller ships item",
     subtitle: "The item moves while the buyer’s funds remain protected in the platform's account.",
     caption: "Seller ships item. Funds remain protected until delivery is confirmed.",
-    status: "Page 7",
+    status: "",
     setup() {
       show("cardShip", "laneParcel", "parcelChip");
       const chip = document.getElementById("parcelChip");
@@ -49,7 +49,7 @@ const steps = [
     title: "Courier confirms delivery",
     subtitle: "Delivery is confirmed by the courier, (or by the buyer inside the platform).",
     caption: "Courier confirms delivery.",
-    status: "Page 8",
+    status: "",
     setup() {
       show("cardConfirm", "ringBuyer");
     }
@@ -58,7 +58,7 @@ const steps = [
     title: "Platform releases payment",
     subtitle: "After the courier confirms delivery, the platform releases the payment to the seller.",
     caption: "Platform releases payment to the seller.",
-    status: "Page 9",
+    status: "",
     setup() {
       show("cardRelease", "ringSeller", "laneMoney", "moneyChip");
       const chip = document.getElementById("moneyChip");

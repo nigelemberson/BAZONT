@@ -104,14 +104,14 @@
       <div class="badge-line">
         <span class="pill">{{ tx['status'] }}</span>
         <span class="pill neutral">record: {{ tx['hold_status'] }}</span>
-        {% if tx['status'] == 'INVITED' %}<span class="pill">Invite stage</span>{% endif %}
+        {% if tx['status'] == 'CREATED' %}<span class="pill">Created</span>{% endif %}
         {% for category, message in FLASH_MESSAGES|default([]) %}
           {% if category == 'success' and message == 'Invitation sent.' %}<span class="pill good tx-invitation-sent-pill">Invitation sent.</span>{% endif %}
         {% endfor %}
-        {% if tx['status'] == 'PAID' %}<span class="pill" style="background:#e7f0ff;color:#123f8e;">Funds secured</span>{% endif %}
+        {% if tx['status'] == 'BUYER_PAID' %}<span class="pill" style="background:#e7f0ff;color:#123f8e;">Funds secured</span>{% endif %}
         {% if tx['status'] == 'TRACKING_SUBMITTED' %}<span class="pill good">Tracking submitted</span>{% endif %}
-        {% if tx['status'] == 'RELEASED' %}<span class="pill good">Transaction complete — Seller paid</span>{% endif %}
-        {% if tx['status'] == 'REFUNDED' %}<span class="pill warn">Transaction complete — Buyer refunded</span>{% endif %}
+        {% if tx['status'] == 'PAYMENT_RELEASED' %}<span class="pill good">Transaction complete — Seller paid</span>{% endif %}
+        {% if tx['status'] == 'AUTO_REFUNDED' %}<span class="pill warn">Transaction complete — Buyer refunded</span>{% endif %}
         {% if tx['status'] == 'CANCELLED' %}<span class="pill warn">Transaction cancelled</span>{% endif %}
       </div>
     </div>
@@ -145,8 +145,9 @@
     </div>
   </section>
   <div class="tx-nav-row">
-    <a class="btn tx-back-blue" href="{{ url_for('invitation_preview', public_id=tx['public_id']) if current_user and current_user['role'] == 'buyer' else url_for('seller_dashboard') }}">Back</a>
-    <a class="btn" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Next → Buyer Actions</a>
+    <a class="btn tx-back-blue" href="{{ url_for('buyer_transactions') if current_user and current_user['role'] == 'buyer' else url_for('seller_dashboard') }}">Back</a>
+    {% if current_user and current_user['role'] == 'buyer' %}<a class="btn" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Next → Buyer Actions</a>{% else %}<a class="btn" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next → Courier</a>{% endif %}
+    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 
   {% elif tx_view == 'actions' %}
@@ -215,7 +216,7 @@
       <input type="text" name="test_card_cvv" placeholder="123" required>
       <div class="tx-pay-cancel-row">
         <button class="tx-pay-button" type="submit" name="action" value="pay" {% if tx['payment_received_at'] or tx['status'] == 'CANCELLED' %}disabled{% endif %}>Pay</button>
-        {% if tx['status'] == 'INVITED' and tx['hold_status'] == 'NOT_FUNDED' and not tx['payment_received_at'] %}
+        {% if tx['status'] == 'CREATED' and tx['hold_status'] == 'NOT_FUNDED' and not tx['payment_received_at'] %}
         <button class="tx-cancel-button" type="submit" name="action" value="cancel" formnovalidate>Cancel transaction</button>
         {% endif %}
       </div>
@@ -225,6 +226,7 @@
   <div class="tx-nav-row">
     <a class="btn tx-back-blue" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">← Back</a>
     <a class="btn" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next → Courier & Logs</a>
+    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 
   {% elif tx_view == 'logs' %}
@@ -267,6 +269,7 @@
   <div class="tx-nav-row">
     <a class="btn secondary" href="{{ url_for('transaction_detail', public_id=tx['public_id'], view='actions') }}">← Back</a>
     <a class="btn" href="{{ url_for('live_home') }}">Done / Home</a>
+    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
   {% endif %}
 </div>

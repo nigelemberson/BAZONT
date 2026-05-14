@@ -13,9 +13,9 @@
 
   <section class="grid-4">
     <div class="stat-card"><div class="tiny">Assigned transactions</div><div class="kpi">{{ transactions|length }}</div></div>
-    <div class="stat-card"><div class="tiny">Awaiting tracking</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'PAID')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Awaiting tracking</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'SELLER_ACCEPTED')|list|length }}</div></div>
     <div class="stat-card"><div class="tiny">Tracking submitted</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'TRACKING_SUBMITTED')|list|length }}</div></div>
-    <div class="stat-card"><div class="tiny">Released</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'RELEASED')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Released</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'PAYMENT_RELEASED')|list|length }}</div></div>
   </section>
 
   <section class="panel">
@@ -37,5 +37,11 @@
       {% endfor %}
     </table>
   </section>
+
+  <div class="buyer-dashboard-bottom-actions" aria-label="Seller dashboard navigation">
+    <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
+    <a class="btn buyer-dashboard-back" href="{{ url_for('role_select') }}">Back</a>
+    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+  </div>
 </div>
 {% endblock %}

@@ -177,6 +177,7 @@
     <a class="btn cp-home" href="{{ url_for('gateway_home') }}">⌂&nbsp; Home</a>
     <a class="btn cp-back" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">←&nbsp; Back</a>
     <a class="btn cp-next" href="{{ url_for('buyer_transactions') }}">Next&nbsp; →</a>
+    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </nav>
 </section>
 {% endblock %}
