@@ -1,185 +1,203 @@
 {% extends 'base.html' %}
 {% block content %}
+<meta http-equiv="refresh" content="60">
 <style>
-  body.endpoint-courier-status .page-wrap {
-    margin-top: 14px !important;
-    padding-top: 0 !important;
-  }
-  .cp-stage {
-    position: relative;
-    width: 100%;
-    max-width: 1280px;
-    height: min(540px, calc(100vh - 340px));
-    min-height: 500px;
+  body.endpoint-courier-status .shell { padding-top: 10px !important; }
+  body.endpoint-courier-status .topbar { padding: 14px 18px !important; border-radius: 20px !important; }
+  body.endpoint-courier-status .brand-title { font-size: 1.55rem !important; }
+  body.endpoint-courier-status .brand-sub, body.endpoint-courier-status .demo-status { font-size: 0.98rem !important; }
+  body.endpoint-courier-status .progress-wrap,
+  body.endpoint-courier-status .steps { display: none !important; }
+  body.endpoint-courier-status .page-wrap { margin-top: 12px !important; padding-top: 0 !important; }
+
+  .status-page {
+    max-width: 1180px;
     margin: 0 auto;
-    overflow: hidden;
-    border-radius: 28px;
+    display: grid;
+    gap: 16px;
+  }
+  .status-hero {
+    background: rgba(15,23,42,0.72);
     border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 26px 70px rgba(0,0,0,0.42);
-    background: #071424;
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 22px 55px rgba(0,0,0,0.35);
   }
-  .cp-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: right center;
-    transform: scale(0.88);
-    transform-origin: right center;
-    z-index: 0;
+  .status-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
   }
-  .cp-left-shade {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background:
-      linear-gradient(90deg,
-        rgba(2,10,22,0.96) 0%,
-        rgba(2,10,22,0.88) 21%,
-        rgba(2,10,22,0.55) 43%,
-        rgba(2,10,22,0.12) 61%,
-        rgba(2,10,22,0.00) 78%);
-    pointer-events: none;
-  }
-  .cp-copy {
-    position: absolute;
-    z-index: 2;
-    left: 36px;
-    top: 24px;
-    width: 390px;
-    color: #fff;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.70);
-  }
-  .cp-copy h1 {
+  .status-title {
     margin: 0 0 8px;
-    font-size: 38px;
-    line-height: 0.98;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.9rem, 3.4vw, 3.1rem);
+    line-height: 1.02;
     font-weight: 900;
   }
-  .cp-intro {
-    margin: 0 0 12px;
-    font-size: 15px;
-    line-height: 1.32;
-    color: rgba(255,255,255,0.96);
-    max-width: 355px;
+  .status-subtitle {
+    margin: 0;
+    color: #dbeafe;
+    font-size: 1.08rem;
+    line-height: 1.42;
   }
-  .cp-steps {
-    display: grid;
-    gap: 6px;
-  }
-  .cp-step {
-    display: grid;
-    grid-template-columns: 50px 1fr;
-    gap: 10px;
-    align-items: center;
-  }
-  .cp-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
+  .status-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 20px;
+    min-width: 170px;
+    padding: 11px 15px;
+    border-radius: 999px;
     font-weight: 900;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.30);
+    background: rgba(34,197,94,0.17);
+    color: #dcfce7;
+    border: 1px solid rgba(34,197,94,0.35);
   }
-  .cp-step-text {
-    padding-left: 14px;
-    border-left: 2px solid currentColor;
-  }
-  .cp-step-title {
-    font-size: 14px;
-    font-weight: 900;
-    line-height: 1.05;
-    margin-bottom: 3px;
-  }
-  .cp-step-body {
-    color: #fff;
-    font-size: 11px;
-    line-height: 1.18;
-    max-width: 330px;
-  }
-  .cp-blue { color:#1e88ff; }
-  .cp-orange { color:#ff7a00; }
-  .cp-green { color:#11c879; }
-  .cp-purple { color:#8a55ff; }
-  .cp-cyan { color:#22d3ee; }
-  .cp-yellow { color:#ffc021; }
-  .cp-blue .cp-icon { background:linear-gradient(180deg,#1689ff,#0b63e5); }
-  .cp-orange .cp-icon { background:linear-gradient(180deg,#ff951d,#ee6b00); }
-  .cp-green .cp-icon { background:linear-gradient(180deg,#24d991,#05a96b); }
-  .cp-purple .cp-icon { background:linear-gradient(180deg,#9b6cff,#6e36e8); }
-  .cp-cyan .cp-icon { background:linear-gradient(180deg,#26d7ef,#0aa5bd); }
-  .cp-yellow .cp-icon { background:linear-gradient(180deg,#ffc83d,#f0a800); }
-  .cp-nav {
-    position: absolute;
-    z-index: 3;
-    left: 42px;
-    right: 42px;
-    bottom: 14px;
+  .status-grid {
     display: grid;
-    grid-template-columns: 180px 180px 180px;
-    justify-content: space-between;
+    grid-template-columns: 1.45fr 0.85fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .status-panel {
+    background: rgba(15,23,42,0.62);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.28);
+  }
+  .progress-list {
+    display: grid;
+    gap: 10px;
+  }
+  .progress-step {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.055);
+  }
+  .progress-step.done { background: rgba(34,197,94,0.13); border-color: rgba(34,197,94,0.26); }
+  .progress-step.active { background: rgba(251,146,60,0.18); border-color: rgba(251,146,60,0.45); box-shadow: 0 0 0 1px rgba(251,146,60,0.14) inset; }
+  .progress-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: flex;
     align-items: center;
-    pointer-events: auto;
+    justify-content: center;
+    font-weight: 900;
+    color: #fff;
+    background: rgba(148,163,184,0.45);
   }
-  .cp-nav .btn {
-    width: 180px !important;
-    min-width: 180px !important;
-    height: 42px;
-    padding: 0 18px !important;
-    border-radius: 14px !important;
-    font-size: 17px !important;
-    font-weight: 900 !important;
-    color: #fff !important;
-    border: 0 !important;
-    text-decoration: none !important;
+  .progress-step.done .progress-icon { background: linear-gradient(180deg,#22c55e,#15803d); }
+  .progress-step.active .progress-icon { background: linear-gradient(180deg,#fb923c,#ea580c); }
+  .progress-title { font-weight: 900; font-size: 1.03rem; margin-bottom: 3px; }
+  .progress-body { color: #dbeafe; font-size: 0.92rem; line-height: 1.35; }
+  .info-list { display: grid; gap: 11px; }
+  .info-row {
+    display: grid;
+    gap: 3px;
+    padding: 11px 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.09);
   }
-  .cp-home { background:linear-gradient(180deg,#11c879,#07a968) !important; box-shadow:0 14px 30px rgba(16,185,129,0.34) !important; }
-  .cp-back { background:linear-gradient(180deg,#3191ff,#1268ee) !important; box-shadow:0 14px 30px rgba(37,99,235,0.42) !important; }
-  .cp-next { background:linear-gradient(180deg,#ff8b28,#f36b13) !important; box-shadow:0 14px 30px rgba(249,115,22,0.42) !important; }
-  @media (max-width: 980px) {
-    .cp-stage { height: 540px; }
-    .cp-copy { left: 26px; top: 30px; width: 390px; }
-    .cp-copy h1 { font-size: 38px; }
-    .cp-nav { left: 26px; right: 26px; grid-template-columns: 1fr; gap: 10px; }
-    .cp-nav .btn { width: 100% !important; min-width: 0 !important; }
+  .info-label { color: #bfdbfe; font-size: 0.82rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+  .info-value { color: #fff; font-size: 0.98rem; font-weight: 800; word-break: break-word; }
+  .event-note { color: #dbeafe; font-size: 0.93rem; line-height: 1.38; margin-top: 12px; }
+  .status-nav {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 2px;
   }
+  .status-nav .btn {
+    width: auto !important;
+    min-width: 150px !important;
+    max-width: 230px !important;
+    padding: 12px 20px !important;
+    font-size: 1rem !important;
+    border-radius: 999px !important;
+  }
+  .status-nav .home { background: linear-gradient(180deg,#11c879,#07a968) !important; }
+  .status-nav .back { background: linear-gradient(180deg,#3191ff,#1268ee) !important; }
+  .status-nav .logout { background: linear-gradient(180deg,#ef4444,#b91c1c) !important; }
 
-    
-
+  @media (max-width: 760px) {
+    body.endpoint-courier-status .topbar { padding: 10px 12px !important; }
+    body.endpoint-courier-status .demo-status { display: none !important; }
+    .status-hero, .status-panel { padding: 14px; border-radius: 20px; }
+    .status-grid { grid-template-columns: 1fr; gap: 12px; }
+    .status-title { font-size: 2rem; }
+    .status-subtitle { font-size: 0.98rem; }
+    .status-pill { min-width: 0; width: 100%; }
+    .progress-step { grid-template-columns: 34px 1fr; padding: 10px; }
+    .progress-icon { width: 30px; height: 30px; }
+    .status-nav { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .status-nav .btn { width: 100% !important; max-width: none !important; }
+  }
 </style>
 
-<section class="cp-stage" aria-label="Courier Progress">
-  <img class="cp-bg" src="{{ url_for('static', filename='images/bazont_lorry_3.jpg') }}" alt="Bazont courier lorry moving from marker 1 to marker 7">
-  <div class="cp-left-shade" aria-hidden="true"></div>
-
-  <div class="cp-copy">
-    <h1>Courier<br>Progress</h1>
-    <p class="cp-intro">Track your parcel in real time. Stay informed at every step from pickup to final delivery.</p>
-
-    <div class="cp-steps">
-      <div class="cp-step cp-blue"><div class="cp-icon">⌖</div><div class="cp-step-text"><div class="cp-step-title">1. Tracking Submitted</div><div class="cp-step-body">Your tracking request has been received.</div></div></div>
-      <div class="cp-step cp-orange"><div class="cp-icon">⌕</div><div class="cp-step-text"><div class="cp-step-title">2. Tracking Validated</div><div class="cp-step-body">Tracking information has been verified.</div></div></div>
-      <div class="cp-step cp-green"><div class="cp-icon">□</div><div class="cp-step-text"><div class="cp-step-title">3. Parcel Accepted by Courier</div><div class="cp-step-body">Your parcel has been accepted by our courier.</div></div></div>
-      <div class="cp-step cp-blue"><div class="cp-icon">▣</div><div class="cp-step-text"><div class="cp-step-title">4. In Transit</div><div class="cp-step-body">Your parcel is on the way to its destination.</div></div></div>
-      <div class="cp-step cp-purple"><div class="cp-icon">⌖</div><div class="cp-step-text"><div class="cp-step-title">5. Out for Delivery</div><div class="cp-step-body">Your parcel is out for delivery.</div></div></div>
-      <div class="cp-step cp-cyan"><div class="cp-icon">✓</div><div class="cp-step-text"><div class="cp-step-title">6. Delivered (Courier Confirmed)</div><div class="cp-step-body">Your parcel has been delivered successfully.</div></div></div>
-      <div class="cp-step cp-yellow"><div class="cp-icon">₱</div><div class="cp-step-text"><div class="cp-step-title">7. Payment Released</div><div class="cp-step-body">Payment has been released to the seller.</div></div></div>
+<section class="status-page" aria-label="Courier status page">
+  <div class="status-hero">
+    <div class="status-title-row">
+      <div>
+        <h1 class="status-title">Courier Status</h1>
+        <p class="status-subtitle">Bazont is monitoring this shipment. This page auto-refreshes every 1 minute in test mode.</p>
+      </div>
+      <div class="status-pill">{{ current_stage_label }}</div>
     </div>
   </div>
 
-  <nav class="cp-nav" aria-label="Page navigation">
-    <a class="btn cp-home" href="{{ url_for('gateway_home') }}">⌂&nbsp; Home</a>
-    <a class="btn cp-back" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">←&nbsp; Back</a>
-    <a class="btn cp-next" href="{{ url_for('buyer_transactions') }}">Next&nbsp; →</a>
-    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+  <div class="status-grid">
+    <div class="status-panel">
+      <div class="progress-list">
+        {% for step in status_steps %}
+        <div class="progress-step {{ step.state }}">
+          <div class="progress-icon">{% if step.state == 'done' %}✓{% elif step.state == 'active' %}●{% else %}○{% endif %}</div>
+          <div>
+            <div class="progress-title">{{ step.title }}</div>
+            <div class="progress-body">{{ step.body }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="status-panel">
+      <div class="info-list">
+        <div class="info-row"><div class="info-label">Transaction</div><div class="info-value">{{ tx['public_id'] }}</div></div>
+        <div class="info-row"><div class="info-label">Courier</div><div class="info-value">{{ tx['courier_name'] or 'Not supplied' }}</div></div>
+        <div class="info-row"><div class="info-label">Tracking Number</div><div class="info-value mono">{{ tx['tracking_number'] or 'Not supplied' }}</div></div>
+        <div class="info-row"><div class="info-label">Tracking Status</div><div class="info-value">{{ tx['tracking_api_status'] or tx['status'] }}</div></div>
+        <div class="info-row"><div class="info-label">Last Checked</div><div class="info-value">{{ tx['tracking_last_checked_at'] or 'Not checked yet' }}</div></div>
+        <div class="info-row"><div class="info-label">Next Check</div><div class="info-value">{{ tx['tracking_next_check_at'] or 'Pending' }}</div></div>
+      </div>
+      <p class="event-note">
+        {% if last_event %}
+          Latest courier event: <strong>{{ last_event['status'] }}</strong><br>{{ last_event['note'] or 'No extra note.' }}
+        {% else %}
+          No courier event has been recorded yet. Bazont will keep checking while tracking is active.
+        {% endif %}
+      </p>
+    </aside>
+  </div>
+
+  <nav class="status-nav" aria-label="Page navigation">
+    <a class="btn home" href="{{ url_for('gateway_home') }}">Home</a>
+    <a class="btn back" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Back</a>
+    {% if current_user and current_user['role'] == 'seller' %}
+      <a class="btn back" href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
+    {% elif current_user and current_user['role'] == 'buyer' %}
+      <a class="btn back" href="{{ url_for('buyer_transactions') }}">Transactions</a>
+    {% endif %}
+    <a class="btn logout" href="{{ url_for('logout') }}">Logout</a>
   </nav>
 </section>
 {% endblock %}
-
-

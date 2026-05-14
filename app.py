@@ -21,7 +21,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont22Z'
+DEFAULT_VERSION = 'Bazont23A'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -45,7 +45,7 @@ RESEND_FROM_EMAIL = os.environ.get(
     'Bazont <noreply@bazont.com>'
 ).strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
-# Bazont22Z: public invite links must not use localhost/127.0.0.1.
+# Bazont23A: public invite links must not use localhost/127.0.0.1.
 # Set BAZONT_PUBLIC_BASE_URL on Render if the live URL differs.
 PUBLIC_BASE_URL = os.environ.get('BAZONT_PUBLIC_BASE_URL', 'https://bazont.com').strip().rstrip('/')
 
@@ -491,7 +491,7 @@ def login_required(role=None):
 def seller_invite_link(tx):
     """Return the public seller invitation URL.
 
-    Bazont22Z rule: emailed invitation links must be public internet URLs,
+    Bazont23A rule: emailed invitation links must be public internet URLs,
     never localhost/127.0.0.1, because seller devices are external to the
     buyer's local Flask session.
     """
@@ -1514,13 +1514,62 @@ def courier_logs(public_id):
 @app.route('/transactions/<public_id>/status')
 @login_required()
 def courier_status(public_id):
+    # Bazont23A: Page 25 is now the monitored courier-status hub.
+    # Refresh courier/rule state before rendering so the page reflects current progress.
+    try:
+        check_due_tracking()
+        process_rules()
+    except Exception:
+        pass
+
     user, conn, tx = _get_authorized_transaction(public_id)
+    tx = refresh_tx(conn, tx['id'])
     courier_events = conn.execute(
         'SELECT * FROM courier_events WHERE transaction_id = ? ORDER BY id DESC',
         (tx['id'],)
     ).fetchall()
     last_event = courier_events[0] if courier_events else None
-    return render_template('courier_status.html', tx=tx, courier_events=courier_events, last_event=last_event)
+
+    raw_status = ((tx['tracking_api_status'] or tx['status'] or '') + '').upper()
+    if tx['status'] == TX_PAYMENT_RELEASED:
+        stage_index = 6
+    elif tx['status'] == TX_DELIVERED or 'DELIVERED' in raw_status:
+        stage_index = 5
+    elif 'OUT_FOR_DELIVERY' in raw_status or 'OUT FOR DELIVERY' in raw_status:
+        stage_index = 4
+    elif 'TRANSIT' in raw_status or 'IN_TRANSIT' in raw_status:
+        stage_index = 3
+    elif 'ACCEPTED' in raw_status or 'PICKUP' in raw_status:
+        stage_index = 2
+    elif tx['tracking_api_status'] and tx['tracking_api_status'] not in ('CHECK_FAILED', 'UNKNOWN'):
+        stage_index = 1
+    elif tx['tracking_number']:
+        stage_index = 0
+    else:
+        stage_index = 0
+
+    base_steps = [
+        ('Tracking submitted', 'Seller tracking number has been received by Bazont.'),
+        ('Tracking validated', 'Bazont has checked or is checking the courier tracking record.'),
+        ('Accepted by courier', 'Courier has accepted the parcel into its network.'),
+        ('In transit', 'Parcel is moving through the courier network.'),
+        ('Out for delivery', 'Parcel is on the final delivery run.'),
+        ('Delivered', 'Courier confirms the item has been delivered.'),
+        ('Payment released', 'Bazont releases payment after courier-confirmed delivery.'),
+    ]
+    status_steps = []
+    for idx, (title, body) in enumerate(base_steps):
+        if idx < stage_index:
+            state = 'done'
+        elif idx == stage_index:
+            state = 'active'
+        else:
+            state = 'pending'
+        status_steps.append({'title': title, 'body': body, 'state': state})
+
+    current_stage_label = base_steps[min(stage_index, len(base_steps)-1)][0]
+    return render_template('courier_status.html', tx=tx, courier_events=courier_events, last_event=last_event,
+                           status_steps=status_steps, current_stage_label=current_stage_label)
 
 
 @app.route('/seller/dashboard')

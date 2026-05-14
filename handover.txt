@@ -1,10 +1,11 @@
-Bazont22Z
+Bazont23A
 
-Changes applied:
-- Page 27 seller dashboard button widths normalized to standard Bazont sizing.
-- Seller dashboard bottom navigation now uses compact Home / Back / Logout buttons.
-- Open buttons in the assigned transaction table are compact instead of full-width.
-- Page 18 seller join cleanup from Bazont22Y preserved.
-- Seller join function preserved.
+Built from Bazont22Z(1).zip.
 
-Next sequence requested by user: Bazont23A, Bazont23B ... Bazont23Z.
+Changes:
+- Page 25 courier/status page cleaned for desktop and mobile.
+- Removed overlapping button layout.
+- Removed broken Next route that led to Forbidden.
+- Added monitored progress checklist and 1-minute auto-refresh in test mode.
+- Added clear Last Checked / Next Check / Tracking Status panel.
+- Preserved live buyer/seller/email workflow.
