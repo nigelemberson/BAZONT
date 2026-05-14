@@ -2094,7 +2094,7 @@
   }
 
 
-/* Bazont22Y: Page 18 seller-join cleanup only. */
+/* Bazont22Z: Page 18 seller-join cleanup only. */
 body.seller-join-clean-page .shell { max-width: 1480px; padding-top: 16px; }
 body.seller-join-clean-page .topbar {
   min-height: 86px;
@@ -2160,6 +2160,51 @@ body.seller-join-clean-page .seller-join-bottom-actions { display: none !importa
   body.seller-join-clean-page .seller-join-layout { grid-template-columns: 1fr; }
   body.seller-join-clean-page .seller-join-button { width: 100% !important; max-width: none !important; }
 }
+
+/* Bazont22Z: Page 27 seller dashboard button width normalization. */
+body.endpoint-seller-dashboard .buyer-dashboard-bottom-actions {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 22px auto 0 !important;
+  width: 900px !important;
+  max-width: 100% !important;
+}
+body.endpoint-seller-dashboard .buyer-dashboard-bottom-actions .btn,
+body.endpoint-seller-dashboard table .btn {
+  width: auto !important;
+  min-width: 130px !important;
+  max-width: 230px !important;
+  padding: 13px 22px !important;
+  font-size: 17px !important;
+}
+body.endpoint-seller-dashboard .buyer-dashboard-bottom-actions .buyer-dashboard-home {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 0 12px rgba(34,197,94,0.6) !important;
+}
+body.endpoint-seller-dashboard .buyer-dashboard-bottom-actions .buyer-dashboard-back {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 0 10px rgba(59,130,246,0.5) !important;
+}
+body.endpoint-seller-dashboard .buyer-dashboard-bottom-actions .buyer-dashboard-logout {
+  background: linear-gradient(180deg, #ef4444, #dc2626) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 14px 30px rgba(220,38,38,0.30) !important;
+}
+body.endpoint-seller-dashboard .panel td .btn.secondary {
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: auto !important;
+  min-width: 110px !important;
+}
+
 
 </style>
 </head>

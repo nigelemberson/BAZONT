@@ -1,13 +1,10 @@
-Bazont22Y.zip
+Bazont22Z
 
-Changes:
-- Public URL transition for seller invitation links.
-- Seller invite email, preview, copy link, share buttons, and transaction detail link now use PUBLIC_BASE_URL.
-- Default PUBLIC_BASE_URL is https://bazont.com.
-- Render override supported with BAZONT_PUBLIC_BASE_URL.
-- Localhost/127.0.0.1 is no longer used for emailed invite links.
-- Flask remains Render-ready: host 0.0.0.0 and reads PORT.
+Changes applied:
+- Page 27 seller dashboard button widths normalized to standard Bazont sizing.
+- Seller dashboard bottom navigation now uses compact Home / Back / Logout buttons.
+- Open buttons in the assigned transaction table are compact instead of full-width.
+- Page 18 seller join cleanup from Bazont22Y preserved.
+- Seller join function preserved.
 
-Test note:
-- Deploy this build live before cross-device seller acceptance testing.
-- On Render, set BAZONT_PUBLIC_BASE_URL to the exact live Bazont URL if different from https://bazont.com.
+Next sequence requested by user: Bazont23A, Bazont23B ... Bazont23Z.

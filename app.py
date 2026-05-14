@@ -21,7 +21,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont22Y'
+DEFAULT_VERSION = 'Bazont22Z'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -45,7 +45,7 @@ RESEND_FROM_EMAIL = os.environ.get(
     'Bazont <noreply@bazont.com>'
 ).strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
-# Bazont22Y: public invite links must not use localhost/127.0.0.1.
+# Bazont22Z: public invite links must not use localhost/127.0.0.1.
 # Set BAZONT_PUBLIC_BASE_URL on Render if the live URL differs.
 PUBLIC_BASE_URL = os.environ.get('BAZONT_PUBLIC_BASE_URL', 'https://bazont.com').strip().rstrip('/')
 
@@ -491,7 +491,7 @@ def login_required(role=None):
 def seller_invite_link(tx):
     """Return the public seller invitation URL.
 
-    Bazont22Y rule: emailed invitation links must be public internet URLs,
+    Bazont22Z rule: emailed invitation links must be public internet URLs,
     never localhost/127.0.0.1, because seller devices are external to the
     buyer's local Flask session.
     """
