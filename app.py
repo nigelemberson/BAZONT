@@ -21,7 +21,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont23A'
+DEFAULT_VERSION = 'Bazont23B'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -37,6 +37,8 @@ ALLOWED_DELIVERED_STATUSES = {'DELIVERED'}
 TRACKING_DEADLINE_DAYS = 3
 RULE_LOOP_SECONDS = 20
 TRACKING_CHECK_SECONDS = 60  # 1 minute (test mode)
+COURIER_TEST_MODE = os.environ.get('BAZONT_COURIER_TEST_MODE', '1').strip().lower() not in ('0', 'false', 'no')
+COURIER_TEST_SEQUENCE = ['TRACKING_SUBMITTED', 'TRACKING_ACCEPTED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED']
 AFTERSHIP_API_KEY = os.environ.get('AFTERSHIP_API_KEY', '').strip()
 AFTERSHIP_BASE_URL = 'https://api.aftership.com/v4/trackings'
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
@@ -103,6 +105,29 @@ def normalise_courier_slug(courier_name):
 
 def tracking_next_check_iso():
     return (now_ph() + timedelta(seconds=TRACKING_CHECK_SECONDS)).isoformat()
+
+
+def courier_test_next_status(current_status):
+    current = (current_status or 'TRACKING_SUBMITTED').strip().upper()
+    if current in ('API_NOT_CONFIRMED', 'VERIFYING_TRACKING', 'UNKNOWN', 'CHECK_FAILED'):
+        current = 'TRACKING_SUBMITTED'
+    if current not in COURIER_TEST_SEQUENCE:
+        return COURIER_TEST_SEQUENCE[0]
+    idx = COURIER_TEST_SEQUENCE.index(current)
+    if idx >= len(COURIER_TEST_SEQUENCE) - 1:
+        return COURIER_TEST_SEQUENCE[-1]
+    return COURIER_TEST_SEQUENCE[idx + 1]
+
+
+def courier_status_label(status):
+    labels = {
+        'TRACKING_SUBMITTED': 'Tracking submitted',
+        'TRACKING_ACCEPTED': 'Accepted by courier',
+        'IN_TRANSIT': 'In transit',
+        'OUT_FOR_DELIVERY': 'Out for delivery',
+        'DELIVERED': 'Delivered',
+    }
+    return labels.get((status or '').upper(), status or 'Tracking submitted')
 
 
 def aftership_headers():
@@ -703,23 +728,58 @@ def ensure_test_login():
     }
 
 def check_due_tracking():
-    if not aftership_enabled():
-        return
     conn = db_connect()
     try:
         rows = conn.execute(
             """SELECT * FROM transactions
                WHERE status = 'TRACKING_SUBMITTED'
                  AND tracking_number IS NOT NULL
-                 AND courier_slug IS NOT NULL
                  AND (tracking_next_check_at IS NULL OR tracking_next_check_at <= ?)""",
             (now_iso(),)
         ).fetchall()
         changed = False
         for tx in rows:
-            ok, message, tracking = aftership_get_tracking_status(tx['tracking_number'], tx['courier_slug'])
             checked_at = now_iso()
             next_at = tracking_next_check_iso()
+
+            # Bazont23B: 1-minute courier simulation for setup/live-flow testing.
+            # This keeps Page 25 moving even before a real AfterShip production key/workflow is in place.
+            if COURIER_TEST_MODE:
+                next_status = courier_test_next_status(tx['tracking_api_status'])
+                note = f"TEST MODE: {courier_status_label(next_status)}. Auto-advanced by Bazont setup monitor."
+                conn.execute(
+                    """UPDATE transactions
+                       SET tracking_api_status = ?, tracking_api_message = ?, tracking_last_checked_at = ?,
+                           tracking_next_check_at = ?, updated_at = ?
+                       WHERE id = ?""",
+                    (next_status, note, checked_at, next_at, checked_at, tx['id'])
+                )
+                conn.execute(
+                    'INSERT INTO courier_events (transaction_id, tracking_number, status, event_time, source, note) VALUES (?, ?, ?, ?, ?, ?)',
+                    (tx['id'], tx['tracking_number'], next_status, checked_at, 'bazont-test-monitor', note)
+                )
+                log_audit(conn, tx['id'], 'system', 'bazont-test-monitor', 'COURIER_TEST_STATUS_ADVANCED', tx['status'], tx['status'], note)
+                changed = True
+                if next_status == 'DELIVERED':
+                    latest_tx = refresh_tx(conn, tx['id'])
+                    try:
+                        set_status(conn, latest_tx, TX_PAYMENT_RELEASED, 'system', 'bazont-test-monitor', 'AUTO_RELEASE_TEST_DELIVERED', 'TEST MODE courier status reached DELIVERED.')
+                    except ValueError:
+                        pass
+                continue
+
+            if not aftership_enabled():
+                conn.execute(
+                    """UPDATE transactions
+                       SET tracking_api_status = ?, tracking_api_message = ?, tracking_last_checked_at = ?,
+                           tracking_next_check_at = ?, updated_at = ?
+                       WHERE id = ?""",
+                    ('CHECK_PENDING', 'AfterShip API key is not configured. Waiting for real courier check.', checked_at, next_at, checked_at, tx['id'])
+                )
+                changed = True
+                continue
+
+            ok, message, tracking = aftership_get_tracking_status(tx['tracking_number'], tx['courier_slug'])
             tag = None
             checkpoint_note = message
             if ok and tracking:
@@ -1470,8 +1530,8 @@ def courier_logs(public_id):
             return redirect(url_for('courier_logs', public_id=public_id))
 
         submitted_at = now_iso()
-        api_status = 'VERIFYING_TRACKING'
-        api_message = 'Tracking saved. AfterShip verification pending.'
+        api_status = 'TRACKING_SUBMITTED' if COURIER_TEST_MODE else 'VERIFYING_TRACKING'
+        api_message = 'Tracking saved. Bazont test monitor will update every 1 minute.' if COURIER_TEST_MODE else 'Tracking saved. AfterShip verification pending.'
         aftership_id = None
 
         ok, message, tracking = aftership_create_tracking(tracking_number, courier_slug)

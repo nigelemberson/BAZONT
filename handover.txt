@@ -1,11 +1,3 @@
-Bazont23A
+Bazont23B
 
-Built from Bazont22Z(1).zip.
-
-Changes:
-- Page 25 courier/status page cleaned for desktop and mobile.
-- Removed overlapping button layout.
-- Removed broken Next route that led to Forbidden.
-- Added monitored progress checklist and 1-minute auto-refresh in test mode.
-- Added clear Last Checked / Next Check / Tracking Status panel.
-- Preserved live buyer/seller/email workflow.
+Courier state engine added for Page 25. TEST MODE advances shipment status every 1 minute: submitted, accepted, in transit, out for delivery, delivered, then payment released. Existing live buyer/seller/email flow preserved.

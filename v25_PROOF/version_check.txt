@@ -1,6 +1,6 @@
 Version check for Bazont22L:
-version.txt = Bazont23A.zip
-forms/version.txt = Bazont23A.zip
-app.py DEFAULT_VERSION = Bazont23A.zip
-handover.txt = Bazont23A.zip
-visible footer/static version references = Bazont23A.zip
+version.txt = Bazont23B.zip
+forms/version.txt = Bazont23B.zip
+app.py DEFAULT_VERSION = Bazont23B.zip
+handover.txt = Bazont23B.zip
+visible footer/static version references = Bazont23B.zip
