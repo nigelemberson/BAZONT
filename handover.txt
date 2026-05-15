@@ -1,7 +1,7 @@
-Bazont23R.zip handover
+Bazont23S.zip handover
 
 Baseline: Bazont23O.zip
-Output: Bazont23R.zip
+Output: Bazont23S.zip
 
 Amendment applied:
 1. Home subtitle changed to: Login or click Next to see how Bazont protects transactions between distant buyers and sellers.

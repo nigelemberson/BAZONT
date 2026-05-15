@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont23R.zip'
+DEFAULT_VERSION = 'Bazont23S.zip'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -908,9 +908,10 @@ def check_due_tracking():
     try:
         rows = conn.execute(
             """SELECT * FROM transactions
-               WHERE status = 'TRACKING_UPLOADED'
+               WHERE status IN ('TRACKING_UPLOADED', 'IN_TRANSIT', 'DELIVERED')
                  AND tracking_number IS NOT NULL
-                 AND (tracking_next_check_at IS NULL OR tracking_next_check_at <= ?)""",
+                 AND (tracking_next_check_at IS NULL OR tracking_next_check_at <= ?)
+                 AND hold_status NOT IN ('RELEASED', 'REFUNDED', 'CANCELLED')""",
             (now_iso(),)
         ).fetchall()
         changed = False
@@ -918,10 +919,12 @@ def check_due_tracking():
             checked_at = now_iso()
             next_at = tracking_next_check_iso()
 
-            # Bazont23P: 1-minute courier simulation for setup/live-flow testing.
-            # This keeps Page 25 moving even before a real AfterShip production key/workflow is in place.
+            # Bazont23S: final courier transition repair.
+            # The simulator now promotes courier states into the transaction record and
+            # then releases the simulated held payment when DELIVERED is reached.
             if COURIER_TEST_MODE:
-                next_status = courier_test_next_status(tx['tracking_api_status'])
+                current_api_status = (tx['tracking_api_status'] or 'TRACKING_UPLOADED').strip().upper()
+                next_status = courier_test_next_status(current_api_status)
                 note = f"TEST MODE: {courier_status_label(next_status)}. Auto-advanced by Bazont setup monitor."
                 conn.execute(
                     """UPDATE transactions
@@ -934,14 +937,23 @@ def check_due_tracking():
                     'INSERT INTO courier_events (transaction_id, tracking_number, status, event_time, source, note) VALUES (?, ?, ?, ?, ?, ?)',
                     (tx['id'], tx['tracking_number'], next_status, checked_at, 'bazont-test-monitor', note)
                 )
-                log_audit(conn, tx['id'], 'system', 'bazont-test-monitor', 'COURIER_TEST_STATUS_ADVANCED', tx['status'], tx['status'], note)
+                log_audit(conn, tx['id'], 'system', 'bazont-test-monitor', 'COURIER_TEST_STATUS_ADVANCED', tx['status'], tx['status'], f"current={current_api_status}; next={next_status}; release_trigger=no")
                 changed = True
-                if next_status == 'DELIVERED':
-                    latest_tx = refresh_tx(conn, tx['id'])
-                    try:
-                        set_status(conn, latest_tx, TX_REVIEW_REQUIRED, 'system', 'bazont-test-monitor', 'RELEASE_DUE_TEST_DELIVERED', 'TEST MODE courier status reached DELIVERED.')
-                    except ValueError:
-                        pass
+
+                latest_tx = refresh_tx(conn, tx['id'])
+                try:
+                    if next_status == 'IN_TRANSIT' and canonical_status(latest_tx['status']) == TX_TRACKING_UPLOADED:
+                        set_status(conn, latest_tx, TX_IN_TRANSIT, 'system', 'bazont-test-monitor', 'COURIER_IN_TRANSIT', 'TEST MODE courier status reached IN_TRANSIT.')
+                        latest_tx = refresh_tx(conn, tx['id'])
+                    elif next_status == 'DELIVERED':
+                        if canonical_status(latest_tx['status']) in (TX_TRACKING_UPLOADED, TX_IN_TRANSIT):
+                            set_status(conn, latest_tx, TX_DELIVERED, 'system', 'bazont-test-monitor', 'COURIER_DELIVERED', 'TEST MODE courier status reached DELIVERED.')
+                            latest_tx = refresh_tx(conn, tx['id'])
+                        if canonical_status(latest_tx['status']) == TX_DELIVERED and latest_tx['hold_status'] != 'RELEASED':
+                            set_status(conn, latest_tx, TX_RELEASED, 'system', 'bazont-test-monitor', 'PAYMENT_RELEASED_TEST_DELIVERED', 'TEST MODE release trigger fired after courier DELIVERED.')
+                            log_audit(conn, tx['id'], 'system', 'bazont-test-monitor', 'RELEASE_TRIGGER_DIAGNOSTIC', TX_DELIVERED, TX_RELEASED, f"current={current_api_status}; next={next_status}; release_trigger=yes")
+                except ValueError as exc:
+                    log_audit(conn, tx['id'], 'system', 'bazont-test-monitor', 'RELEASE_TRIGGER_DIAGNOSTIC', latest_tx['status'], latest_tx['status'], f"current={current_api_status}; next={next_status}; release_trigger=blocked; error={exc}")
                 continue
 
             if not aftership_enabled():
@@ -988,9 +1000,14 @@ def check_due_tracking():
             if tag and tag.upper() in ALLOWED_DELIVERED_STATUSES:
                 latest_tx = refresh_tx(conn, tx['id'])
                 try:
-                    set_status(conn, latest_tx, TX_REVIEW_REQUIRED, 'system', 'aftership', 'RELEASE_DUE_DELIVERY_CONFIRMED', 'AfterShip reported DELIVERED.')
-                except ValueError:
-                    pass
+                    if canonical_status(latest_tx['status']) in (TX_TRACKING_UPLOADED, TX_IN_TRANSIT):
+                        set_status(conn, latest_tx, TX_DELIVERED, 'system', 'aftership', 'COURIER_DELIVERED', 'AfterShip reported DELIVERED.')
+                        latest_tx = refresh_tx(conn, tx['id'])
+                    if canonical_status(latest_tx['status']) == TX_DELIVERED and latest_tx['hold_status'] != 'RELEASED':
+                        set_status(conn, latest_tx, TX_RELEASED, 'system', 'aftership', 'PAYMENT_RELEASED_DELIVERY_CONFIRMED', 'Release trigger fired after AfterShip DELIVERED.')
+                        log_audit(conn, tx['id'], 'system', 'aftership', 'RELEASE_TRIGGER_DIAGNOSTIC', TX_DELIVERED, TX_RELEASED, 'release_trigger=yes; source=aftership')
+                except ValueError as exc:
+                    log_audit(conn, tx['id'], 'system', 'aftership', 'RELEASE_TRIGGER_DIAGNOSTIC', latest_tx['status'], latest_tx['status'], f'release_trigger=blocked; error={exc}')
         if changed:
             conn.commit()
     finally:
@@ -1032,15 +1049,16 @@ def process_rules():
                 (tx['id'],)
             ).fetchone()
             if latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
-                if tx['status'] in (TX_FUNDED, TX_INVITED, TX_SELLER_JOINED, TX_TRACKING_UPLOADED, TX_DELIVERED):
+                if canonical_status(tx['status']) in (TX_TRACKING_UPLOADED, TX_IN_TRANSIT, TX_DELIVERED):
                     try:
-                        set_status(conn, tx, TX_REVIEW_REQUIRED, 'system', 'rule-engine', 'RELEASE_DUE_DELIVERY_CONFIRMED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
+                        if canonical_status(tx['status']) != TX_DELIVERED:
+                            set_status(conn, tx, TX_DELIVERED, 'system', 'rule-engine', 'COURIER_DELIVERED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
+                            tx = refresh_tx(conn, tx['id'])
+                        if canonical_status(tx['status']) == TX_DELIVERED and tx['hold_status'] != 'RELEASED':
+                            set_status(conn, tx, TX_RELEASED, 'system', 'rule-engine', 'PAYMENT_RELEASED_DELIVERY_CONFIRMED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
                         changed = True
-                    except ValueError:
-                        pass
-
-            if tx['status'] == TX_TRACKING_UPLOADED and latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
-                pass
+                    except ValueError as exc:
+                        log_audit(conn, tx['id'], 'system', 'rule-engine', 'RELEASE_TRIGGER_DIAGNOSTIC', tx['status'], tx['status'], f'release_trigger=blocked; error={exc}')
 
         if changed:
             conn.commit()
