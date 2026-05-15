@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  body.admin-backoffice-page .shell { padding: 14px 18px 14px; }
+  body.admin-backoffice-page .page-wrap { margin-top: 10px; padding-top: 0; }
+  .admin-office-stack { gap: 12px; }
+  .admin-office-hero { padding: 18px 24px !important; }
+  .admin-office-hero .hero-title { font-size: 2.25rem !important; margin-bottom: 6px !important; }
+  .admin-office-hero .hero-subtitle { font-size: 1.05rem !important; line-height: 1.3 !important; }
+  .admin-office-panel { padding: 16px 18px !important; border-radius: 20px !important; overflow-x: auto; }
+  .admin-office-table { width: 100%; min-width: 1180px; border-collapse: collapse; }
+  .admin-office-table th,
+  .admin-office-table td { padding: 9px 10px !important; font-size: 0.92rem !important; vertical-align: top; }
+  .admin-office-table th { font-size: 0.78rem !important; white-space: nowrap; }
+  .admin-office-id { font-weight: 900; color: var(--blue); white-space: nowrap; }
+  .admin-office-status { font-weight: 900; white-space: nowrap; }
+  .admin-office-muted { color: var(--muted); }
+  .admin-office-actions { display: flex; gap: 16px; justify-content: center; margin-top: 14px; }
+  .admin-office-back { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; color: #fff !important; border: none !important; }
+  .admin-office-home { background: linear-gradient(135deg, #16a34a, #22c55e) !important; color: #fff !important; border: none !important; }
+</style>
+<div class="stack admin-office-stack">
+  <section class="hero-card admin-office-hero">
+    <div>
+      <h1 class="hero-title">Back Office</h1>
+      <p class="hero-subtitle">Inspection-only transaction oversight. This page is reachable from Index and is not mixed into the buyer/seller public flow.</p>
+    </div>
+  </section>
+
+  <section class="panel admin-office-panel" aria-label="Back Office transaction oversight">
+    <h3 class="section-title">Transaction oversight</h3>
+    <table class="admin-office-table">
+      <tr>
+        <th>Transaction ID</th>
+        <th>Buyer email</th>
+        <th>Seller email</th>
+        <th>Item description</th>
+        <th>Amount held</th>
+        <th>Payment status</th>
+        <th>Transaction status</th>
+        <th>Courier</th>
+        <th>Tracking number</th>
+        <th>Tracking uploaded time</th>
+        <th>Delivery status</th>
+        <th>Refund/release eligibility flag</th>
+        <th>Created timestamp</th>
+      </tr>
+      {% for tx in transactions %}
+      <tr>
+        <td class="admin-office-id">{{ tx['public_id'] }}</td>
+        <td>{{ tx['buyer_email'] or '-' }}</td>
+        <td>{{ tx['joined_seller_email'] or tx['seller_email'] or '-' }}</td>
+        <td>{{ tx['item_description'] }}</td>
+        <td>₱{{ '%.2f'|format(tx['amount_held']) }}</td>
+        <td>{{ tx['payment_status'] }}</td>
+        <td class="admin-office-status">{{ tx['status'] }}</td>
+        <td>{{ tx['courier_name'] or tx['courier_slug'] or '-' }}</td>
+        <td>{{ tx['tracking_number'] or '-' }}</td>
+        <td>{{ tx['tracking_submitted_at'] or '-' }}</td>
+        <td>{{ tx['latest_delivery_status'] or tx['tracking_api_status'] or '-' }}</td>
+        <td class="admin-office-status">{{ tx['eligibility_flag'] }}</td>
+        <td>{{ tx['created_at'] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="13" class="admin-office-muted">No transactions found.</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+</div>
+<div class="admin-office-actions" aria-label="Back Office navigation">
+  <a class="btn admin-office-home" href="{{ url_for('gateway_home') }}">Home</a>
+  <a class="btn admin-office-back" href="{{ url_for('index_page') }}">Back to Index</a>
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@ import threading
 import time
 import secrets
 import html
+import re
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
@@ -21,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont23B'
+DEFAULT_VERSION = 'Bazont23R.zip'
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -38,7 +39,7 @@ TRACKING_DEADLINE_DAYS = 3
 RULE_LOOP_SECONDS = 20
 TRACKING_CHECK_SECONDS = 60  # 1 minute (test mode)
 COURIER_TEST_MODE = os.environ.get('BAZONT_COURIER_TEST_MODE', '1').strip().lower() not in ('0', 'false', 'no')
-COURIER_TEST_SEQUENCE = ['TRACKING_SUBMITTED', 'TRACKING_ACCEPTED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED']
+COURIER_TEST_SEQUENCE = ['TRACKING_UPLOADED', 'TRACKING_ACCEPTED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED']
 AFTERSHIP_API_KEY = os.environ.get('AFTERSHIP_API_KEY', '').strip()
 AFTERSHIP_BASE_URL = 'https://api.aftership.com/v4/trackings'
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
@@ -47,7 +48,7 @@ RESEND_FROM_EMAIL = os.environ.get(
     'Bazont <noreply@bazont.com>'
 ).strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
-# Bazont23A: public invite links must not use localhost/127.0.0.1.
+# Bazont23P: public invite links must not use localhost/127.0.0.1.
 # Set BAZONT_PUBLIC_BASE_URL on Render if the live URL differs.
 PUBLIC_BASE_URL = os.environ.get('BAZONT_PUBLIC_BASE_URL', 'https://bazont.com').strip().rstrip('/')
 
@@ -108,9 +109,9 @@ def tracking_next_check_iso():
 
 
 def courier_test_next_status(current_status):
-    current = (current_status or 'TRACKING_SUBMITTED').strip().upper()
+    current = (current_status or 'TRACKING_UPLOADED').strip().upper()
     if current in ('API_NOT_CONFIRMED', 'VERIFYING_TRACKING', 'UNKNOWN', 'CHECK_FAILED'):
-        current = 'TRACKING_SUBMITTED'
+        current = 'TRACKING_UPLOADED'
     if current not in COURIER_TEST_SEQUENCE:
         return COURIER_TEST_SEQUENCE[0]
     idx = COURIER_TEST_SEQUENCE.index(current)
@@ -121,7 +122,7 @@ def courier_test_next_status(current_status):
 
 def courier_status_label(status):
     labels = {
-        'TRACKING_SUBMITTED': 'Tracking submitted',
+        'TRACKING_UPLOADED': 'Tracking uploaded',
         'TRACKING_ACCEPTED': 'Accepted by courier',
         'IN_TRANSIT': 'In transit',
         'OUT_FOR_DELIVERY': 'Out for delivery',
@@ -193,6 +194,38 @@ def tx_financials(tx):
         'seller_receives': seller_receives,
         'platform_holds': total_amount,
     }
+
+
+def transaction_review_flag(tx, latest_delivery_status=None):
+    """Return the operational refund/release eligibility flag for Back Office only."""
+    status = canonical_status(tx['status'])
+    latest_delivery = (latest_delivery_status or tx['tracking_api_status'] or '').strip().upper()
+    if status == TX_RELEASED or tx['released_at']:
+        return 'RELEASED'
+    if status == TX_REFUNDED or tx['refunded_at']:
+        return 'REFUNDED'
+    if latest_delivery in ALLOWED_DELIVERED_STATUSES or status == TX_DELIVERED:
+        return 'RELEASE DUE / DELIVERY CONFIRMED'
+    paid_at_value = tx['payment_received_at']
+    if paid_at_value and not tx['tracking_number']:
+        try:
+            paid_at = datetime.fromisoformat(paid_at_value)
+            if now_ph() >= paid_at + timedelta(days=TRACKING_DEADLINE_DAYS):
+                return 'REFUND DUE / TRACKING DEADLINE MISSED'
+        except ValueError:
+            return 'REVIEW_REQUIRED'
+    if status == TX_REVIEW_REQUIRED:
+        return 'REVIEW_REQUIRED'
+    return 'OK / MONITORING'
+
+def admin_payment_status(tx):
+    if tx['released_at'] or canonical_status(tx['status']) == TX_RELEASED:
+        return 'RELEASED'
+    if tx['refunded_at'] or canonical_status(tx['status']) == TX_REFUNDED:
+        return 'REFUNDED'
+    if tx['payment_received_at'] or tx['hold_status'] == 'FUNDED':
+        return 'FUNDED'
+    return 'NOT_FUNDED'
 
 
 app = Flask(__name__)
@@ -336,11 +369,13 @@ def init_db():
         if column not in cols:
             conn.execute(f'ALTER TABLE transactions ADD COLUMN {column} {col_type}')
 
-    # Build 22Q: normalize older state names to the new authoritative transaction state engine.
-    conn.execute("UPDATE transactions SET status = 'CREATED' WHERE status = 'INVITED'")
-    conn.execute("UPDATE transactions SET status = 'BUYER_PAID' WHERE status = 'PAID'")
-    conn.execute("UPDATE transactions SET status = 'PAYMENT_RELEASED' WHERE status = 'RELEASED'")
-    conn.execute("UPDATE transactions SET status = 'AUTO_REFUNDED' WHERE status = 'REFUNDED'")
+    # Bazont23R: normalize older state names to the current transaction state engine.
+    conn.execute("UPDATE transactions SET status = 'FUNDED' WHERE status IN ('PAID', 'FUNDED')")
+    conn.execute("UPDATE transactions SET status = 'INVITED' WHERE status = 'INVITED'")
+    conn.execute("UPDATE transactions SET status = 'SELLER_JOINED' WHERE status = 'SELLER_JOINED'")
+    conn.execute("UPDATE transactions SET status = 'TRACKING_UPLOADED' WHERE status = 'TRACKING_UPLOADED'")
+    conn.execute("UPDATE transactions SET status = 'RELEASED' WHERE status = 'RELEASED'")
+    conn.execute("UPDATE transactions SET status = 'REFUNDED' WHERE status = 'REFUNDED'")
     conn.commit()
     conn.close()
 
@@ -373,36 +408,57 @@ def run_one_time_development_reset():
 
 
 TX_CREATED = 'CREATED'
-TX_BUYER_PAID = 'BUYER_PAID'
-TX_INVITE_SENT = 'INVITE_SENT'
-TX_SELLER_ACCEPTED = 'SELLER_ACCEPTED'
-TX_TRACKING_SUBMITTED = 'TRACKING_SUBMITTED'
+TX_FUNDED = 'FUNDED'
+TX_INVITED = 'INVITED'
+TX_SELLER_JOINED = 'SELLER_JOINED'
+TX_TRACKING_PENDING = 'TRACKING_PENDING'
+TX_TRACKING_UPLOADED = 'TRACKING_UPLOADED'
+TX_IN_TRANSIT = 'IN_TRANSIT'
 TX_DELIVERED = 'DELIVERED'
-TX_PAYMENT_RELEASED = 'PAYMENT_RELEASED'
-TX_AUTO_REFUNDED = 'AUTO_REFUNDED'
+TX_RELEASED = 'RELEASED'
+TX_REFUNDED = 'REFUNDED'
 TX_CANCELLED = 'CANCELLED'
+TX_REVIEW_REQUIRED = 'REVIEW_REQUIRED'
 
-TX_TERMINAL_STATES = {TX_PAYMENT_RELEASED, TX_AUTO_REFUNDED, TX_CANCELLED}
+# Backward-compatible constant names used by older templates/routes.
+TX_FUNDED = TX_FUNDED
+TX_INVITED = TX_INVITED
+TX_SELLER_JOINED = TX_SELLER_JOINED
+TX_TRACKING_UPLOADED = TX_TRACKING_UPLOADED
+TX_RELEASED = TX_RELEASED
+TX_REFUNDED = TX_REFUNDED
+
+TX_TERMINAL_STATES = {TX_RELEASED, TX_REFUNDED, TX_CANCELLED}
+TRANSACTION_STATUS_STATES = (
+    TX_CREATED, TX_FUNDED, TX_INVITED, TX_SELLER_JOINED, TX_TRACKING_PENDING,
+    TX_TRACKING_UPLOADED, TX_IN_TRANSIT, TX_DELIVERED, TX_RELEASED,
+    TX_REFUNDED, TX_CANCELLED, TX_REVIEW_REQUIRED,
+)
 
 LEGACY_STATUS_MAP = {
-    'INVITED': TX_CREATED,
-    'PAID': TX_BUYER_PAID,
-    'RELEASED': TX_PAYMENT_RELEASED,
-    'REFUNDED': TX_AUTO_REFUNDED,
+    'PAID': TX_FUNDED,
+    'FUNDED': TX_FUNDED,
+    'INVITED': TX_INVITED,
+    'SELLER_JOINED': TX_SELLER_JOINED,
+    'TRACKING_UPLOADED': TX_TRACKING_UPLOADED,
+    'RELEASED': TX_RELEASED,
+    'REFUNDED': TX_REFUNDED,
 }
 
 VALID_TRANSITIONS = {
-    TX_CREATED: {TX_BUYER_PAID, TX_CANCELLED},
-    TX_BUYER_PAID: {TX_INVITE_SENT, TX_TRACKING_SUBMITTED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
-    TX_INVITE_SENT: {TX_SELLER_ACCEPTED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
-    TX_SELLER_ACCEPTED: {TX_TRACKING_SUBMITTED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
-    TX_TRACKING_SUBMITTED: {TX_DELIVERED, TX_AUTO_REFUNDED, TX_PAYMENT_RELEASED},
-    TX_DELIVERED: {TX_PAYMENT_RELEASED},
-    TX_PAYMENT_RELEASED: set(),
-    TX_AUTO_REFUNDED: set(),
+    TX_CREATED: {TX_FUNDED, TX_CANCELLED, TX_REVIEW_REQUIRED},
+    TX_FUNDED: {TX_INVITED, TX_SELLER_JOINED, TX_TRACKING_PENDING, TX_TRACKING_UPLOADED, TX_DELIVERED, TX_RELEASED, TX_REFUNDED, TX_REVIEW_REQUIRED},
+    TX_INVITED: {TX_SELLER_JOINED, TX_TRACKING_PENDING, TX_TRACKING_UPLOADED, TX_DELIVERED, TX_RELEASED, TX_REFUNDED, TX_REVIEW_REQUIRED},
+    TX_SELLER_JOINED: {TX_TRACKING_PENDING, TX_TRACKING_UPLOADED, TX_DELIVERED, TX_RELEASED, TX_REFUNDED, TX_REVIEW_REQUIRED},
+    TX_TRACKING_PENDING: {TX_TRACKING_UPLOADED, TX_REFUNDED, TX_REVIEW_REQUIRED},
+    TX_TRACKING_UPLOADED: {TX_IN_TRANSIT, TX_DELIVERED, TX_RELEASED, TX_REFUNDED, TX_REVIEW_REQUIRED},
+    TX_IN_TRANSIT: {TX_DELIVERED, TX_RELEASED, TX_REVIEW_REQUIRED},
+    TX_DELIVERED: {TX_RELEASED, TX_REVIEW_REQUIRED},
+    TX_RELEASED: set(),
+    TX_REFUNDED: set(),
     TX_CANCELLED: set(),
+    TX_REVIEW_REQUIRED: {TX_REFUNDED, TX_RELEASED, TX_CANCELLED},
 }
-
 
 def canonical_status(status):
     return LEGACY_STATUS_MAP.get(status, status)
@@ -427,14 +483,14 @@ def set_status(conn, tx, new_status, actor_type, actor_ref, action, details=''):
     hold_status = tx['hold_status']
     released_at = tx['released_at']
     refunded_at = tx['refunded_at']
-    if new_status == TX_BUYER_PAID:
+    if new_status == TX_FUNDED:
         hold_status = 'FUNDED'
-    elif new_status == TX_TRACKING_SUBMITTED:
+    elif new_status in (TX_TRACKING_PENDING, TX_TRACKING_UPLOADED, TX_IN_TRANSIT, TX_DELIVERED, TX_REVIEW_REQUIRED):
         hold_status = 'FUNDED'
-    elif new_status == TX_PAYMENT_RELEASED:
+    elif new_status == TX_RELEASED:
         hold_status = 'RELEASED'
         released_at = now_iso()
-    elif new_status == TX_AUTO_REFUNDED:
+    elif new_status == TX_REFUNDED:
         hold_status = 'REFUNDED'
     elif new_status == TX_CANCELLED:
         hold_status = 'CANCELLED'
@@ -454,14 +510,38 @@ def refresh_tx(conn, tx_id):
 
 
 
+def establish_authenticated_session(user):
+    """Create one complete server-side auth state; never leave stale display data."""
+    session.clear()
+    session['user_id'] = user['id']
+    session['auth_email'] = user['email']
+    session['auth_role'] = user['role']
+    session['auth_ok'] = True
+
+
+def clear_authenticated_session():
+    """Remove every auth/display key while preserving later flash messages."""
+    for key in ('user_id', 'user', 'auth_email', 'auth_role', 'auth_ok'):
+        session.pop(key, None)
+    session['auth_logged_out'] = True
+
+
 def current_user():
     user_id = session.get('user_id')
-    if not user_id:
+    if session.get('auth_logged_out'):
+        # A page that says "Logged out." must never also render a user pill or Logout.
+        clear_authenticated_session()
+        return None
+    if not user_id or session.get('auth_ok') is not True:
+        clear_authenticated_session()
         return None
     conn = get_db()
     user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
     if user is None:
-        session.clear()
+        clear_authenticated_session()
+        return None
+    if session.get('auth_email') != user['email'] or session.get('auth_role') != user['role']:
+        clear_authenticated_session()
         return None
     return user
 
@@ -482,6 +562,7 @@ def inject_globals():
         'PAYMENT_METHODS': PAYMENT_METHODS,
         'PAYOUT_METHODS': PAYOUT_METHODS,
         'tx_financials': tx_financials,
+        'MASTER_PAGE_MAP': globals().get('MASTER_PAGE_MAP', []),
     }
 
 
@@ -516,7 +597,7 @@ def login_required(role=None):
 def seller_invite_link(tx):
     """Return the public seller invitation URL.
 
-    Bazont23A rule: emailed invitation links must be public internet URLs,
+    Bazont23P rule: emailed invitation links must be public internet URLs,
     never localhost/127.0.0.1, because seller devices are external to the
     buyer's local Flask session.
     """
@@ -707,8 +788,8 @@ def assign_seller_to_transaction(conn, tx, seller, actor_type='system', actor_re
         raise ValueError('This transaction is already assigned to another seller.')
     conn.execute('UPDATE transactions SET seller_user_id = ?, updated_at = ? WHERE id = ?', (seller['id'], now_iso(), tx['id']))
     tx_now = refresh_tx(conn, tx['id'])
-    if tx_now['status'] in (TX_INVITE_SENT, TX_BUYER_PAID):
-        set_status(conn, tx_now, TX_SELLER_ACCEPTED, actor_type, actor_ref, 'SELLER_ACCEPTED', details)
+    if tx_now['status'] in (TX_INVITED, TX_FUNDED):
+        set_status(conn, tx_now, TX_SELLER_JOINED, actor_type, actor_ref, 'SELLER_JOINED', details)
     else:
         log_audit(conn, tx['id'], actor_type, actor_ref, 'SELLER_JOINED', None, None, details)
 
@@ -721,18 +802,113 @@ def ensure_test_login():
         return
     conn = get_db()
     user = get_or_create_user(conn, TEST_USER_EMAIL, TEST_USER_ROLE)
-    session['user_id'] = user['id']
-    session['user'] = {
-        'email': TEST_USER_EMAIL,
-        'role': TEST_USER_ROLE
-    }
+    establish_authenticated_session(user)
+
+
+# Bazont23P: temporary audit-only transaction helpers.
+# These do not change the normal buyer/seller workflow; they only prevent dead
+# audit links by resolving dynamic transaction pages to a real inspection record.
+def get_or_create_audit_transaction(conn, buyer=None, paid=False, assign_seller=False, tracking=False, audit_key="default"):
+    """Create a stable inspection transaction without using production state transitions.
+
+    This is used only by /audit/p/<page_no>.  It deliberately avoids set_status()
+    because an audit page may need to preview Page 17 or Page 25 directly from
+    Home, even when a previous audit run left the same demo transaction in a
+    different state.  Production routes and production auth remain unchanged.
+    """
+    if buyer is None:
+        buyer, _seller = ensure_demo_users(conn)
+    seller = get_or_create_user(conn, "seller.audit@bazont.local", "seller")
+    description = f"Audit access transaction {audit_key}"
+    tx = conn.execute(
+        "SELECT * FROM transactions WHERE item_description = ? AND buyer_user_id = ? ORDER BY id DESC LIMIT 1",
+        (description, buyer["id"])
+    ).fetchone()
+    if tx is None:
+        public_id = "AUDIT-" + secrets.token_hex(4).upper()
+        invite_token = secrets.token_urlsafe(24)
+        now = now_iso()
+        conn.execute(
+            """INSERT INTO transactions (
+                public_id, buyer_user_id, seller_email, item_description, item_price, shipping_price, total_amount,
+                weight_kg, length_cm, width_cm, height_cm, invite_token, invite_sent_at,
+                status, hold_status, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CREATED', 'NOT_FUNDED', ?, ?)""",
+            (public_id, buyer["id"], "seller.audit@bazont.local", description, 8500.0, 300.0, 8800.0,
+             1.0, 15.0, 15.0, 15.0, invite_token, now, now, now)
+        )
+        tx_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+        log_audit(conn, tx_id, "system", "page-audit", "AUDIT_TRANSACTION_CREATED", None, TX_CREATED, "Temporary Page Access / Audit transaction.")
+        conn.commit()
+        tx = conn.execute("SELECT * FROM transactions WHERE id = ?", (tx_id,)).fetchone()
+
+    now = now_iso()
+    target_status = TX_CREATED
+    hold_status = "NOT_FUNDED"
+    payment_received_at = None
+    seller_user_id = None
+    tracking_number = None
+    courier_name = None
+    courier_slug = None
+    tracking_submitted_at = None
+    tracking_api_status = None
+    tracking_api_message = None
+    tracking_last_checked_at = None
+    tracking_next_check_at = None
+
+    if paid:
+        target_status = TX_FUNDED
+        hold_status = "FUNDED"
+        payment_received_at = now
+    if assign_seller:
+        target_status = TX_SELLER_JOINED
+        hold_status = "FUNDED"
+        payment_received_at = payment_received_at or now
+        seller_user_id = seller["id"]
+    if tracking:
+        target_status = TX_TRACKING_UPLOADED
+        hold_status = "FUNDED"
+        payment_received_at = payment_received_at or now
+        seller_user_id = seller["id"]
+        tracking_number = "AUDIT123456"
+        courier_name = "LBC Express"
+        courier_slug = "lbc-express"
+        tracking_submitted_at = now
+        tracking_api_status = "TRACKING_UPLOADED"
+        tracking_api_message = "Temporary Page Access / Audit tracking state."
+        tracking_last_checked_at = now
+        tracking_next_check_at = tracking_next_check_iso()
+
+    conn.execute(
+        """UPDATE transactions
+           SET payment_received_at = ?, seller_user_id = ?, tracking_number = ?, courier_name = ?, courier_slug = ?,
+               tracking_submitted_at = ?, tracking_api_status = ?, tracking_api_message = ?, tracking_last_checked_at = ?,
+               tracking_next_check_at = ?, status = ?, hold_status = ?, updated_at = ?
+           WHERE id = ?""",
+        (payment_received_at, seller_user_id, tracking_number, courier_name, courier_slug,
+         tracking_submitted_at, tracking_api_status, tracking_api_message, tracking_last_checked_at,
+         tracking_next_check_at, target_status, hold_status, now, tx["id"])
+    )
+    if tracking:
+        existing_event = conn.execute(
+            "SELECT id FROM courier_events WHERE transaction_id = ? AND source = ? LIMIT 1",
+            (tx["id"], "page-audit")
+        ).fetchone()
+        if existing_event is None:
+            conn.execute(
+                "INSERT INTO courier_events (transaction_id, tracking_number, status, event_time, source, note) VALUES (?, ?, ?, ?, ?, ?)",
+                (tx["id"], "AUDIT123456", "TRACKING_UPLOADED", now, "page-audit", "Temporary Page Access / Audit courier event.")
+            )
+    log_audit(conn, tx["id"], "system", "page-audit", "AUDIT_STATE_PREPARED", tx["status"], target_status, f"Temporary Page Access / Audit state for {audit_key}.")
+    conn.commit()
+    return refresh_tx(conn, tx["id"])
 
 def check_due_tracking():
     conn = db_connect()
     try:
         rows = conn.execute(
             """SELECT * FROM transactions
-               WHERE status = 'TRACKING_SUBMITTED'
+               WHERE status = 'TRACKING_UPLOADED'
                  AND tracking_number IS NOT NULL
                  AND (tracking_next_check_at IS NULL OR tracking_next_check_at <= ?)""",
             (now_iso(),)
@@ -742,7 +918,7 @@ def check_due_tracking():
             checked_at = now_iso()
             next_at = tracking_next_check_iso()
 
-            # Bazont23B: 1-minute courier simulation for setup/live-flow testing.
+            # Bazont23P: 1-minute courier simulation for setup/live-flow testing.
             # This keeps Page 25 moving even before a real AfterShip production key/workflow is in place.
             if COURIER_TEST_MODE:
                 next_status = courier_test_next_status(tx['tracking_api_status'])
@@ -763,7 +939,7 @@ def check_due_tracking():
                 if next_status == 'DELIVERED':
                     latest_tx = refresh_tx(conn, tx['id'])
                     try:
-                        set_status(conn, latest_tx, TX_PAYMENT_RELEASED, 'system', 'bazont-test-monitor', 'AUTO_RELEASE_TEST_DELIVERED', 'TEST MODE courier status reached DELIVERED.')
+                        set_status(conn, latest_tx, TX_REVIEW_REQUIRED, 'system', 'bazont-test-monitor', 'RELEASE_DUE_TEST_DELIVERED', 'TEST MODE courier status reached DELIVERED.')
                     except ValueError:
                         pass
                 continue
@@ -812,7 +988,7 @@ def check_due_tracking():
             if tag and tag.upper() in ALLOWED_DELIVERED_STATUSES:
                 latest_tx = refresh_tx(conn, tx['id'])
                 try:
-                    set_status(conn, latest_tx, TX_PAYMENT_RELEASED, 'system', 'aftership', 'AUTO_RELEASE_DELIVERED', 'AfterShip reported DELIVERED.')
+                    set_status(conn, latest_tx, TX_REVIEW_REQUIRED, 'system', 'aftership', 'RELEASE_DUE_DELIVERY_CONFIRMED', 'AfterShip reported DELIVERED.')
                 except ValueError:
                     pass
         if changed:
@@ -825,7 +1001,7 @@ def process_rules():
     conn = db_connect()
     try:
         rows = conn.execute(
-            "SELECT * FROM transactions WHERE status IN ('CREATED', 'BUYER_PAID', 'INVITE_SENT', 'SELLER_ACCEPTED', 'TRACKING_SUBMITTED', 'DELIVERED')"
+            "SELECT * FROM transactions WHERE status IN ('CREATED', 'FUNDED', 'INVITED', 'SELLER_JOINED', 'TRACKING_PENDING', 'TRACKING_UPLOADED', 'IN_TRANSIT', 'DELIVERED')"
         ).fetchall()
         current_time = now_ph()
         changed = False
@@ -836,16 +1012,16 @@ def process_rules():
 
             if tx['status'] == TX_CREATED and payment_received_at:
                 try:
-                    set_status(conn, tx, TX_BUYER_PAID, 'system', 'rule-engine', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
+                    set_status(conn, tx, TX_FUNDED, 'system', 'rule-engine', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx = refresh_tx(conn, tx['id'])
                     changed = True
                 except ValueError:
                     pass
 
-            if tx['status'] in (TX_BUYER_PAID, TX_INVITE_SENT, TX_SELLER_ACCEPTED) and payment_received_at and current_time >= payment_received_at + timedelta(days=TRACKING_DEADLINE_DAYS):
+            if tx['status'] in (TX_FUNDED, TX_INVITED, TX_SELLER_JOINED) and payment_received_at and current_time >= payment_received_at + timedelta(days=TRACKING_DEADLINE_DAYS):
                 if not tx['tracking_number']:
                     try:
-                        set_status(conn, tx, TX_AUTO_REFUNDED, 'system', 'rule-engine', 'AUTO_REFUND_NO_TRACKING', f'No tracking uploaded within {TRACKING_DEADLINE_DAYS} days of payment.')
+                        set_status(conn, tx, TX_REVIEW_REQUIRED, 'system', 'rule-engine', 'REFUND_DUE_TRACKING_DEADLINE_MISSED', f'No tracking uploaded within {TRACKING_DEADLINE_DAYS} days of payment.')
                         tx = refresh_tx(conn, tx['id'])
                         changed = True
                     except ValueError:
@@ -856,14 +1032,14 @@ def process_rules():
                 (tx['id'],)
             ).fetchone()
             if latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
-                if tx['status'] in (TX_BUYER_PAID, TX_INVITE_SENT, TX_SELLER_ACCEPTED, TX_TRACKING_SUBMITTED, TX_DELIVERED):
+                if tx['status'] in (TX_FUNDED, TX_INVITED, TX_SELLER_JOINED, TX_TRACKING_UPLOADED, TX_DELIVERED):
                     try:
-                        set_status(conn, tx, TX_PAYMENT_RELEASED, 'system', 'rule-engine', 'AUTO_RELEASE_DELIVERED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
+                        set_status(conn, tx, TX_REVIEW_REQUIRED, 'system', 'rule-engine', 'RELEASE_DUE_DELIVERY_CONFIRMED', f"Courier status {latest_event['status']} at {latest_event['event_time']}")
                         changed = True
                     except ValueError:
                         pass
 
-            if tx['status'] == TX_TRACKING_SUBMITTED and latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
+            if tx['status'] == TX_TRACKING_UPLOADED and latest_event and latest_event['status'].upper() in ALLOWED_DELIVERED_STATUSES:
                 pass
 
         if changed:
@@ -889,7 +1065,7 @@ def _send_root_file(filename):
 
 @app.route('/')
 def gateway_home():
-    return _send_root_file('page0.html')
+    return render_gateway_home_page()
 
 
 @app.route('/page1')
@@ -901,7 +1077,12 @@ def page1_intro():
 @app.route('/page0')
 @app.route('/page0.html')
 def page0_welcome():
-    return _send_root_file('page0.html')
+    return render_gateway_home_page()
+
+
+@app.route('/index')
+def index_page():
+    return render_index_page()
 
 
 @app.route('/style.css')
@@ -923,6 +1104,18 @@ def gateway_live_placeholder():
 @app.route('/animation')
 @app.route('/animation/')
 def animation_index():
+    # Bazont23Q v26 cleanup: /animation must no longer show the obsolete
+    # demo landing page. The canonical walkthrough pages are audit pages 4-9.
+    # /animation without a step now opens the real Page 4.
+    raw_step = request.args.get('step')
+    if not raw_step:
+        return redirect('/animation/?step=1')
+    try:
+        step = int(raw_step)
+    except (TypeError, ValueError):
+        step = 1
+    if step < 1 or step > 6:
+        return redirect('/animation/?step=1')
     return send_from_directory(BASE_DIR / 'animation', 'index.html')
 
 
@@ -945,7 +1138,9 @@ def forms_files(filename):
 @app.route('/app')
 @app.route('/app/')
 def live_home():
-    return render_template('index.html')
+    # Bazont23Q v26 cleanup: legacy /app created a duplicate Page 5.
+    # It is no longer a canonical user page; send users to Register.
+    return redirect(url_for('register'))
 
 
 @app.route('/forms-api/session')
@@ -1003,7 +1198,7 @@ def forms_api_login():
     if not user or not check_password_hash(user['password_hash'], password):
         return jsonify({'ok': False, 'message': 'Invalid email or password.'}), 401
 
-    session['user_id'] = user['id']
+    establish_authenticated_session(user)
     return jsonify({'ok': True, 'email': user['email'], 'role': user['role']})
 
 
@@ -1049,9 +1244,7 @@ def login():
             if next_url:
                 return redirect(url_for('login', next=next_url))
             return redirect(url_for('login'))
-        session['user_id'] = user['id']
-        session.pop('pending_login_email', None)
-        session.pop('pending_login_password', None)
+        establish_authenticated_session(user)
         flash('Logged in successfully.', 'success')
         return redirect(url_for('role_select'))
     return render_template(
@@ -1067,11 +1260,7 @@ def test_login():
     # TEMPORARY TEST LOGIN ONLY — REMOVE BEFORE PRODUCTION
     conn = get_db()
     user = get_or_create_user(conn, TEST_USER_EMAIL, TEST_USER_ROLE)
-    session['user_id'] = user['id']
-    session['user'] = {
-        'email': TEST_USER_EMAIL,
-        'role': TEST_USER_ROLE
-    }
+    establish_authenticated_session(user)
     return redirect(url_for('role_select'))
 
 
@@ -1084,6 +1273,7 @@ def role_select():
 @app.route('/logout')
 def logout():
     session.clear()
+    session['auth_logged_out'] = True
     flash('Logged out.', 'success')
     return redirect(url_for('gateway_home'))
 
@@ -1239,13 +1429,13 @@ def invitation_preview(public_id):
         ok, message = send_seller_invite(tx)
         sent_at_display = now_ph_display()
         actor_ref = 'resend' if ok else 'email-outbox'
-        action = 'SELLER_INVITE_SENT' if ok else 'SELLER_INVITE_PREVIEW_CREATED'
+        action = 'SELLER_INVITED' if ok else 'SELLER_INVITE_PREVIEW_CREATED'
         log_audit(conn, tx['id'], 'system', actor_ref, action, None, None, message)
         conn.commit()
         if ok:
             tx_now = refresh_tx(conn, tx['id'])
-            if tx_now['status'] == TX_BUYER_PAID:
-                set_status(conn, tx_now, TX_INVITE_SENT, 'system', actor_ref, 'SELLER_INVITE_SENT_STATE', message)
+            if tx_now['status'] == TX_FUNDED:
+                set_status(conn, tx_now, TX_INVITED, 'system', actor_ref, 'SELLER_INVITED_STATE', message)
                 conn.commit()
             return redirect(url_for(
                 'invitation_preview',
@@ -1265,7 +1455,7 @@ def invitation_preview(public_id):
         ))
 
     invitation_sent = conn.execute(
-        "SELECT 1 FROM audit_log WHERE transaction_id = ? AND action = 'SELLER_INVITE_SENT' LIMIT 1",
+        "SELECT 1 FROM audit_log WHERE transaction_id = ? AND action = 'SELLER_INVITED' LIMIT 1",
         (tx['id'],)
     ).fetchone() is not None
     invite_content = build_seller_invite_content(tx)
@@ -1288,7 +1478,14 @@ def invitation_email_preview(public_id):
         flash('Buyer payment must be recorded before the seller invitation is available.', 'error')
         return redirect(url_for('buyer_actions', public_id=public_id))
 
-    return build_seller_invite_html(tx), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    email_html = build_seller_invite_html(tx)
+    if session.get('audit_access_mode'):
+        badge = '<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">20</div>'
+        if '<body' in email_html:
+            email_html = re.sub(r'(<body[^>]*>)', r'\1' + badge, email_html, count=1, flags=re.I)
+        else:
+            email_html = badge + email_html
+    return email_html, 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 @app.route('/seller/join/<token>', methods=['GET', 'POST'])
@@ -1305,7 +1502,7 @@ def seller_join(token):
         # Development-safe seller handover: the invitation link must be testable
         # in the same browser after the buyer sends it.  End the buyer session
         # and show the seller join form instead of bouncing back to courier.
-        session.pop('user_id', None)
+        clear_authenticated_session()
         flash('Buyer session ended for seller invitation testing. Join below as the seller for this transaction.', 'success')
         user = None
     elif user and user['role'] == 'seller':
@@ -1347,7 +1544,7 @@ def seller_join(token):
 
         assign_seller_to_transaction(conn, tx, seller, 'seller', seller_email, 'Seller joined via email link.')
         conn.commit()
-        session['user_id'] = seller['id']
+        establish_authenticated_session(seller)
         flash('Seller account linked to transaction.', 'success')
         return redirect(url_for('courier_logs', public_id=tx['public_id']))
     return render_template('seller_join.html', tx=tx)
@@ -1391,7 +1588,7 @@ def transaction_detail(public_id):
                 log_audit(conn, tx['id'], 'buyer', user['email'], 'FULL_PAYMENT_RECEIVED', tx['status'], tx['status'], f"Buyer paid PHP {tx_financials(tx)['buyer_pays']:.2f}. Platform holds PHP {tx_financials(tx)['platform_holds']:.2f}.")
                 tx_after_payment = refresh_tx(conn, tx['id'])
                 if tx_after_payment['status'] == TX_CREATED:
-                    set_status(conn, tx_after_payment, TX_BUYER_PAID, 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
+                    set_status(conn, tx_after_payment, TX_FUNDED, 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx_after_payment = refresh_tx(conn, tx['id'])
                 log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 16 for {tx['seller_email']}")
                 conn.commit()
@@ -1417,7 +1614,7 @@ def transaction_detail(public_id):
             if not tx['payment_received_at']:
                 flash('Buyer payment must be recorded before seller tracking can be submitted.', 'error')
                 return redirect(url_for('transaction_detail', public_id=public_id))
-            if tx['status'] not in (TX_SELLER_ACCEPTED, TX_TRACKING_SUBMITTED):
+            if tx['status'] not in (TX_SELLER_JOINED, TX_TRACKING_UPLOADED):
                 flash('Tracking cannot be submitted in the current state.', 'error')
                 return redirect(url_for('transaction_detail', public_id=public_id))
             conn.execute(
@@ -1427,8 +1624,8 @@ def transaction_detail(public_id):
                 (tracking_number, courier_name, now_iso(), now_iso(), tx['id'])
             )
             tx = refresh_tx(conn, tx['id'])
-            if tx['status'] == TX_SELLER_ACCEPTED:
-                set_status(conn, tx, TX_TRACKING_SUBMITTED, 'seller', user['email'], 'TRACKING_SUBMITTED', f'{courier_name} / {tracking_number}')
+            if tx['status'] == TX_SELLER_JOINED:
+                set_status(conn, tx, TX_TRACKING_UPLOADED, 'seller', user['email'], 'TRACKING_UPLOADED', f'{courier_name} / {tracking_number}')
             else:
                 log_audit(conn, tx['id'], 'seller', user['email'], 'TRACKING_UPDATED', tx['status'], tx['status'], f'{courier_name} / {tracking_number}')
             conn.commit()
@@ -1483,7 +1680,7 @@ def buyer_actions(public_id):
                 log_audit(conn, tx['id'], 'buyer', user['email'], 'FULL_PAYMENT_RECEIVED', tx['status'], tx['status'], f"Buyer paid PHP {tx_financials(tx)['buyer_pays']:.2f}. Platform holds PHP {tx_financials(tx)['platform_holds']:.2f}.")
                 tx_after_payment = refresh_tx(conn, tx['id'])
                 if tx_after_payment['status'] == TX_CREATED:
-                    set_status(conn, tx_after_payment, TX_BUYER_PAID, 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
+                    set_status(conn, tx_after_payment, TX_FUNDED, 'system', 'payment-test', 'PAYMENT_CONFIRMED', 'Buyer paid full amount.')
                     tx_after_payment = refresh_tx(conn, tx['id'])
                 log_audit(conn, tx['id'], 'system', 'payment-test', 'SELLER_INVITE_READY_AFTER_PAYMENT', None, None, f"Payment recorded. Seller invitation email is ready to send from Page 16 for {tx['seller_email']}")
                 conn.commit()
@@ -1525,12 +1722,12 @@ def courier_logs(public_id):
         if not tx['payment_received_at']:
             flash('Buyer payment must be recorded before seller tracking can be submitted.', 'error')
             return redirect(url_for('courier_logs', public_id=public_id))
-        if tx['status'] not in (TX_SELLER_ACCEPTED, TX_TRACKING_SUBMITTED):
+        if tx['status'] not in (TX_SELLER_JOINED, TX_TRACKING_UPLOADED):
             flash('Tracking cannot be submitted in the current transaction state.', 'error')
             return redirect(url_for('courier_logs', public_id=public_id))
 
         submitted_at = now_iso()
-        api_status = 'TRACKING_SUBMITTED' if COURIER_TEST_MODE else 'VERIFYING_TRACKING'
+        api_status = 'TRACKING_UPLOADED' if COURIER_TEST_MODE else 'VERIFYING_TRACKING'
         api_message = 'Tracking saved. Bazont test monitor will update every 1 minute.' if COURIER_TEST_MODE else 'Tracking saved. AfterShip verification pending.'
         aftership_id = None
 
@@ -1553,8 +1750,8 @@ def courier_logs(public_id):
              api_message, aftership_id, submitted_at, tracking_next_check_iso(), submitted_at, tx['id'])
         )
         tx = refresh_tx(conn, tx['id'])
-        if tx['status'] == TX_SELLER_ACCEPTED:
-            set_status(conn, tx, TX_TRACKING_SUBMITTED, 'seller', user['email'], 'TRACKING_SUBMITTED', f'{courier_name} / {tracking_number}. {api_message}')
+        if tx['status'] == TX_SELLER_JOINED:
+            set_status(conn, tx, TX_TRACKING_UPLOADED, 'seller', user['email'], 'TRACKING_UPLOADED', f'{courier_name} / {tracking_number}. {api_message}')
         else:
             log_audit(conn, tx['id'], 'seller', user['email'], 'TRACKING_UPDATED', tx['status'], tx['status'], f'{courier_name} / {tracking_number}. {api_message}')
         conn.execute(
@@ -1574,7 +1771,7 @@ def courier_logs(public_id):
 @app.route('/transactions/<public_id>/status')
 @login_required()
 def courier_status(public_id):
-    # Bazont23A: Page 25 is now the monitored courier-status hub.
+    # Bazont23P: Page 25 is now the monitored courier-status hub.
     # Refresh courier/rule state before rendering so the page reflects current progress.
     try:
         check_due_tracking()
@@ -1591,7 +1788,7 @@ def courier_status(public_id):
     last_event = courier_events[0] if courier_events else None
 
     raw_status = ((tx['tracking_api_status'] or tx['status'] or '') + '').upper()
-    if tx['status'] == TX_PAYMENT_RELEASED:
+    if tx['status'] == TX_RELEASED:
         stage_index = 6
     elif tx['status'] == TX_DELIVERED or 'DELIVERED' in raw_status:
         stage_index = 5
@@ -1646,9 +1843,174 @@ def seller_dashboard():
     return render_template('seller_dashboard.html', transactions=transactions)
 
 
+@app.route('/admin/back-office')
+def admin_backoffice():
+    """Inspection-only back-office view. Not linked into buyer/seller public flow."""
+    conn = get_db()
+    rows = conn.execute(
+        """
+        SELECT
+            t.*,
+            buyer.email AS buyer_email,
+            seller.email AS joined_seller_email,
+            (
+                SELECT ce.status
+                FROM courier_events ce
+                WHERE ce.transaction_id = t.id
+                ORDER BY ce.event_time DESC, ce.id DESC
+                LIMIT 1
+            ) AS latest_delivery_status
+        FROM transactions t
+        LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+        LEFT JOIN users seller ON seller.id = t.seller_user_id
+        ORDER BY t.created_at DESC, t.id DESC
+        """
+    ).fetchall()
+    transactions = []
+    for row in rows:
+        tx = dict(row)
+        tx['status'] = canonical_status(tx['status'])
+        tx['payment_status'] = admin_payment_status(tx)
+        tx['amount_held'] = tx_financials(tx)['platform_holds']
+        tx['eligibility_flag'] = transaction_review_flag(tx, tx.get('latest_delivery_status'))
+        transactions.append(tx)
+    return render_template('admin_backoffice.html', transactions=transactions)
+
+
+
+# Bazont23Q: STRICT F_B_C_v26 CANONICAL ROUTE/TEMPLATE INVENTORY + AUDIT ACCESS MODE.
+# Single authoritative user-facing page map. Home audit panel and audit routes are based on this map.
+MASTER_PAGE_MAP = [
+    {'number':'1', 'title':'Home', 'route':'/', 'endpoint':'gateway_home', 'template':'page0.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'2', 'title':'Why Bazont Exists', 'route':'/page1', 'endpoint':'page1_intro', 'template':'templates/page1_intro.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'3', 'title':'Rules That Protect Both Sides', 'route':'/intro', 'endpoint':'intro_page', 'template':'intro.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'4', 'title':'Buyer Creates Transaction', 'route':'/animation/?step=1', 'endpoint':'animation_index', 'template':'animation/index.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'5', 'title':'Seller Joins Transaction', 'route':'/animation/?step=2', 'endpoint':'animation_index', 'template':'animation/index.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'6', 'title':'Buyer Makes Payment', 'route':'/animation/?step=3', 'endpoint':'animation_index', 'template':'animation/index.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'7', 'title':'Seller Ships Item', 'route':'/animation/?step=4', 'endpoint':'animation_index', 'template':'animation/index.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'8', 'title':'Courier Confirms Delivery', 'route':'/animation/?step=5', 'endpoint':'animation_index', 'template':'animation/index.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'9', 'title':'Platform Releases Payment', 'route':'/animation/?step=6', 'endpoint':'animation_index', 'template':'animation/index.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'10', 'title':'Register', 'route':'/register', 'endpoint':'register', 'template':'templates/register.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'11', 'title':'Login', 'route':'/login', 'endpoint':'login', 'template':'templates/login.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'12', 'title':'Role', 'route':'/role-select', 'endpoint':'role_select', 'template':'templates/role_select.html', 'protected':True, 'audit_kind':'buyer'},
+    {'number':'13', 'title':'Dashboard', 'route':'/buyer/dashboard', 'endpoint':'buyer_dashboard', 'template':'templates/buyer_dashboard.html', 'protected':True, 'audit_kind':'buyer'},
+    {'number':'14', 'title':'Create', 'route':'/buyer/transactions/new', 'endpoint':'new_transaction', 'template':'templates/new_transaction.html', 'protected':True, 'audit_kind':'buyer'},
+    {'number':'15', 'title':'Pay', 'route':'/transactions/<public_id>/buyer-actions', 'endpoint':'buyer_actions', 'template':'templates/buyer_actions.html', 'protected':True, 'audit_kind':'tx_buyer'},
+    {'number':'16', 'title':'Invite', 'route':'/buyer/transactions/<public_id>/invitation-preview', 'endpoint':'invitation_preview', 'template':'templates/invitation_preview.html', 'protected':True, 'audit_kind':'tx_paid_buyer'},
+    {'number':'17', 'title':'Courier', 'route':'/transactions/<public_id>/courier', 'endpoint':'courier_logs', 'template':'templates/courier_logs.html', 'protected':True, 'audit_kind':'tx_seller_tracking'},
+    {'number':'18', 'title':'Seller', 'route':'/seller/join/<token>', 'endpoint':'seller_join', 'template':'templates/seller_join.html', 'protected':False, 'audit_kind':'seller_join'},
+    {'number':'19', 'title':'Transaction Detail', 'route':'/transactions/<public_id>', 'endpoint':'transaction_detail', 'template':'templates/transaction_detail.html', 'protected':True, 'audit_kind':'tx_buyer'},
+    {'number':'20', 'title':'Invitation Email Preview', 'route':'/buyer/transactions/<public_id>/invitation-email-preview', 'endpoint':'invitation_email_preview', 'template':'generated html', 'protected':True, 'audit_kind':'tx_paid_buyer'},
+    {'number':'25', 'title':'Status', 'route':'/transactions/<public_id>/status', 'endpoint':'courier_status', 'template':'templates/courier_status.html', 'protected':True, 'audit_kind':'tx_buyer_tracking'},
+    {'number':'26', 'title':'Buyer Transactions', 'route':'/buyer/transactions', 'endpoint':'buyer_transactions', 'template':'templates/buyer_transactions.html', 'protected':True, 'audit_kind':'buyer'},
+    {'number':'27', 'title':'Seller Dashboard', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
+    {'number':'28', 'title':'FAQ', 'route':'/faq', 'endpoint':'faq', 'template':'templates/faq.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'29', 'title':'Index', 'route':'/index', 'endpoint':'index_page', 'template':'index_page.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'30', 'title':'Back Office', 'route':'/admin/back-office', 'endpoint':'admin_backoffice', 'template':'templates/admin_backoffice.html', 'protected':False, 'audit_kind':'public'},
+]
+MASTER_PAGE_BY_NUMBER = {row['number']: row for row in MASTER_PAGE_MAP}
+
+
+def audit_login_as(role='buyer'):
+    conn = get_db()
+    buyer, seller = ensure_demo_users(conn)
+    user = seller if role == 'seller' else buyer
+    establish_authenticated_session(user)
+    session['audit_access_mode'] = True
+    return user
+
+
+def audit_transaction_for(kind='tx_buyer'):
+    conn = get_db()
+    buyer, seller = ensure_demo_users(conn)
+    audit_seller = get_or_create_user(conn, 'seller.audit@bazont.local', 'seller')
+    role = 'seller' if 'seller' in kind else 'buyer'
+    paid = kind in ('tx_paid_buyer', 'tx_seller_tracking', 'tx_buyer_tracking')
+    assign_seller = kind in ('tx_seller_tracking', 'tx_buyer_tracking') or role == 'seller'
+    tracking = kind in ('tx_seller_tracking', 'tx_buyer_tracking')
+    tx = get_or_create_audit_transaction(conn, buyer=buyer, paid=paid, assign_seller=assign_seller, tracking=tracking, audit_key=kind)
+    establish_authenticated_session(audit_seller if role == 'seller' else buyer)
+    session['audit_access_mode'] = True
+    return tx
+
+
+def audit_destination_for(page):
+    kind = page['audit_kind']
+    endpoint = page['endpoint']
+    if kind == 'public':
+        return redirect(page['route'])
+    if kind == 'buyer':
+        audit_login_as('buyer')
+        return redirect(url_for(endpoint))
+    if kind == 'seller':
+        audit_login_as('seller')
+        return redirect(url_for(endpoint))
+    if kind == 'seller_join':
+        conn = get_db()
+        buyer, _seller = ensure_demo_users(conn)
+        tx = get_or_create_audit_transaction(conn, buyer=buyer, paid=True, assign_seller=False, tracking=False)
+        clear_authenticated_session()
+        session['audit_access_mode'] = True
+        return redirect(url_for('seller_join', token=tx['invite_token']))
+    if kind.startswith('tx_'):
+        tx = audit_transaction_for(kind)
+        if endpoint in ('buyer_actions', 'transaction_detail', 'courier_logs', 'courier_status', 'invitation_email_preview'):
+            return redirect(url_for(endpoint, public_id=tx['public_id']))
+        if endpoint == 'invitation_preview':
+            return redirect(url_for('invitation_preview', public_id=tx['public_id']))
+    abort(404)
+
+
+@app.route('/audit/p/<page_no>')
+def audit_master_page(page_no):
+    page = MASTER_PAGE_BY_NUMBER.get(str(page_no))
+    if not page:
+        abort(404)
+    return audit_destination_for(page)
+
+# Backward-compatible audit aliases now delegate to the single master map.
+@app.route('/audit/page<int:page_no>')
+def audit_page_legacy(page_no):
+    return redirect(url_for('audit_master_page', page_no=str(page_no)))
+
+@app.route('/audit-map.json')
+def audit_map_json():
+    return {'pages': MASTER_PAGE_MAP, 'version': get_version()}
+
 @app.route('/__version')
 def version_route():
     return {'version': get_version()}
+
+
+def build_audit_panel_html():
+    status_for = lambda page: 'PROTECTED' if page.get('protected') else 'ALIVE'
+    cls_for = lambda page: 'protected' if page.get('protected') else 'alive'
+    rows = []
+    for page in MASTER_PAGE_MAP:
+        route_label = html.escape(page['route'])
+        title = html.escape(page['title'])
+        number = html.escape(str(page['number']))
+        status = status_for(page)
+        cls = cls_for(page)
+        rows.append(f'<a class="audit-link {cls}" href="/audit/p/{number}">{number} {title} • {status} • {route_label}</a>')
+    return '\n          '.join(rows)
+
+
+def render_gateway_home_page():
+    page_path = BASE_DIR / 'page0.html'
+    content = page_path.read_text(encoding='utf-8')
+    version = get_version()
+    content = re.sub(r'Bazont23[A-Z]\.zip', version, content)
+    return content
+
+
+def render_index_page():
+    page_path = BASE_DIR / 'index_page.html'
+    content = page_path.read_text(encoding='utf-8')
+    version = get_version()
+    content = re.sub(r'Bazont23[A-Z]\.zip', version, content)
+    content = content.replace('<!-- AUDIT_PANEL_ROWS -->', build_audit_panel_html())
+    return content
 
 
 @app.route("/faq")

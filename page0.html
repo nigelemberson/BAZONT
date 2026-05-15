@@ -201,6 +201,72 @@
   .page1-fit .actions { margin-top: 0; gap: 18px; }
   .page1-fit .footer-lines { margin-top: 10px; line-height: 1.35; }
 
+
+
+  .index-shortcut {
+    position: fixed;
+    top: 34px;
+    left: 10px;
+    z-index: 2147483647;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(37,99,235,0.92);
+    color: #fff;
+    font: 800 11px/1 Arial, sans-serif;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+  }
+  .index-shortcut:hover { background: rgba(29,78,216,0.98); }
+
+  .audit-panel {
+    width: min(980px, calc(100% - 48px));
+    margin: 18px auto 0;
+    padding: 16px 18px 18px;
+    border-radius: 20px;
+    background: rgba(15,23,42,0.58);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+    text-align: left;
+  }
+  .audit-panel h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  .audit-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .audit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 132px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+  }
+  .audit-link.alive { background: rgba(34,197,94,0.20); }
+  .audit-link.protected { background: rgba(37,99,235,0.22); }
+  .audit-link.internal { background: rgba(251,146,60,0.20); }
+  .audit-link.unnumbered { background: rgba(148,163,184,0.20); }
+  .audit-note {
+    margin: 10px 0 0;
+    color: #dbe4f3;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
   @media (max-width: 900px) {
     .top-login {
       top: 18px;
@@ -238,6 +304,7 @@
 </head>
 <body class="page1-fit">
   <div class="page-id-badge">1</div>
+  <a class="index-shortcut" href="/index">X Index</a>
 
 
   <div class="wrap">
@@ -246,17 +313,9 @@
       <div class="bazont-logo-4Ta">
         <img src="/static/assets/bazont_logo.png" alt="Bazont">
       </div>
-      <div class="sub">Login if already registered, or click Next to see how Bazont protects transactions between distant buyers and sellers.</div>
+      <div class="sub">Login or click Next to see how Bazont protects transactions between distant buyers and sellers.</div>
 
       <div class="actions">
-        <a class="cta cta-animation" href="/page1" style="transform: scale(0.65); transform-origin: center;">
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polygon points="10,8 17,12 10,16 10,8" fill="currentColor" stroke="none"></polygon>
-          </svg>
-          <span>Next</span>
-        </a>
-
         <a class="cta cta-login" href="/login" style="transform: scale(0.65); transform-origin: center;">
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21a8 8 0 0 0-16 0"></path>
@@ -264,7 +323,16 @@
           </svg>
           <span>Login</span>
         </a>
+
+        <a class="cta cta-animation" href="/page1" style="transform: scale(0.65); transform-origin: center;">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10,8 17,12 10,16 10,8" fill="currentColor" stroke="none"></polygon>
+          </svg>
+          <span>Next</span>
+        </a>
       </div>
+
 
       <div class="footer-lines">
         <div class="line-1">Secure transactions&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Rules-based process&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;No manual intervention</div>
@@ -272,7 +340,7 @@
     </main>
   </div>
 
-  <div class="footer-version"><span id="visible-version">Bazont23B.zip</span></div>
+  <div class="footer-version"><span id="visible-version">Bazont23R.zip</span></div>
 
   <script>
   fetch("/__version", {cache:"no-store"})

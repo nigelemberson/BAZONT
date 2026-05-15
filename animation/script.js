@@ -173,7 +173,7 @@ function renderStep() {
   sceneSubtitle.textContent = step.subtitle;
   captionBox.textContent = step.caption;
   demoStatus.textContent = step.status;
-  if (pageIdBadge) pageIdBadge.textContent = animationPageIds[currentStep] || "3";
+  if (pageIdBadge) pageIdBadge.textContent = animationPageIds[currentStep] || "4";
   progressFill.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
 
   stepItems.forEach((item, index) => {

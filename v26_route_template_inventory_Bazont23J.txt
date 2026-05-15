@@ -1,0 +1,301 @@
+Bazont23Q v26 ROUTE + TEMPLATE INVENTORY (actual Flask routes)
+
+function=gateway_home
+  routes=/
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=page1_intro
+  routes=/page1, /page1_intro
+  template/file=page1_intro.html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=page0_welcome
+  routes=/page0, /page0.html
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=gateway_style
+  routes=/style.css
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=intro_page
+  routes=/intro, /intro.html
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=gateway_live_placeholder
+  routes=/live.html
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=live_home
+
+function=animation_index
+  routes=/animation, /animation/
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=animation_files
+  routes=/animation/<path:filename>
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=forms_index
+  routes=/forms, /forms/
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=register
+
+function=forms_files
+  routes=/forms/<path:filename>
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=live_home
+  routes=/app, /app/
+  template/file=index.html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=forms_api_session
+  routes=/forms-api/session
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=forms_api_register
+  routes=/forms-api/register
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=forms_api_login
+  routes=/forms-api/login
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=register
+  routes=/register
+  template/file=register.html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=login, register, login
+
+function=login
+  routes=/login
+  template/file=login.html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=role_select, login, login
+
+function=test_login
+  routes=/test-login
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=role_select
+
+function=role_select
+  routes=/role-select
+  template/file=role_select.html
+  protected=login_required()
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=logout
+  routes=/logout
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=gateway_home
+
+function=buyer_dashboard
+  routes=/buyer/dashboard
+  template/file=buyer_dashboard.html
+  protected=login_required(role='buyer')
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=buyer_transactions
+  routes=/buyer/transactions
+  template/file=buyer_transactions.html
+  protected=login_required(role='buyer')
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=new_transaction
+  routes=/buyer/transactions/new
+  template/file=new_transaction.html, new_transaction.html
+  protected=login_required(role='buyer')
+  classification=USER PAGE
+  redirects/url_for=buyer_actions
+
+function=latest_invitation_preview
+  routes=/buyer/transactions/latest/invitation-preview
+  template/file=static file/redirect/generated html
+  protected=login_required(role='buyer')
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=buyer_actions, buyer_actions
+
+function=invitation_preview
+  routes=/buyer/transactions/<public_id>/invitation-preview
+  template/file=invitation_preview.html
+  protected=login_required(role='buyer')
+  classification=USER PAGE
+  redirects/url_for=buyer_actions, invitation_preview, invitation_preview
+
+function=invitation_email_preview
+  routes=/buyer/transactions/<public_id>/invitation-email-preview
+  template/file=static file/redirect/generated html
+  protected=login_required(role='buyer')
+  classification=USER PAGE
+  redirects/url_for=buyer_actions
+
+function=seller_join
+  routes=/seller/join/<token>
+  template/file=seller_join.html, seller_join.html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=login, courier_logs, courier_logs, login, seller_dashboard
+
+function=transaction_detail
+  routes=/transactions/<public_id>
+  template/file=transaction_detail.html
+  protected=login_required()
+  classification=USER PAGE
+  redirects/url_for=buyer_actions, courier_logs, transaction_detail, invitation_preview, role_select, transaction_detail, transaction_detail, transaction_detail, transaction_detail, transaction_detail
+
+function=buyer_actions
+  routes=/transactions/<public_id>/buyer-actions
+  template/file=buyer_actions.html
+  protected=login_required()
+  classification=USER PAGE
+  redirects/url_for=buyer_actions, invitation_preview, role_select, buyer_actions
+
+function=courier_logs
+  routes=/transactions/<public_id>/courier
+  template/file=courier_logs.html
+  protected=login_required()
+  classification=USER PAGE
+  redirects/url_for=courier_status, courier_logs, courier_logs, courier_logs
+
+function=courier_status
+  routes=/transactions/<public_id>/status
+  template/file=courier_status.html
+  protected=login_required()
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=seller_dashboard
+  routes=/seller/dashboard
+  template/file=seller_dashboard.html
+  protected=login_required(role='seller')
+  classification=USER PAGE
+  redirects/url_for=-
+
+function=audit_master_page
+  routes=/audit/p/<page_no>
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=audit_page_legacy
+  routes=/audit/page<int:page_no>
+  template/file=static file/redirect/generated html
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=audit_master_page
+
+function=audit_map_json
+  routes=/audit-map.json
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=version_route
+  routes=/__version
+  template/file=none
+  protected=NO
+  classification=SYSTEM / NOT A PAGE
+  redirects/url_for=-
+
+function=faq
+  routes=/faq
+  template/file=faq.html
+  protected=NO
+  classification=USER PAGE
+  redirects/url_for=-
+
+
+Bazont23Q v26 ROUTE + TEMPLATE INVENTORY
+
+Master user-facing page map (authoritative):
+Page 1: Home | route=/ | endpoint=gateway_home | template=page0.html | protected=False | audit_access=public
+Page 2: Intro Risk | route=/page1 | endpoint=page1_intro | template=templates/page1_intro.html | protected=False | audit_access=public
+Page 3: Rules / Info | route=/intro | endpoint=intro_page | template=intro.html | protected=False | audit_access=public
+Page 4: Guided Demo | route=/animation | endpoint=animation_index | template=animation/index.html | protected=False | audit_access=public
+Page 5: App | route=/app | endpoint=live_home | template=templates/index.html | protected=False | audit_access=public
+Page 6: FAQ | route=/faq | endpoint=faq | template=templates/faq.html | protected=False | audit_access=public
+Page 10: Register | route=/register | endpoint=register | template=templates/register.html | protected=False | audit_access=public
+Page 11: Login | route=/login | endpoint=login | template=templates/login.html | protected=False | audit_access=public
+Page 12: Role | route=/role-select | endpoint=role_select | template=templates/role_select.html | protected=True | audit_access=buyer audit session
+Page 13: Dashboard | route=/buyer/dashboard | endpoint=buyer_dashboard | template=templates/buyer_dashboard.html | protected=True | audit_access=buyer audit session
+Page 14: Create | route=/buyer/transactions/new | endpoint=new_transaction | template=templates/new_transaction.html | protected=True | audit_access=buyer audit session
+Page 15: Pay | route=/transactions/<public_id>/buyer-actions | endpoint=buyer_actions | template=templates/buyer_actions.html | protected=True | audit_access=buyer audit transaction
+Page 16: Invite | route=/buyer/transactions/<public_id>/invitation-preview | endpoint=invitation_preview | template=templates/invitation_preview.html | protected=True | audit_access=buyer paid audit transaction
+Page 17: Courier | route=/transactions/<public_id>/courier | endpoint=courier_logs | template=templates/courier_logs.html | protected=True | audit_access=seller audit transaction
+Page 18: Seller | route=/seller/join/<token> | endpoint=seller_join | template=templates/seller_join.html | protected=False | audit_access=audit invite token
+Page 19: Transaction Detail | route=/transactions/<public_id> | endpoint=transaction_detail | template=templates/transaction_detail.html | protected=True | audit_access=buyer/seller audit transaction
+Page 20: Invitation Email Preview | route=/buyer/transactions/<public_id>/invitation-email-preview | endpoint=invitation_email_preview | template=generated html | protected=True | audit_access=buyer paid audit transaction
+Page 25: Status | route=/transactions/<public_id>/status | endpoint=courier_status | template=templates/courier_status.html | protected=True | audit_access=buyer audit transaction
+Page 26: Buyer Transactions | route=/buyer/transactions | endpoint=buyer_transactions | template=templates/buyer_transactions.html | protected=True | audit_access=buyer audit session
+Page 27: Seller Dashboard | route=/seller/dashboard | endpoint=seller_dashboard | template=templates/seller_dashboard.html | protected=True | audit_access=seller audit session
+
+System / not user pages:
+/style.css static asset
+/live.html redirect alias to /app
+/forms and /forms/ redirect aliases to /register
+/forms-api/session JSON endpoint
+/forms-api/register POST API endpoint
+/forms-api/login POST API endpoint
+/test-login POST auth helper
+/logout session action
+/animation/<path> static asset route
+/forms/<path> static asset route
+/__version JSON version endpoint
+/audit/p/<page_no> temporary v26 inspection route
+/audit/page<int> backward-compatible audit alias
+/audit-map.json JSON audit map
+
+Duplicate/alias notes:
+/page1 and /page1_intro are aliases for Page 2.
+/page0 and /page0.html are aliases for Page 1 Home static file.
+/intro and /intro.html are aliases for Page 3.
+/app and /app/ are aliases for Page 5.
+/animation and /animation/ are aliases for Page 4.

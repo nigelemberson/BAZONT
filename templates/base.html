@@ -2094,7 +2094,7 @@
   }
 
 
-/* Bazont23B: Page 18 seller-join cleanup only. */
+/* Bazont23P: Page 18 seller-join cleanup only. */
 body.seller-join-clean-page .shell { max-width: 1480px; padding-top: 16px; }
 body.seller-join-clean-page .topbar {
   min-height: 86px;
@@ -2161,7 +2161,7 @@ body.seller-join-clean-page .seller-join-bottom-actions { display: none !importa
   body.seller-join-clean-page .seller-join-button { width: 100% !important; max-width: none !important; }
 }
 
-/* Bazont23B: Page 27 seller dashboard button width normalization. */
+/* Bazont23P: Page 27 seller dashboard button width normalization. */
 body.endpoint-seller-dashboard .buyer-dashboard-bottom-actions {
   display: flex !important;
   justify-content: space-between !important;
@@ -2206,20 +2206,92 @@ body.endpoint-seller-dashboard .panel td .btn.secondary {
 }
 
 
+
+/* Bazont23P: Page 10 Register-only polish — compact single alert, standard nav tabs, professional active colour. */
+body.register-page > .shell > .steps {
+  grid-template-columns: repeat(10, 110px) !important;
+  justify-content: start !important;
+  gap: 8px !important;
+  margin: 14px 0 18px !important;
+}
+body.register-page > .shell > .steps .step {
+  width: 110px !important;
+  min-width: 110px !important;
+  max-width: 110px !important;
+  padding: 10px 8px !important;
+  min-height: 46px !important;
+  border-radius: 14px !important;
+}
+body.register-page > .shell > .steps .step.active {
+  background: linear-gradient(180deg, #2563eb, #1d4ed8) !important;
+  border-color: rgba(147,197,253,0.48) !important;
+  box-shadow: 0 10px 24px rgba(37,99,235,0.28) !important;
+}
+body.register-page .flash.register-compact-alert {
+  width: 100% !important;
+  max-width: 520px !important;
+  margin: 0 0 16px 0 !important;
+  padding: 10px 14px !important;
+  min-height: 0 !important;
+  border-radius: 12px !important;
+  font-size: 0.98rem !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.16) !important;
+}
+body.register-page .flash.register-compact-alert.error {
+  background: rgba(254,242,242,0.96) !important;
+  color: #b91c1c !important;
+  border: 1px solid rgba(248,113,113,0.38) !important;
+}
+body.register-page .flash.register-compact-alert::before {
+  content: "⚠";
+  display: inline-block;
+  margin-right: 8px;
+  color: #b91c1c;
+}
+
+/* Bazont23P: auth/session display rule — pill only appears with matching server user, and logout appears with it. */
+body .topbar-auth {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: nowrap;
+}
+body .topbar-auth .topbar-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 7px 14px;
+  border-radius: 12px;
+  color: #fff !important;
+  font-weight: 800;
+  text-decoration: none !important;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 1px solid rgba(248,113,113,0.55);
+  box-shadow: 0 8px 18px rgba(220,38,38,0.20);
+}
+body .topbar-auth .navchip {
+  margin-left: 0 !important;
+}
+
 </style>
 </head>
-<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
-{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','courier_logs':'17','seller_join':'18','courier_status':'25','transaction_detail':'16A','buyer_transactions':'26','seller_dashboard':'27'} %}
+<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% elif request.endpoint == 'admin_backoffice' %}admin-backoffice-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
+{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','latest_invitation_preview':'16','invitation_email_preview':'20','courier_logs':'17','seller_join':'18','transaction_detail':'19','courier_status':'25','buyer_transactions':'26','seller_dashboard':'27','faq':'28','admin_backoffice':'30','page1_intro':'2'} %}
 {% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'courier_status', 'buyer_transactions'] %}
 {% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'16', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'25', 'buyer_transactions':'26'} %}
-{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('25','Status')] %}
+{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('25','Status'), ('26','Buyer Tx'), ('27','Seller Dash')] %}
 {% if request.endpoint in PAGE_IDS %}<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">{{ PAGE_IDS[request.endpoint] }}</div>{% endif %}
   <div class="shell">
     {% if request.endpoint in NORMALISED_PAGES %}
     <div class="topbar">
       <div class="brand header-left"><img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b"><div class="header-title"><div class="brand-title brand-name">BAZONT</div><div class="brand-sub subtitle">Safe Transactions</div></div></div>
       <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
-      {% if current_user %}<span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span>{% endif %}
+      {% if current_user %}<div class="topbar-auth"><a class="topbar-logout" href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span></div>{% endif %}
     </div>
     <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ [100, ((((ACTIVE_PAGES[request.endpoint]|int) - 9) / 16 * 100)|round(2))]|min }}%"></div></div></div>
     <div class="steps">
@@ -2240,11 +2312,22 @@ body.endpoint-seller-dashboard .panel td .btn.secondary {
 
     <main class="page-wrap">
       {% set FLASH_MESSAGES = get_flashed_messages(with_categories=true) %}
-      {% for category, message in FLASH_MESSAGES %}
-        {% if not (request.endpoint == 'transaction_detail' and category == 'success' and message == 'Invitation sent.') %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endif %}
-      {% endfor %}
+      {% if request.endpoint == 'register' %}
+        {% set ns = namespace(seen=[]) %}
+        {% for category, message in FLASH_MESSAGES %}
+          {% set flash_key = category ~ '|' ~ message %}
+          {% if flash_key not in ns.seen %}
+            {% set ns.seen = ns.seen + [flash_key] %}
+            <div class="flash {{ category }} register-compact-alert">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {% for category, message in FLASH_MESSAGES %}
+          {% if not (request.endpoint == 'transaction_detail' and category == 'success' and message == 'Invitation sent.') %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
       {% block content %}{% endblock %}
       <div class="page-version-fixed">{{ VERSION }}</div>
     </main>

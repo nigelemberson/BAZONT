@@ -1,3 +1,15 @@
-Bazont23B
+Bazont23R.zip handover
 
-Courier state engine added for Page 25. TEST MODE advances shipment status every 1 minute: submitted, accepted, in transit, out for delivery, delivered, then payment released. Existing live buyer/seller/email flow preserved.
+Baseline: Bazont23O.zip
+Output: Bazont23R.zip
+
+Amendment applied:
+1. Home subtitle changed to: Login or click Next to see how Bazont protects transactions between distant buyers and sellers.
+2. Home buttons swapped so Login is LEFT and Next is RIGHT.
+3. Preserved X Index, page numbering, routes, and existing functionality.
+
+Checks:
+- python py_compile app.py/package_check.py/zip_check.py PASS
+- package_check.py PASS
+- zip_check.py PASS after packaging
+- TRUE FLAT ZIP checked

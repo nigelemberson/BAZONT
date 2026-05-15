@@ -1,23 +1,24 @@
-Bazont23B.zip — visible page map after Pages 9-16 primary-flow removal and visible renumbering
-
-NEW visible page numbers now shown to the user:
-1. Welcome / /page0.html / old Page 0 -> Page 1
-2. Image intro / /page1 / old Page 1 -> Page 2
-3. Intro / intro.html / old Page 2 -> Page 3
-4. Buyer creates transaction / /animation/?step=1 / old Page 3 -> Page 4
-5. Seller joins transaction / /animation/?step=2 / old Page 4 -> Page 5
-6. Buyer makes payment / /animation/?step=3 / old Page 5 -> Page 6
-7. Seller ships item / /animation/?step=4 / old Page 6 -> Page 7
-8. Courier confirms delivery / /animation/?step=5 / old Page 7 -> Page 8
-9. Platform releases payment / /animation/?step=6 / old Page 8 -> Page 9
-10. Register / /register / old Page 17 -> Page 10
-11. Login / /login / old Page 18 -> Page 11
-12. Role select / /role-select / old Page 19 -> Page 12
-13. Buyer dashboard / /buyer/dashboard / old Page 20 -> Page 13
-14. Create new buyer transaction / /buyer/transactions/new / old Page 21 -> Page 14
-15. Buyer actions/payment / /buyer/transactions/<public_id>/actions / old Page 22 -> Page 15
-16. Invitation preview and transaction detail / old Page 23 -> Page 16
-17. Courier logs / old Page 24 -> Page 17
-
-Old Pages 25+ were intentionally left untouched unless already outside the specified mapping.
-Version target: Bazont23B.zip
+1 | Home | / | ALIVE
+2 | Why Bazont Exists | /page1 | ALIVE
+3 | Rules That Protect Both Sides | /intro | ALIVE
+4 | Buyer Creates Transaction | /animation/?step=1 | ALIVE
+5 | Seller Joins Transaction | /animation/?step=2 | ALIVE
+6 | Buyer Makes Payment | /animation/?step=3 | ALIVE
+7 | Seller Ships Item | /animation/?step=4 | ALIVE
+8 | Courier Confirms Delivery | /animation/?step=5 | ALIVE
+9 | Platform Releases Payment | /animation/?step=6 | ALIVE
+10 | Register | /register | ALIVE
+11 | Login | /login | ALIVE
+12 | Role | /role-select | PROTECTED
+13 | Dashboard | /buyer/dashboard | PROTECTED
+14 | Create | /buyer/transactions/new | PROTECTED
+15 | Pay | /transactions/<public_id>/buyer-actions | PROTECTED
+16 | Invite | /buyer/transactions/<public_id>/invitation-preview | PROTECTED
+17 | Courier | /transactions/<public_id>/courier | PROTECTED
+18 | Seller | /seller/join/<token> | ALIVE
+19 | Transaction Detail | /transactions/<public_id> | PROTECTED
+20 | Invitation Email Preview | /buyer/transactions/<public_id>/invitation-email-preview | PROTECTED
+25 | Status | /transactions/<public_id>/status | PROTECTED
+26 | Buyer Transactions | /buyer/transactions | PROTECTED
+27 | Seller Dashboard | /seller/dashboard | PROTECTED
+28 | FAQ | /faq | ALIVE

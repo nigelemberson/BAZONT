@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bazont — Index</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(34,197,94,0.18), transparent 26%),
+      radial-gradient(circle at 82% 10%, rgba(37,99,235,0.22), transparent 28%),
+      linear-gradient(135deg, #0f172a 0%, #111827 42%, #064e3b 100%);
+  }
+  .page-id-badge {
+    position: fixed;
+    top: 8px;
+    left: 10px;
+    z-index: 2147483647;
+    background: rgba(15,23,42,0.92);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font: 700 12px/1 Arial,sans-serif;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+  }
+  .wrap {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 54px 0 44px;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 52px);
+    letter-spacing: -0.03em;
+  }
+  .back-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 132px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 12px 24px rgba(22,163,74,0.26);
+  }
+  .audit-panel {
+    width: 100%;
+    padding: 18px 20px 20px;
+    border-radius: 20px;
+    background: rgba(15,23,42,0.58);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+    text-align: left;
+  }
+  .audit-panel h2 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .audit-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .audit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 132px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+  }
+  .audit-link.alive { background: rgba(34,197,94,0.20); }
+  .audit-link.protected { background: rgba(37,99,235,0.22); }
+  .audit-link.internal { background: rgba(251,146,60,0.20); }
+  .audit-link.unnumbered { background: rgba(148,163,184,0.20); }
+  .audit-note {
+    margin: 12px 0 0;
+    color: #dbe4f3;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .footer-version {
+    position: fixed;
+    right: 20px;
+    bottom: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.72);
+    z-index: 70;
+    pointer-events: none;
+  }
+  @media (max-width: 680px) {
+    .wrap { width: min(100% - 24px, 1120px); padding-top: 48px; }
+    .topbar { align-items: flex-start; flex-direction: column; }
+    .back-home { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="page-id-badge">29</div>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Index</h1>
+      <a class="back-home" href="/">Back to Home</a>
+    </div>
+    <section class="audit-panel" aria-label="Page Access / Audit">
+      <h2>Page Access / Audit</h2>
+      <div class="audit-grid">
+        <!-- AUDIT_PANEL_ROWS -->
+      </div>
+      <p class="audit-note">Temporary v26 inspection mode: this panel is generated from the master page map. Audit buttons open real visible pages without changing normal production workflow links.</p>
+    </section>
+  </div>
+  <div class="footer-version"><span id="visible-version">Bazont23R.zip</span></div>
+  <script>
+  fetch("/__version", {cache:"no-store"})
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      const el = document.getElementById("visible-version");
+      if (el && data && data.version) el.textContent = String(data.version).trim();
+    })
+    .catch(() => {});
+  </script>
+</body>
+</html>

@@ -13,9 +13,9 @@
 
   <section class="grid-4">
     <div class="stat-card"><div class="tiny">Assigned transactions</div><div class="kpi">{{ transactions|length }}</div></div>
-    <div class="stat-card"><div class="tiny">Awaiting tracking</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'SELLER_ACCEPTED')|list|length }}</div></div>
-    <div class="stat-card"><div class="tiny">Tracking submitted</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'TRACKING_SUBMITTED')|list|length }}</div></div>
-    <div class="stat-card"><div class="tiny">Released</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'PAYMENT_RELEASED')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Awaiting tracking</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'SELLER_JOINED')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Tracking uploaded</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'TRACKING_UPLOADED')|list|length }}</div></div>
+    <div class="stat-card"><div class="tiny">Released</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'RELEASED')|list|length }}</div></div>
   </section>
 
   <section class="panel">

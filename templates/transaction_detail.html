@@ -108,10 +108,10 @@
         {% for category, message in FLASH_MESSAGES|default([]) %}
           {% if category == 'success' and message == 'Invitation sent.' %}<span class="pill good tx-invitation-sent-pill">Invitation sent.</span>{% endif %}
         {% endfor %}
-        {% if tx['status'] == 'BUYER_PAID' %}<span class="pill" style="background:#e7f0ff;color:#123f8e;">Funds secured</span>{% endif %}
-        {% if tx['status'] == 'TRACKING_SUBMITTED' %}<span class="pill good">Tracking submitted</span>{% endif %}
-        {% if tx['status'] == 'PAYMENT_RELEASED' %}<span class="pill good">Transaction complete — Seller paid</span>{% endif %}
-        {% if tx['status'] == 'AUTO_REFUNDED' %}<span class="pill warn">Transaction complete — Buyer refunded</span>{% endif %}
+        {% if tx['status'] == 'FUNDED' %}<span class="pill" style="background:#e7f0ff;color:#123f8e;">Funds secured</span>{% endif %}
+        {% if tx['status'] == 'TRACKING_UPLOADED' %}<span class="pill good">Tracking uploaded</span>{% endif %}
+        {% if tx['status'] == 'RELEASED' %}<span class="pill good">Transaction complete — Seller paid</span>{% endif %}
+        {% if tx['status'] == 'REFUNDED' %}<span class="pill warn">Transaction complete — Buyer refunded</span>{% endif %}
         {% if tx['status'] == 'CANCELLED' %}<span class="pill warn">Transaction cancelled</span>{% endif %}
       </div>
     </div>
@@ -138,7 +138,7 @@
       <table>
         <tr><th>Size</th><td class="tx-size-single-line">{{ tx['length_cm'] }} × {{ tx['width_cm'] }} × {{ tx['height_cm'] }} cm</td></tr>
         <tr><th>Tracking</th><td>{{ tx['courier_name'] or '-' }} {{ tx['tracking_number'] or '-' }}</td></tr>
-        <tr><th>Tracking submitted</th><td>{{ tx['tracking_submitted_at'] or '-' }}</td></tr>
+        <tr><th>Tracking uploaded</th><td>{{ tx['tracking_submitted_at'] or '-' }}</td></tr>
         <tr><th>Released at</th><td>{{ tx['released_at'] or '-' }}</td></tr>
         <tr><th>Refunded at</th><td>{{ tx['refunded_at'] or '-' }}</td></tr>
       </table>
