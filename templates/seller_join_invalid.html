@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="seller-join-panel" style="max-width:760px;margin:0 auto;text-align:center;">
+  <h1 class="seller-join-title">Seller invitation unavailable</h1>
+  <p class="seller-join-subtitle">{{ message }}</p>
+  <div class="actions" style="justify-content:center;margin-top:22px;">
+    <a class="btn secondary" href="{{ url_for('gateway_home') }}">Home</a>
+  </div>
+</section>
+{% endblock %}

@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont24V.zip'
+DEFAULT_VERSION = 'Bazont24X.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
@@ -49,9 +49,15 @@ RESEND_FROM_EMAIL = os.environ.get(
     'Bazont <noreply@bazont.com>'
 ).strip()
 RESEND_API_URL = 'https://api.resend.com/emails'
-# Bazont23P: public invite links must not use localhost/127.0.0.1.
-# Set BAZONT_PUBLIC_BASE_URL on Render if the live URL differs.
-PUBLIC_BASE_URL = os.environ.get('BAZONT_PUBLIC_BASE_URL', 'https://bazont.com').strip().rstrip('/')
+# Bazont24X: real invitation emails must use a public base URL by default.
+# Configure APP_BASE_URL / PUBLIC_BASE_URL / BAZONT_PUBLIC_BASE_URL only for an explicit override.
+# Localhost/127.0.0.1 is allowed only when deliberately configured for local-only testing.
+PUBLIC_BASE_URL = (
+    os.environ.get('APP_BASE_URL')
+    or os.environ.get('PUBLIC_BASE_URL')
+    or os.environ.get('BAZONT_PUBLIC_BASE_URL')
+    or 'https://bazont.com'
+).strip().rstrip('/')
 
 LOCAL_RESEND_KEY_FILE = 'resend_api_key.txt'
 if not AFTERSHIP_API_KEY and os.path.exists(LOCAL_RESEND_KEY_FILE):
@@ -541,6 +547,33 @@ def clear_authenticated_session():
     session['auth_logged_out'] = True
 
 
+def remove_login_required_flash_noise():
+    """Keep public seller invite pages from showing stale login-required warnings.
+
+    The /seller/join/<token> invitation entry point is intentionally public.
+    If a browser arrived there after a protected-page redirect, old
+    "Please log in first." flash messages must not stack above the seller
+    join form.  Preserve other messages, deduplicated.
+    """
+    flashes = session.get('_flashes')
+    if not flashes:
+        return
+    cleaned = []
+    seen = set()
+    for category, message in flashes:
+        if message == 'Please log in first.':
+            continue
+        key = (category, message)
+        if key in seen:
+            continue
+        seen.add(key)
+        cleaned.append((category, message))
+    if cleaned:
+        session['_flashes'] = cleaned
+    else:
+        session.pop('_flashes', None)
+
+
 def audit_session_allows_current_endpoint():
     """Allow demo identities only for the one protected page entered from /audit/p/<page_no>."""
     if session.get('audit_access_mode') is not True:
@@ -639,20 +672,16 @@ def login_required(role=None):
 
 
 def seller_invite_link(tx):
-    """Return the seller invitation URL for the real email/link mode.
+    """Return the real seller invitation URL for sent emails.
 
-    Bazont24V: keep buyer-preview mode non-navigating, but make the real
-    seller invitation use the actual running app host when generated during
-    a request. This prevents local/test invitations from pointing to a
-    placeholder public domain that can return Not Found, while still allowing
-    Render/live deployments to force a public base URL with
-    BAZONT_PUBLIC_BASE_URL.
+    Buyer preview mode is handled separately in the HTML builder. Real sent
+    invitations must never inherit request.host_url because a local buyer
+    sending from 127.0.0.1 would create a dead link for the seller. By
+    default, sent invitation links use https://bazont.com. Localhost/127.0.0.1
+    is possible only if explicitly configured through APP_BASE_URL,
+    PUBLIC_BASE_URL, or BAZONT_PUBLIC_BASE_URL for local-only testing.
     """
     token = tx['invite_token']
-    if os.environ.get('BAZONT_PUBLIC_BASE_URL', '').strip():
-        return f"{PUBLIC_BASE_URL}{url_for('seller_join', token=token)}"
-    if has_request_context():
-        return url_for('seller_join', token=token, _external=True)
     return f"{PUBLIC_BASE_URL}{url_for('seller_join', token=token)}"
 
 
@@ -1592,18 +1621,22 @@ def invitation_email_preview(public_id):
 def seller_join(token):
     conn = get_db()
     tx = conn.execute('SELECT * FROM transactions WHERE invite_token = ?', (token,)).fetchone()
+    remove_login_required_flash_noise()
     if not tx:
-        abort(404)
+        session.pop('_flashes', None)
+        return render_template('seller_join_invalid.html', message='This seller invitation link is invalid or expired.'), 404
     if tx['status'] == TX_CANCELLED:
-        flash('This transaction has been cancelled.', 'error')
-        return redirect(url_for('login'))
+        session.pop('_flashes', None)
+        return render_template('seller_join_invalid.html', message='This transaction has been cancelled.'), 410
     user = current_user()
+    remove_login_required_flash_noise()
     if user and user['role'] == 'buyer':
-        # Development-safe seller handover: the invitation link must be testable
-        # in the same browser after the buyer sends it.  End the buyer session
-        # and show the seller join form instead of bouncing back to courier.
+        # Public seller invitation links must open Page 18 without requiring any
+        # prior buyer/seller login.  If the buyer tests the real email link in
+        # the same browser, silently clear the buyer session and show the seller
+        # join form directly.
         clear_authenticated_session()
-        flash('Buyer session ended for seller invitation testing. Join below as the seller for this transaction.', 'success')
+        remove_login_required_flash_noise()
         user = None
     elif user and user['role'] == 'seller':
         # Bazont22W: cross-device invite acceptance.

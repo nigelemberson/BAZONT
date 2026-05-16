@@ -3142,8 +3142,11 @@ body.transaction-detail-page > .shell > .steps .step {
           {% endif %}
         {% endfor %}
       {% else %}
+        {% set ns = namespace(seen=[]) %}
         {% for category, message in FLASH_MESSAGES %}
-          {% if not (request.endpoint == 'transaction_detail' and category == 'success' and message == 'Invitation sent.') %}
+          {% set flash_key = category ~ '|' ~ message %}
+          {% if flash_key not in ns.seen and not (request.endpoint == 'transaction_detail' and category == 'success' and message == 'Invitation sent.') %}
+            {% set ns.seen = ns.seen + [flash_key] %}
             <div class="flash {{ category }}">{{ message }}</div>
           {% endif %}
         {% endfor %}

@@ -1,2 +1,3 @@
-Bazont24V.zip
-DBB rebuilt from continuous visible map 10-26. Routes unchanged. TRUE flat ZIP.
+Bazont24X.zip
+Version references updated to Bazont24X.zip.
+Seller invitation token route is public for valid email links; buyer preview remains non-navigating.
