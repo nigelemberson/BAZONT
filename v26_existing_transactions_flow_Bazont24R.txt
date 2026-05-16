@@ -1,8 +1,0 @@
-Bazont24R v26 acceptance scope:
-- Baseline: Bazont24Q.zip
-- Cleaned Page 22 buyer existing transactions labels/content.
-- Page 22 transaction links now open Page 19 with from_page=buyer_transactions context.
-- Page 19 Back returns to Page 22 when opened from Page 22.
-- DBB active mapping retained: Page 22 = buyer_transactions, Page 19 = transaction_detail.
-- No transaction/auth/courier/payment logic changed.
-- Version updated to Bazont24S.zip.

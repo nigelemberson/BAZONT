@@ -1,5 +1,0 @@
-Bazont23Q v26 numbering-display cleanup proof
-Kept one badge system per rendered page: base.html for base templates; standalone badge for standalone pages.
-Removed FAQ page-tag duplicate artifact.
-Removed FAQ top-right Page text.
-Removed forms static top-right Page text.

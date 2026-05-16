@@ -1,9 +1,0 @@
-Bazont23Q v26 acceptance click test
-
-PASS criteria checked by static/code inspection in this package:
-- Home audit panel lists Page 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,26,27,28.
-- /animation without step no longer opens obsolete demo landing; it redirects to /animation/?step=1.
-- Animation step badges are now 4,5,6,7,8,9 instead of all showing 4.
-- /app no longer creates duplicate Page 5; it redirects to /register.
-- Audit mode remains the only path that injects buyer/seller/test transaction access for protected pages.
-- Production protected routes keep login_required decorators.

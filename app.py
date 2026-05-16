@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
 
-from flask import Flask, flash, g, redirect, render_template, request, session, url_for, abort, send_from_directory, jsonify
+from flask import Flask, flash, g, redirect, render_template, request, session, url_for, abort, send_from_directory, jsonify, has_request_context
 from werkzeug.security import check_password_hash, generate_password_hash
 
 try:
@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont24S.zip'
+DEFAULT_VERSION = 'Bazont24V.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
@@ -639,13 +639,20 @@ def login_required(role=None):
 
 
 def seller_invite_link(tx):
-    """Return the public seller invitation URL.
+    """Return the seller invitation URL for the real email/link mode.
 
-    Bazont23P rule: emailed invitation links must be public internet URLs,
-    never localhost/127.0.0.1, because seller devices are external to the
-    buyer's local Flask session.
+    Bazont24V: keep buyer-preview mode non-navigating, but make the real
+    seller invitation use the actual running app host when generated during
+    a request. This prevents local/test invitations from pointing to a
+    placeholder public domain that can return Not Found, while still allowing
+    Render/live deployments to force a public base URL with
+    BAZONT_PUBLIC_BASE_URL.
     """
     token = tx['invite_token']
+    if os.environ.get('BAZONT_PUBLIC_BASE_URL', '').strip():
+        return f"{PUBLIC_BASE_URL}{url_for('seller_join', token=token)}"
+    if has_request_context():
+        return url_for('seller_join', token=token, _external=True)
     return f"{PUBLIC_BASE_URL}{url_for('seller_join', token=token)}"
 
 
@@ -692,13 +699,19 @@ def _html_fallback_link_block(invite_link, safe_invite_link):
                 <p style="margin:0 0 20px;font-size:13px;line-height:1.45;color:#2563eb;word-break:break-all;"><a href="{safe_invite_link}" style="color:#2563eb;text-decoration:none;">{safe_invite_link}</a></p>
 """
 
-def build_seller_invite_html(tx):
+def build_seller_invite_html(tx, preview_mode=False):
     invite_link = seller_invite_link(tx)
     public_id = html.escape(str(tx['public_id']))
     item_description = html.escape(str(tx['item_description']))
     total_amount = f"PHP {tx['total_amount']:.2f}"
     safe_invite_link = html.escape(invite_link, quote=True)
     fallback_link_block = _html_fallback_link_block(invite_link, safe_invite_link)
+    if preview_mode:
+        accept_button_html = '''<button type="button" onclick="var msg=document.getElementById('bazont-preview-accept-note'); if(msg){ msg.style.display='inline-block'; msg.setAttribute('aria-hidden','false'); window.clearTimeout(window.bazontPreviewAcceptTimer); window.bazontPreviewAcceptTimer=window.setTimeout(function(){ msg.style.display='none'; msg.setAttribute('aria-hidden','true'); }, 4200); } return false;" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:13px 28px;border-radius:999px;border:0;cursor:pointer;box-shadow:0 8px 18px rgba(37,99,235,0.24);">Accept Invitation</button>
+                  <div id="bazont-preview-accept-note" role="status" aria-live="polite" aria-hidden="true" style="display:none;margin-top:12px;background:#16a34a;color:#ffffff;font-size:13px;line-height:1.45;font-weight:900;padding:10px 14px;border-radius:14px;box-shadow:0 10px 22px rgba(22,163,74,0.22);">This is the button the seller will click after you send the invitation.</div>'''
+        fallback_link_block = ''
+    else:
+        accept_button_html = f'<a href="{safe_invite_link}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:13px 28px;border-radius:999px;">Accept Invitation</a>'
     return f"""<!doctype html>
 <html style="height:100%;overflow:hidden;">
   <body style="margin:0;padding:0;background:#f4f7fb;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#172033;">
@@ -729,7 +742,7 @@ def build_seller_invite_html(tx):
                 </table>
 
                 <div style="text-align:center;margin:20px 0 18px;">
-                  <a href="{safe_invite_link}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:16px;font-weight:900;padding:13px 28px;border-radius:999px;">Accept Invitation</a>
+                  {accept_button_html}
                 </div>
 
                 {fallback_link_block}
@@ -1565,7 +1578,7 @@ def invitation_email_preview(public_id):
         flash('Buyer payment must be recorded before the seller invitation is available.', 'error')
         return redirect(url_for('buyer_actions', public_id=public_id))
 
-    email_html = build_seller_invite_html(tx)
+    email_html = build_seller_invite_html(tx, preview_mode=True)
     if session.get('audit_access_mode'):
         badge = '<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">20</div>'
         if '<body' in email_html:
