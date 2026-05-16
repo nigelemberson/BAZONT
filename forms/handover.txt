@@ -1,3 +1,2 @@
-Bazont25B.zip
-Version references updated to Bazont25B.zip.
-Seller invitation token route is public for valid email links; buyer preview remains non-navigating.
+Bazont25C.zip
+Version references updated to Bazont25C.zip.

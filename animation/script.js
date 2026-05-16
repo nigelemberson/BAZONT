@@ -147,7 +147,7 @@ nextBtn.addEventListener("click", () => {
     currentStep += 1;
     renderStep();
   } else {
-    window.location.href = "/register";
+    window.location.href = "/seller-invite/continue";
   }
 });
 

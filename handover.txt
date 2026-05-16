@@ -1,5 +1,17 @@
-Bazont25B.zip
+Bazont25E.zip
 
-Baseline: Bazont25A.zip
-Change: fixed seller invitation routing/data-flow so Page 12 Seller Dashboard reopens the active seller transaction work page instead of falling back to an empty generic dashboard.
-Checks: app.py syntax OK; Page 23 template includes transaction identity, payment confirmation, Next Seller Action, tracking entry, courier progress, and Home | Back | Next.
+F_B_C_v26 handover
+
+Baseline: Bazont25C.zip
+Build: Bazont25E.zip
+
+Amendment:
+- Added focused Seller Payment Secured page after seller_invite Pages 1-9.
+- Page 9 seller_invite continuation now routes to /seller/payment-secured.
+- Existing Pages 1-9 remain shared; no duplicate seller pages created.
+- Seller payment-secured page shows transaction identity, secured-payment message, money details, 3-day tracking rule, seller next actions, and Continue to Shipping Details.
+- Buyer/public flow preserved.
+
+Bazont25E: Connected Seller Payment Secured page to seller-only shipping details and courier progress routing.
+
+Bazont25E: Connected Seller Payment Secured page to seller-only shipping details and courier progress routing.

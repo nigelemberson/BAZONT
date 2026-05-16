@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont25B.zip'
+DEFAULT_VERSION = 'Bazont25E.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
@@ -542,9 +542,36 @@ def establish_authenticated_session(user):
 
 def clear_authenticated_session():
     """Remove every auth/display key while preserving later flash messages."""
-    for key in ('user_id', 'user', 'auth_email', 'auth_role', 'auth_ok', 'selected_role'):
+    for key in (
+        'user_id', 'user', 'auth_email', 'auth_role', 'auth_ok', 'selected_role',
+        'seller_invite_journey', 'seller_invite_public_id', 'seller_invite_token',
+        'seller_onboarding_public_id', 'active_seller_transaction_public_id'
+    ):
         session.pop(key, None)
     session['auth_logged_out'] = True
+
+
+def mark_seller_invite_journey(tx, token=None, active=False):
+    """Persist the seller invitation journey across the shared intro pages.
+
+    Pages 1-9 are intentionally shared.  This flag is the routing context
+    that lets Page 9 branch the invited seller back into the seller workflow
+    instead of the normal public/register/buyer path.
+    """
+    session.pop('auth_logged_out', None)
+    session['seller_invite_journey'] = True
+    session['seller_invite_public_id'] = tx['public_id']
+    if token:
+        session['seller_invite_token'] = token
+    session['seller_onboarding_public_id'] = tx['public_id']
+    if active:
+        session['active_seller_transaction_public_id'] = tx['public_id']
+    session.permanent = True
+
+
+def clear_seller_invite_journey():
+    for key in ('seller_invite_journey', 'seller_invite_public_id', 'seller_invite_token', 'seller_onboarding_public_id', 'active_seller_transaction_public_id'):
+        session.pop(key, None)
 
 
 def remove_login_required_flash_noise():
@@ -1312,6 +1339,41 @@ def forms_api_login():
     return jsonify({'ok': True, 'email': user['email'], 'role': user['role']})
 
 
+
+@app.route('/seller-invite/continue')
+def seller_invite_continue():
+    """Branch from shared Page 9 according to journey context.
+
+    Normal visitors continue to the existing public/register route.
+    Sellers who accepted an invitation stay in the seller route and now land on
+    the focused Seller Payment Secured action page before shipping details.
+    """
+    if session.get('seller_invite_journey'):
+        public_id = session.get('active_seller_transaction_public_id') or session.get('seller_onboarding_public_id') or session.get('seller_invite_public_id')
+        if public_id:
+            session['seller_onboarding_public_id'] = public_id
+            session['active_seller_transaction_public_id'] = public_id
+        user = current_user()
+        if user and user['role'] == 'seller':
+            session['auth_role'] = 'seller'
+            session['selected_role'] = 'seller'
+            return redirect(url_for('seller_payment_secured'))
+        token = session.get('seller_invite_token')
+        if token:
+            return redirect(url_for('seller_join', token=token))
+        return redirect(url_for('login'))
+    return redirect(url_for('register'))
+
+
+@app.route('/seller-invite/back')
+def seller_invite_back():
+    """Safe back target for the seller invite journey."""
+    token = session.get('seller_invite_token')
+    if session.get('seller_invite_journey') and token:
+        return redirect(url_for('seller_join', token=token))
+    return redirect(url_for('gateway_home'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -1409,6 +1471,9 @@ def choose_role(role):
     role = (role or '').strip().lower()
     if role not in ('buyer', 'seller'):
         abort(404)
+    if session.get('seller_invite_journey') and role != 'seller':
+        flash('Seller invitation journey is active. Continue as Seller for this transaction.', 'error')
+        return redirect(url_for('seller_invite_continue'))
     user = current_user()
     conn = get_db()
     conn.execute('UPDATE users SET role = ? WHERE id = ?', (role, user['id']))
@@ -1416,6 +1481,8 @@ def choose_role(role):
     session['auth_role'] = role
     session['selected_role'] = role
     if role == 'seller':
+        if session.get('seller_invite_journey'):
+            return redirect(url_for('seller_payment_secured'))
         return redirect(url_for('seller_dashboard'))
     return redirect(url_for('buyer_dashboard'))
 
@@ -1628,6 +1695,7 @@ def seller_join(token):
     if tx['status'] == TX_CANCELLED:
         session.pop('_flashes', None)
         return render_template('seller_join_invalid.html', message='This transaction has been cancelled.'), 410
+    mark_seller_invite_journey(tx, token=token, active=bool(tx['seller_user_id']))
     user = current_user()
     remove_login_required_flash_noise()
     if user and user['role'] == 'buyer':
@@ -1637,6 +1705,7 @@ def seller_join(token):
         # join form directly.
         clear_authenticated_session()
         remove_login_required_flash_noise()
+        mark_seller_invite_journey(tx, token=token, active=bool(tx['seller_user_id']))
         user = None
     elif user and user['role'] == 'seller':
         # Bazont22W: cross-device invite acceptance.
@@ -1652,8 +1721,7 @@ def seller_join(token):
             return redirect(url_for('seller_dashboard'))
         assign_seller_to_transaction(conn, tx, user, 'seller', user['email'], 'Seller accepted email invitation from an existing seller session.')
         conn.commit()
-        session['seller_onboarding_public_id'] = tx['public_id']
-        session['active_seller_transaction_public_id'] = tx['public_id']
+        mark_seller_invite_journey(tx, token=token, active=True)
         flash('Invitation accepted. Seller account linked to transaction.', 'success')
         return redirect(url_for('page1_intro'))
     if request.method == 'POST':
@@ -1681,8 +1749,7 @@ def seller_join(token):
         conn.commit()
         establish_authenticated_session(seller)
         flash('Seller account linked to transaction. Please review the Bazont introduction before continuing to the seller route.', 'success')
-        session['seller_onboarding_public_id'] = tx['public_id']
-        session['active_seller_transaction_public_id'] = tx['public_id']
+        mark_seller_invite_journey(tx, token=token, active=True)
         return redirect(url_for('page1_intro'))
     return render_template('seller_join.html', tx=tx)
 
@@ -1854,10 +1921,45 @@ def buyer_actions(public_id):
     return render_template('buyer_actions.html', tx=tx)
 
 
+
+def seller_flow_context_for(tx=None):
+    """Return True when the current request is part of the seller transaction workflow."""
+    user = current_user()
+    if not user or user['role'] != 'seller':
+        return False
+    active_public_id = session.get('active_seller_transaction_public_id') or session.get('seller_onboarding_public_id') or session.get('seller_invite_public_id')
+    if tx is not None and active_public_id and tx['public_id'] != active_public_id:
+        return False
+    return bool(session.get('seller_invite_journey') or active_public_id)
+
+
+@app.route('/seller/shipping-details')
+@login_required(role='seller')
+def seller_shipping_details():
+    """Stable seller-only entry into shipping details from Seller Payment Secured."""
+    user = current_user()
+    conn = get_db()
+    selected_tx, _transactions = find_active_seller_transaction(conn, user)
+    if not selected_tx:
+        flash('No joined seller transaction is available for shipping details.', 'error')
+        return redirect(url_for('seller_payment_secured'))
+    session['selected_role'] = 'seller'
+    session['active_seller_transaction_public_id'] = selected_tx['public_id']
+    session['seller_onboarding_public_id'] = selected_tx['public_id']
+    if session.get('seller_invite_journey'):
+        session['seller_invite_public_id'] = selected_tx['public_id']
+    return redirect(url_for('courier_logs', public_id=selected_tx['public_id']))
+
+
 @app.route('/transactions/<public_id>/courier', methods=['GET', 'POST'])
 @login_required()
 def courier_logs(public_id):
     user, conn, tx = _get_authorized_transaction(public_id)
+    seller_flow = seller_flow_context_for(tx)
+    if seller_flow:
+        session['selected_role'] = 'seller'
+        session['active_seller_transaction_public_id'] = tx['public_id']
+        session['seller_onboarding_public_id'] = tx['public_id']
 
     if request.method == 'POST':
         if user['id'] != tx['seller_user_id']:
@@ -1916,7 +2018,7 @@ def courier_logs(public_id):
 
     audit = conn.execute('SELECT * FROM audit_log WHERE transaction_id = ? ORDER BY id DESC', (tx['id'],)).fetchall()
     courier_events = conn.execute('SELECT * FROM courier_events WHERE transaction_id = ? ORDER BY id DESC', (tx['id'],)).fetchall()
-    return render_template('courier_logs.html', tx=tx, audit=audit, courier_events=courier_events, aftership_enabled=aftership_enabled())
+    return render_template('courier_logs.html', tx=tx, audit=audit, courier_events=courier_events, aftership_enabled=aftership_enabled(), seller_flow=seller_flow)
 
 
 @app.route('/transactions/<public_id>/status')
@@ -1931,6 +2033,11 @@ def courier_status(public_id):
         pass
 
     user, conn, tx = _get_authorized_transaction(public_id)
+    seller_flow = seller_flow_context_for(tx)
+    if seller_flow:
+        session['selected_role'] = 'seller'
+        session['active_seller_transaction_public_id'] = tx['public_id']
+        session['seller_onboarding_public_id'] = tx['public_id']
     tx = refresh_tx(conn, tx['id'])
     courier_events = conn.execute(
         'SELECT * FROM courier_events WHERE transaction_id = ? ORDER BY id DESC',
@@ -1940,30 +2047,27 @@ def courier_status(public_id):
 
     raw_status = ((tx['tracking_api_status'] or tx['status'] or '') + '').upper()
     if tx['status'] == TX_RELEASED:
-        stage_index = 6
-    elif tx['status'] == TX_DELIVERED or 'DELIVERED' in raw_status:
         stage_index = 5
-    elif 'OUT_FOR_DELIVERY' in raw_status or 'OUT FOR DELIVERY' in raw_status:
+    elif tx['status'] == TX_DELIVERED or 'DELIVERED' in raw_status:
         stage_index = 4
-    elif 'TRANSIT' in raw_status or 'IN_TRANSIT' in raw_status:
+    elif 'OUT_FOR_DELIVERY' in raw_status or 'OUT FOR DELIVERY' in raw_status:
         stage_index = 3
-    elif 'ACCEPTED' in raw_status or 'PICKUP' in raw_status:
+    elif 'TRANSIT' in raw_status or 'IN_TRANSIT' in raw_status:
         stage_index = 2
-    elif tx['tracking_api_status'] and tx['tracking_api_status'] not in ('CHECK_FAILED', 'UNKNOWN'):
+    elif 'ACCEPTED' in raw_status or 'PICKUP' in raw_status:
         stage_index = 1
-    elif tx['tracking_number']:
+    elif tx['tracking_number'] or (tx['tracking_api_status'] and tx['tracking_api_status'] not in ('CHECK_FAILED', 'UNKNOWN')):
         stage_index = 0
     else:
         stage_index = 0
 
     base_steps = [
-        ('Tracking submitted', 'Seller tracking number has been received by Bazont.'),
-        ('Tracking validated', 'Bazont has checked or is checking the courier tracking record.'),
-        ('Accepted by courier', 'Courier has accepted the parcel into its network.'),
-        ('In transit', 'Parcel is moving through the courier network.'),
-        ('Out for delivery', 'Parcel is on the final delivery run.'),
+        ('Tracking Submitted', 'Seller tracking number has been received by Bazont.'),
+        ('Accepted by Courier', 'Courier has accepted the parcel into its network.'),
+        ('In Transit', 'Parcel is moving through the courier network.'),
+        ('Out for Delivery', 'Parcel is on the final delivery run.'),
         ('Delivered', 'Courier confirms the item has been delivered.'),
-        ('Payment released', 'Bazont releases payment after courier-confirmed delivery.'),
+        ('Payment Released', 'Bazont releases payment after courier-confirmed delivery.'),
     ]
     status_steps = []
     for idx, (title, body) in enumerate(base_steps):
@@ -1977,7 +2081,75 @@ def courier_status(public_id):
 
     current_stage_label = base_steps[min(stage_index, len(base_steps)-1)][0]
     return render_template('courier_status.html', tx=tx, courier_events=courier_events, last_event=last_event,
-                           status_steps=status_steps, current_stage_label=current_stage_label)
+                           status_steps=status_steps, current_stage_label=current_stage_label, seller_flow=seller_flow)
+
+
+def find_active_seller_transaction(conn, user):
+    """Return the invited/active seller transaction using session context first."""
+    seller_email = (user['email'] or '').strip().lower()
+    rows = conn.execute(
+        """SELECT t.*, buyer.email AS buyer_email
+           FROM transactions t
+           LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+           WHERE (t.seller_user_id = ? OR lower(t.seller_email) = ?)
+             AND t.public_id <> 'TX-B72BAD32'
+             AND t.item_description NOT LIKE 'Audit access transaction%'
+             AND lower(t.seller_email) NOT IN ('buyer_demo@bazont.local', 'seller_demo@bazont.local', 'seller.audit@bazont.local')
+           ORDER BY t.id DESC""",
+        (user['id'], seller_email)
+    ).fetchall()
+    repaired_any = False
+    for row in rows:
+        if not row['seller_user_id'] and (row['seller_email'] or '').strip().lower() == seller_email:
+            conn.execute('UPDATE transactions SET seller_user_id = ?, updated_at = ? WHERE id = ?', (user['id'], now_iso(), row['id']))
+            repaired_any = True
+    if repaired_any:
+        conn.commit()
+        rows = conn.execute(
+            """SELECT t.*, buyer.email AS buyer_email
+               FROM transactions t
+               LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+               WHERE (t.seller_user_id = ? OR lower(t.seller_email) = ?)
+                 AND t.public_id <> 'TX-B72BAD32'
+                 AND t.item_description NOT LIKE 'Audit access transaction%'
+                 AND lower(t.seller_email) NOT IN ('buyer_demo@bazont.local', 'seller_demo@bazont.local', 'seller.audit@bazont.local')
+               ORDER BY t.id DESC""",
+            (user['id'], seller_email)
+        ).fetchall()
+    transactions = list(rows)
+    active_public_id = session.get('active_seller_transaction_public_id') or session.get('seller_onboarding_public_id') or session.get('seller_invite_public_id')
+    selected_tx = None
+    if active_public_id:
+        selected_tx = next((tx for tx in transactions if tx['public_id'] == active_public_id), None)
+    if selected_tx is None and transactions:
+        selected_tx = transactions[0]
+    if selected_tx:
+        session['active_seller_transaction_public_id'] = selected_tx['public_id']
+        session['seller_onboarding_public_id'] = selected_tx['public_id']
+        if session.get('seller_invite_journey'):
+            session['seller_invite_public_id'] = selected_tx['public_id']
+        session['selected_role'] = 'seller'
+    return selected_tx, transactions
+
+
+@app.route('/seller/payment-secured')
+@login_required(role='seller')
+def seller_payment_secured():
+    """Focused seller transition page after invitation intro Pages 1-9."""
+    user = current_user()
+    conn = get_db()
+    selected_tx, transactions = find_active_seller_transaction(conn, user)
+    if not selected_tx:
+        flash('No joined seller transaction is available for this account. Please use the seller invitation link from the buyer.', 'error')
+        return redirect(url_for('seller_dashboard'))
+    financials = tx_financials(selected_tx)
+    return render_template(
+        'seller_payment_secured.html',
+        tx=selected_tx,
+        transactions=transactions,
+        financials=financials,
+        TRACKING_DEADLINE_DAYS=TRACKING_DEADLINE_DAYS,
+    )
 
 
 @app.route('/seller/dashboard')
@@ -2026,7 +2198,7 @@ def seller_dashboard():
     transactions = list(candidate_rows)
     selected_tx = None
 
-    # Bazont25B: Page 12 -> Seller Dashboard must reopen the seller's active
+    # Bazont25C: Page 12 -> Seller Dashboard must reopen the seller's active
     # invitation transaction, not a generic empty dashboard.  Prefer the
     # transaction captured when the seller accepted the invitation; otherwise
     # use the latest real transaction assigned to this seller account/email.
@@ -2038,6 +2210,9 @@ def seller_dashboard():
     if selected_tx:
         session['active_seller_transaction_public_id'] = selected_tx['public_id']
         session['seller_onboarding_public_id'] = selected_tx['public_id']
+        if session.get('seller_invite_journey'):
+            session['seller_invite_public_id'] = selected_tx['public_id']
+        session['selected_role'] = 'seller'
 
     financials = tx_financials(selected_tx) if selected_tx else None
     courier_events = []
@@ -2116,10 +2291,11 @@ MASTER_PAGE_MAP = [
     {'number':'20', 'title':'Invitation Email Preview', 'route':'/buyer/transactions/<public_id>/invitation-email-preview', 'endpoint':'invitation_email_preview', 'template':'generated html', 'protected':True, 'audit_kind':'tx_paid_buyer'},
     {'number':'21', 'title':'Status', 'route':'/transactions/<public_id>/status', 'endpoint':'courier_status', 'template':'templates/courier_status.html', 'protected':True, 'audit_kind':'tx_buyer_tracking'},
     {'number':'22', 'title':'Buyer Transactions', 'route':'/buyer/transactions', 'endpoint':'buyer_transactions', 'template':'templates/buyer_transactions.html', 'protected':True, 'audit_kind':'buyer'},
-    {'number':'23', 'title':'Seller Dashboard', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
-    {'number':'24', 'title':'FAQ', 'route':'/faq', 'endpoint':'faq', 'template':'templates/faq.html', 'protected':False, 'audit_kind':'public'},
-    {'number':'25', 'title':'Index', 'route':'/index', 'endpoint':'index_page', 'template':'index_page.html', 'protected':False, 'audit_kind':'public'},
-    {'number':'26', 'title':'Back Office', 'route':'/admin/back-office', 'endpoint':'admin_backoffice', 'template':'templates/admin_backoffice.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'23', 'title':'Seller Payment Secured', 'route':'/seller/payment-secured', 'endpoint':'seller_payment_secured', 'template':'templates/seller_payment_secured.html', 'protected':True, 'audit_kind':'tx_seller_tracking'},
+    {'number':'24', 'title':'Seller Dashboard', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
+    {'number':'25', 'title':'FAQ', 'route':'/faq', 'endpoint':'faq', 'template':'templates/faq.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'26', 'title':'Index', 'route':'/index', 'endpoint':'index_page', 'template':'index_page.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'27', 'title':'Back Office', 'route':'/admin/back-office', 'endpoint':'admin_backoffice', 'template':'templates/admin_backoffice.html', 'protected':False, 'audit_kind':'public'},
 ]
 MASTER_PAGE_BY_NUMBER = {row['number']: row for row in MASTER_PAGE_MAP}
 
@@ -2174,6 +2350,12 @@ def audit_destination_for(page):
         tx = audit_transaction_for(kind, endpoint)
         if endpoint in ('buyer_actions', 'transaction_detail', 'courier_logs', 'courier_status', 'invitation_email_preview'):
             return redirect(url_for(endpoint, public_id=tx['public_id']))
+        if endpoint == 'seller_payment_secured':
+            session['seller_invite_journey'] = True
+            session['seller_invite_public_id'] = tx['public_id']
+            session['seller_onboarding_public_id'] = tx['public_id']
+            session['active_seller_transaction_public_id'] = tx['public_id']
+            return redirect(url_for('seller_payment_secured'))
         if endpoint == 'invitation_preview':
             return redirect(url_for('invitation_preview', public_id=tx['public_id']))
     abort(404)

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="stack seller-payment-secured-page">
+  <section class="hero-card seller-payment-hero">
+    <div class="secure-kicker">Seller payment secured</div>
+    <h1 class="hero-title">Bazont is securely holding the buyer’s payment for this item.</h1>
+    <p class="hero-subtitle">Your next responsibility is to arrange shipping and submit valid courier tracking for this transaction.</p>
+  </section>
+
+  <section class="panel seller-work-panel">
+    <h3 class="section-title">Transaction details</h3>
+    <div class="seller-work-grid">
+      <div class="info-card"><span>Transaction ID</span><strong>{{ tx['public_id'] }}</strong></div>
+      <div class="info-card"><span>Item description</span><strong>{{ tx['item_description'] }}</strong></div>
+      <div class="info-card"><span>Seller email</span><strong>{{ tx['seller_email'] }}</strong></div>
+      <div class="info-card"><span>Buyer email</span><strong>{{ tx['buyer_email'] or 'Recorded buyer account' }}</strong></div>
+    </div>
+  </section>
+
+  <section class="panel seller-money-panel">
+    <h3 class="section-title">Money details</h3>
+    <p class="seller-safe-message">Buyer payment is secured by Bazont. Bazont releases payment after courier-confirmed delivery.</p>
+    <div class="seller-money-grid">
+      <div class="money-card green"><span>Total amount held</span><strong>₱{{ '%.2f'|format(financials.platform_holds) }}</strong></div>
+      <div class="money-card"><span>Seller fee</span><strong>₱{{ '%.2f'|format(financials.seller_fee) }}</strong></div>
+      <div class="money-card green"><span>Seller receives on delivery</span><strong>₱{{ '%.2f'|format(financials.seller_receives) }}</strong></div>
+      <div class="money-card"><span>Shipping fee information</span><strong>₱{{ '%.2f'|format(financials.shipping_price) }} included</strong></div>
+    </div>
+  </section>
+
+  <section class="panel seller-rules-panel">
+    <h3 class="section-title">Seller rules</h3>
+    <ul class="seller-action-list">
+      <li>Seller must upload valid tracking within {{ TRACKING_DEADLINE_DAYS }} days.</li>
+      <li>If tracking is not uploaded in time, the transaction auto-cancels.</li>
+      <li>If the transaction auto-cancels, the buyer is refunded.</li>
+    </ul>
+  </section>
+
+  <section class="panel seller-action-panel">
+    <h3 class="section-title">Seller next action</h3>
+    <ol class="seller-action-list">
+      <li>Arrange shipping.</li>
+      <li>Enter courier.</li>
+      <li>Enter tracking number.</li>
+      <li>Submit tracking.</li>
+    </ol>
+    <a class="btn seller-primary-action" href="{{ url_for('seller_shipping_details') }}">Continue to Shipping Details</a>
+  </section>
+
+  <div class="buyer-dashboard-bottom-actions" aria-label="Seller payment secured navigation">
+    <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
+    <a class="btn buyer-dashboard-back" href="{{ url_for('seller_invite_back') }}">Back</a>
+    <a class="btn buyer-dashboard-next" href="{{ url_for('seller_shipping_details') }}">Next</a>
+  </div>
+</div>
+{% endblock %}

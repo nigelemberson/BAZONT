@@ -65,10 +65,16 @@
   </div>
 
   <div class="ct-nav">
-    <a class="btn ct-back-blue" href="{{ url_for('seller_dashboard') if current_user and current_user['role'] == 'seller' else url_for('invitation_preview', public_id=tx['public_id']) }}">← Back</a>
-    <a class="btn" href="{{ url_for('courier_status', public_id=tx['public_id']) }}">View Status</a>
-    <a class="btn" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Shared Transaction Hub</a>
-    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+    {% if seller_flow %}
+      <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
+      <a class="btn ct-back-blue" href="{{ url_for('seller_payment_secured') }}">← Back</a>
+      <a class="btn" href="{{ url_for('courier_status', public_id=tx['public_id']) }}">View Status</a>
+    {% else %}
+      <a class="btn ct-back-blue" href="{{ url_for('invitation_preview', public_id=tx['public_id']) }}">← Back</a>
+      <a class="btn" href="{{ url_for('courier_status', public_id=tx['public_id']) }}">View Status</a>
+      <a class="btn" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Shared Transaction Hub</a>
+      <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
