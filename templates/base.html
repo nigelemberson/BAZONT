@@ -3098,6 +3098,14 @@ body.transaction-detail-page > .shell > .steps .step {
     grid-template-columns: repeat(9, minmax(0, 1fr)) !important;
   }
 }
+
+/* Bazont24Y: Page 18 seller-join password eye matches Register/Login. */
+body.seller-join-clean-page .password-eye-wrap { position: relative !important; width: 100% !important; }
+body.seller-join-clean-page .password-eye-field { width: 100% !important; padding-right: 52px !important; }
+body.seller-join-clean-page .password-eye-toggle { position: absolute !important; top: 50% !important; right: 9px !important; transform: translateY(-50%) !important; width: 32px !important; height: 32px !important; min-width: 32px !important; min-height: 32px !important; padding: 0 !important; margin: 0 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-radius: 999px !important; background: rgba(255,255,255,0.10) !important; border: 1px solid rgba(255,255,255,0.20) !important; color: #eaf2ff !important; box-shadow: none !important; line-height: 1 !important; cursor: pointer !important; }
+body.seller-join-clean-page .password-eye-toggle svg { width: 18px !important; height: 18px !important; display: block !important; fill: none !important; stroke: currentColor !important; stroke-width: 1.9 !important; stroke-linecap: round !important; stroke-linejoin: round !important; }
+body.seller-join-clean-page .password-eye-toggle svg circle { fill: none !important; }
+
 </style>
 </head>
 <body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'seller_dashboard' %}seller-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% elif request.endpoint == 'admin_backoffice' %}admin-backoffice-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
@@ -3158,3 +3166,37 @@ body.transaction-detail-page > .shell > .steps .step {
 
 </body>
 </html>
+
+<style>
+/* Bazont25A: seller route work page visual support, Page 23 only. */
+body.seller-dashboard-page .seller-workspace { gap: 16px; }
+body.seller-dashboard-page .seller-work-hero { padding-top: 22px !important; padding-bottom: 20px !important; }
+body.seller-dashboard-page .seller-stat-row { margin-top: 4px; }
+body.seller-dashboard-page .seller-work-grid,
+body.seller-dashboard-page .seller-money-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+body.seller-dashboard-page .info-card,
+body.seller-dashboard-page .money-card { border: 1px solid rgba(255,255,255,0.10); border-radius: 16px; padding: 12px 14px; background: rgba(255,255,255,0.045); }
+body.seller-dashboard-page .info-card span,
+body.seller-dashboard-page .money-card span { display: block; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.66); margin-bottom: 5px; }
+body.seller-dashboard-page .info-card strong,
+body.seller-dashboard-page .money-card strong { color: #fff; font-size: 18px; }
+body.seller-dashboard-page .money-card.green strong,
+body.seller-dashboard-page .seller-safe-message { color: #22c55e; }
+body.seller-dashboard-page .seller-rule { margin-top: 12px; color: rgba(255,255,255,.78); }
+body.seller-dashboard-page .seller-action-list { margin: 0 0 14px 20px; color: rgba(255,255,255,.82); line-height: 1.5; }
+body.seller-dashboard-page .seller-tracking-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: center; }
+body.seller-dashboard-page .seller-tracking-form input { min-height: 44px; border-radius: 14px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.24); color: #fff; padding: 0 12px; }
+body.seller-dashboard-page .seller-pickup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: span 2; }
+body.seller-dashboard-page .seller-waiting { border-radius: 14px; padding: 12px 14px; background: rgba(245,158,11,.12); color: #fbbf24; font-weight: 800; }
+body.seller-dashboard-page .seller-progress-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+body.seller-dashboard-page .seller-step { display: flex; gap: 8px; align-items: center; border-radius: 14px; padding: 10px 12px; font-weight: 800; background: rgba(255,255,255,.045); color: rgba(255,255,255,.72); }
+body.seller-dashboard-page .seller-step span { width: 22px; height: 22px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,.10); font-size: 12px; }
+body.seller-dashboard-page .seller-step.done { background: rgba(34,197,94,.14); color: #86efac; }
+@media (max-width: 900px) {
+  body.seller-dashboard-page .seller-work-grid,
+  body.seller-dashboard-page .seller-money-grid,
+  body.seller-dashboard-page .seller-progress-steps,
+  body.seller-dashboard-page .seller-tracking-form { grid-template-columns: 1fr; }
+  body.seller-dashboard-page .seller-pickup-row { grid-column: auto; grid-template-columns: 1fr; }
+}
+</style>

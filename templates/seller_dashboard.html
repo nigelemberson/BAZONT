@@ -1,41 +1,119 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="stack">
-  <section class="hero-card">
-    <h1 class="hero-title">Seller dashboard</h1>
-    <p class="hero-subtitle">Only transactions assigned to the logged-in seller appear here. Seller payout shown below is after the seller share of the platform fee.</p>
+<div class="stack seller-workspace">
+  <section class="hero-card seller-work-hero">
+    <h1 class="hero-title">Seller Transaction Work Page</h1>
+    {% if selected_tx %}
+      <p class="hero-subtitle">Your assigned Bazont transaction is ready for seller action. Review the secured payment, arrange shipping, then submit courier tracking.</p>
+    {% else %}
+      <p class="hero-subtitle">Only transactions assigned to the logged-in seller appear here. Open a transaction to review payment security and upload tracking.</p>
+    {% endif %}
   </section>
 
-  <section class="grid-4">
+  <section class="grid-4 seller-stat-row">
     <div class="stat-card"><div class="tiny">Assigned transactions</div><div class="kpi">{{ transactions|length }}</div></div>
     <div class="stat-card"><div class="tiny">Awaiting tracking</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'SELLER_JOINED')|list|length }}</div></div>
     <div class="stat-card"><div class="tiny">Tracking uploaded</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'TRACKING_UPLOADED')|list|length }}</div></div>
     <div class="stat-card"><div class="tiny">Released</div><div class="kpi">{{ transactions|selectattr('status', 'equalto', 'RELEASED')|list|length }}</div></div>
   </section>
 
-  <section class="panel">
-    <h3 class="section-title">Assigned transactions</h3>
-    <table>
-      <tr><th>Public ID</th><th>record total</th><th>Seller receives</th><th>Status</th><th>Tracking</th><th>Action</th></tr>
-      {% for tx in transactions %}
-      {% set f = tx_financials(tx) %}
-      <tr>
-        <td><strong>{{ tx['public_id'] }}</strong></td>
-        <td>₱{{ '%.2f'|format(f.transaction_total) }}</td>
-        <td>₱{{ '%.2f'|format(f.seller_receives) }}</td>
-        <td>{{ tx['status'] }}</td>
-        <td>{{ tx['tracking_number'] or '-' }}</td>
-        <td><a class="btn secondary" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Open</a></td>
-      </tr>
+  {% if selected_tx %}
+    <section class="panel seller-work-panel">
+      <h3 class="section-title">Transaction identity</h3>
+      <div class="seller-work-grid">
+        <div class="info-card"><span>Transaction ID</span><strong>{{ selected_tx['public_id'] }}</strong></div>
+        <div class="info-card"><span>Item</span><strong>{{ selected_tx['item_description'] }}</strong></div>
+        <div class="info-card"><span>Buyer email</span><strong>{{ selected_tx['buyer_email'] or 'Recorded buyer account' }}</strong></div>
+        <div class="info-card"><span>Seller email</span><strong>{{ selected_tx['seller_email'] }}</strong></div>
+      </div>
+    </section>
+
+    <section class="panel seller-money-panel">
+      <h3 class="section-title">Payment secured by Bazont</h3>
+      <p class="seller-safe-message">Buyer payment is secured by Bazont for this transaction. Bazont releases payment after courier-confirmed delivery.</p>
+      <div class="seller-money-grid">
+        <div class="money-card green"><span>Total amount held</span><strong>₱{{ '%.2f'|format(financials.platform_holds) }}</strong></div>
+        <div class="money-card"><span>Shipping fee included</span><strong>₱{{ '%.2f'|format(financials.shipping_price) }}</strong></div>
+        <div class="money-card"><span>Seller fee</span><strong>₱{{ '%.2f'|format(financials.seller_fee) }}</strong></div>
+        <div class="money-card green"><span>Seller receives on delivery</span><strong>₱{{ '%.2f'|format(financials.seller_receives) }}</strong></div>
+      </div>
+      <p class="tiny seller-rule">Payment release rule: Bazont releases payment after the courier confirms the item has been DELIVERED.</p>
+    </section>
+
+    <section class="panel seller-action-panel">
+      <h3 class="section-title">Next Seller Action</h3>
+      <ol class="seller-action-list">
+        <li>Arrange shipping with a reputable courier.</li>
+        <li>Enter courier name and tracking number below.</li>
+        <li>Submit tracking so Bazont can monitor courier progress.</li>
+      </ol>
+      {% if selected_tx['payment_received_at'] %}
+        <form method="post" action="{{ url_for('courier_logs', public_id=selected_tx['public_id']) }}" class="seller-tracking-form">
+          <input type="text" name="courier_name" value="{{ selected_tx['courier_name'] or '' }}" placeholder="Courier name" required>
+          <input type="text" name="tracking_number" value="{{ selected_tx['tracking_number'] or '' }}" placeholder="Tracking number" required>
+          <div class="seller-pickup-row">
+            <input type="date" name="pickup_date" value="{{ selected_tx['pickup_date'] or '' }}">
+            <input type="time" name="pickup_time" value="{{ selected_tx['pickup_time'] or '' }}">
+          </div>
+          <button class="btn secondary" type="submit">Submit Tracking</button>
+        </form>
       {% else %}
-      <tr><td colspan="6">No assigned transactions.</td></tr>
-      {% endfor %}
-    </table>
-  </section>
+        <div class="seller-waiting">Waiting for buyer payment confirmation before tracking can be submitted.</div>
+      {% endif %}
+    </section>
+
+    <section class="panel seller-progress-panel">
+      <h3 class="section-title">Tracking / progress status</h3>
+      {% set raw = (selected_tx['tracking_api_status'] or selected_tx['status'] or '')|upper %}
+      {% set progress = [
+        ('tracking submitted', selected_tx['tracking_number']),
+        ('accepted by courier', 'ACCEPT' in raw or 'PICKUP' in raw),
+        ('in transit', 'TRANSIT' in raw),
+        ('out for delivery', 'OUT_FOR_DELIVERY' in raw or 'OUT FOR DELIVERY' in raw),
+        ('delivered', 'DELIVERED' in raw or selected_tx['status'] == 'DELIVERED'),
+        ('payment released', selected_tx['released_at'] or selected_tx['status'] == 'RELEASED')
+      ] %}
+      <div class="seller-progress-steps">
+        {% for label, done in progress %}
+          <div class="seller-step {{ 'done' if done else 'pending' }}"><span>{{ loop.index }}</span>{{ label|title }}</div>
+        {% endfor %}
+      </div>
+      <p class="tiny">Current status: {{ selected_tx['tracking_api_status'] or selected_tx['status'] }}</p>
+      <a class="btn" href="{{ url_for('courier_status', public_id=selected_tx['public_id']) }}">View Courier Progress</a>
+    </section>
+  {% elif transactions|length > 1 %}
+    <section class="panel">
+      <h3 class="section-title">Assigned seller transactions</h3>
+      <table>
+        <tr><th>Public ID</th><th>Item</th><th>Seller receives</th><th>Status</th><th>Tracking</th><th>Action</th></tr>
+        {% for tx in transactions %}
+        {% set f = tx_financials(tx) %}
+        <tr>
+          <td><strong>{{ tx['public_id'] }}</strong></td>
+          <td>{{ tx['item_description'] }}</td>
+          <td>₱{{ '%.2f'|format(f.seller_receives) }}</td>
+          <td>{{ tx['status'] }}</td>
+          <td>{{ tx['tracking_number'] or '-' }}</td>
+          <td><a class="btn secondary" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Open Seller Work</a></td>
+        </tr>
+        {% endfor %}
+      </table>
+    </section>
+  {% else %}
+    <section class="panel">
+      <h3 class="section-title">No assigned transactions yet</h3>
+      <p>No seller transaction is currently assigned to this account. Use the seller invitation link from the buyer to join a transaction.</p>
+    </section>
+  {% endif %}
 
   <div class="buyer-dashboard-bottom-actions" aria-label="Seller dashboard navigation">
     <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
     <a class="btn buyer-dashboard-back" href="{{ url_for('role_select') }}">Back</a>
+    {% if selected_tx %}
+      <a class="btn buyer-dashboard-next" href="{{ url_for('courier_status', public_id=selected_tx['public_id']) }}">Next</a>
+    {% else %}
+      <a class="btn buyer-dashboard-next" href="{{ url_for('seller_dashboard') }}" aria-disabled="true">Next</a>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -6,7 +6,10 @@
     <p class="seller-join-subtitle">This invitation is tied to transaction <strong>{{ tx['public_id'] }}</strong> for seller email <strong>{{ tx['seller_email'] }}</strong>.</p>
     <form method="post" class="seller-join-form">
       <label>Choose seller password</label>
-      <input type="password" name="password" required>
+      <div class="password-eye-wrap seller-password-eye-wrap">
+        <input class="password-eye-field" id="seller-join-password" type="password" name="password" autocomplete="new-password" required>
+        <button class="password-eye-toggle" type="button" data-target="seller-join-password" aria-label="Show password" aria-pressed="false"><svg class="password-eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
+      </div>
       <button type="submit" class="seller-join-button">Join as Seller</button>
     </form>
   </section>
@@ -23,4 +26,18 @@
     </table>
   </section>
 </div>
+
+<script>
+  document.querySelectorAll(".password-eye-toggle").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const target = document.getElementById(button.getAttribute("data-target"));
+      if (!target) return;
+      const showing = target.type === "text";
+      target.type = showing ? "password" : "text";
+      button.classList.toggle("is-visible", !showing);
+      button.setAttribute("aria-pressed", String(!showing));
+      button.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    });
+  });
+</script>
 {% endblock %}

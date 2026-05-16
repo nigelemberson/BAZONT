@@ -1,3 +1,5 @@
-Bazont24X.zip
-Version references updated to Bazont24X.zip.
-Seller invitation token route is public for valid email links; buyer preview remains non-navigating.
+Bazont25B.zip
+
+Baseline: Bazont25A.zip
+Change: fixed seller invitation routing/data-flow so Page 12 Seller Dashboard reopens the active seller transaction work page instead of falling back to an empty generic dashboard.
+Checks: app.py syntax OK; Page 23 template includes transaction identity, payment confirmation, Next Seller Action, tracking entry, courier progress, and Home | Back | Next.

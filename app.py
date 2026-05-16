@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont24X.zip'
+DEFAULT_VERSION = 'Bazont25B.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
@@ -1652,8 +1652,10 @@ def seller_join(token):
             return redirect(url_for('seller_dashboard'))
         assign_seller_to_transaction(conn, tx, user, 'seller', user['email'], 'Seller accepted email invitation from an existing seller session.')
         conn.commit()
+        session['seller_onboarding_public_id'] = tx['public_id']
+        session['active_seller_transaction_public_id'] = tx['public_id']
         flash('Invitation accepted. Seller account linked to transaction.', 'success')
-        return redirect(url_for('courier_logs', public_id=tx['public_id']))
+        return redirect(url_for('page1_intro'))
     if request.method == 'POST':
         seller_email = tx['seller_email'].lower()
         password = request.form['password']
@@ -1678,8 +1680,10 @@ def seller_join(token):
         assign_seller_to_transaction(conn, tx, seller, 'seller', seller_email, 'Seller joined via email link.')
         conn.commit()
         establish_authenticated_session(seller)
-        flash('Seller account linked to transaction.', 'success')
-        return redirect(url_for('courier_logs', public_id=tx['public_id']))
+        flash('Seller account linked to transaction. Please review the Bazont introduction before continuing to the seller route.', 'success')
+        session['seller_onboarding_public_id'] = tx['public_id']
+        session['active_seller_transaction_public_id'] = tx['public_id']
+        return redirect(url_for('page1_intro'))
     return render_template('seller_join.html', tx=tx)
 
 
@@ -1981,13 +1985,75 @@ def courier_status(public_id):
 def seller_dashboard():
     user = current_user()
     conn = get_db()
-    transactions = conn.execute(
-        '''SELECT * FROM transactions
-           WHERE seller_user_id = ?
-           ORDER BY id DESC''',
-        (user['id'],)
+    seller_email = (user['email'] or '').strip().lower()
+
+    # Bazont25A: Page 23 is the seller transaction work page.
+    # A seller who accepted an invitation must not land on an empty seller
+    # dashboard because seller_user_id was not yet attached or because the route
+    # was reached after the intro/demo flow.  Treat either seller_user_id OR the
+    # invited seller_email as the seller's assignment, then repair the link.
+    candidate_rows = conn.execute(
+        '''SELECT t.*, buyer.email AS buyer_email
+           FROM transactions t
+           LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+           WHERE (t.seller_user_id = ? OR lower(t.seller_email) = ?)
+             AND t.public_id <> 'TX-B72BAD32'
+             AND t.item_description NOT LIKE 'Audit access transaction%'
+             AND lower(t.seller_email) NOT IN ('buyer_demo@bazont.local', 'seller_demo@bazont.local', 'seller.audit@bazont.local')
+           ORDER BY t.id DESC''',
+        (user['id'], seller_email)
     ).fetchall()
-    return render_template('seller_dashboard.html', transactions=transactions)
+
+    repaired_any = False
+    for row in candidate_rows:
+        if not row['seller_user_id'] and (row['seller_email'] or '').strip().lower() == seller_email:
+            conn.execute('UPDATE transactions SET seller_user_id = ?, updated_at = ? WHERE id = ?', (user['id'], now_iso(), row['id']))
+            repaired_any = True
+    if repaired_any:
+        conn.commit()
+        candidate_rows = conn.execute(
+            '''SELECT t.*, buyer.email AS buyer_email
+               FROM transactions t
+               LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+               WHERE (t.seller_user_id = ? OR lower(t.seller_email) = ?)
+                 AND t.public_id <> 'TX-B72BAD32'
+                 AND t.item_description NOT LIKE 'Audit access transaction%'
+                 AND lower(t.seller_email) NOT IN ('buyer_demo@bazont.local', 'seller_demo@bazont.local', 'seller.audit@bazont.local')
+               ORDER BY t.id DESC''',
+            (user['id'], seller_email)
+        ).fetchall()
+
+    transactions = list(candidate_rows)
+    selected_tx = None
+
+    # Bazont25B: Page 12 -> Seller Dashboard must reopen the seller's active
+    # invitation transaction, not a generic empty dashboard.  Prefer the
+    # transaction captured when the seller accepted the invitation; otherwise
+    # use the latest real transaction assigned to this seller account/email.
+    active_public_id = session.get('active_seller_transaction_public_id') or session.get('seller_onboarding_public_id')
+    if active_public_id:
+        selected_tx = next((tx for tx in transactions if tx['public_id'] == active_public_id), None)
+    if selected_tx is None and transactions:
+        selected_tx = transactions[0]
+    if selected_tx:
+        session['active_seller_transaction_public_id'] = selected_tx['public_id']
+        session['seller_onboarding_public_id'] = selected_tx['public_id']
+
+    financials = tx_financials(selected_tx) if selected_tx else None
+    courier_events = []
+    if selected_tx:
+        courier_events = conn.execute(
+            'SELECT * FROM courier_events WHERE transaction_id = ? ORDER BY id DESC',
+            (selected_tx['id'],)
+        ).fetchall()
+    return render_template(
+        'seller_dashboard.html',
+        transactions=transactions,
+        selected_tx=selected_tx,
+        financials=financials,
+        courier_events=courier_events,
+        TRACKING_DEADLINE_DAYS=TRACKING_DEADLINE_DAYS
+    )
 
 
 @app.route('/admin/back-office')
