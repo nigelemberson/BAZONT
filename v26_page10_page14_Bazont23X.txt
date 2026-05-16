@@ -1,0 +1,12 @@
+Bazont23X STRICT F_B_C_v26 static proof
+Baseline: Bazont23W.zip
+Output: Bazont24S.zip
+Scope: Page 10/11 password-eye visual cleanup and Page 14 public Next / Preview bypass removal only.
+PASS - DEFAULT_VERSION/version.txt/forms/version.txt updated to Bazont24S.zip.
+PASS - Page 10 Register uses SVG password-eye icon, no emoji/monkey text toggle.
+PASS - Page 11 Login uses matching SVG password-eye icon, no emoji/monkey text toggle.
+PASS - Password-eye CSS centers icon with flex alignment, line-height 0, width/height 20px SVG.
+PASS - Page 14 public Next / Preview anchor removed from template.
+PASS - latest_invitation_preview no longer creates preview/test transactions; redirects to new_transaction with form-required message.
+PASS - buyer_demo/seller_demo injection strings not reintroduced.
+PASS - Page 10 active button colour not amended in this build.

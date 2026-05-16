@@ -191,7 +191,11 @@
 
   <nav class="status-nav" aria-label="Page navigation">
     <a class="btn home" href="{{ url_for('gateway_home') }}">Home</a>
+    {% if request.args.get('from_page') == 'transaction_detail' %}
+    <a class="btn back" href="{{ url_for('transaction_detail', public_id=tx['public_id'], from_page='buyer_transactions') }}">Back</a>
+    {% else %}
     <a class="btn back" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Back</a>
+    {% endif %}
     {% if current_user and current_user['role'] == 'seller' %}
       <a class="btn back" href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
     {% elif current_user and current_user['role'] == 'buyer' %}

@@ -3,11 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forms Demo - Login</title>
+  <title>Bazont - Login</title>
   <link rel="stylesheet" href="/forms/style.css">
 
 <style>
 .page-id-badge{position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);}
+
+/* Bazont24A - Page 11 uses the same authenticated-session display as Pages 10/12. */
+.topbar-auth {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+}
+.topbar-auth .topbar-logout {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+}
+.topbar-auth .navchip {
+  color: white !important;
+  padding: 10px 16px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+}
+.login-already-card {
+  text-align: center !important;
+}
+.login-already-card h1 {
+  margin-bottom: 12px !important;
+}
+.login-already-card p {
+  color: #dbeafe !important;
+  font-size: 1.18rem !important;
+  line-height: 1.45 !important;
+  margin: 0 0 12px !important;
+}
 
 /* Bazont22L - Page 11 right panel styled to match Page 10 */
 body.login-page .info-panel,
@@ -38,6 +80,29 @@ body.login-page .info-panel li,
 body.login-page .right-panel li {
   font-size: 1.03rem !important;
   line-height: 1.5 !important;
+}
+
+
+/* Bazont24E: Page 11 dead bar now matches the canonical Page 10/12/14 flow set. */
+body .steps {
+  display: grid !important;
+  grid-template-columns: repeat(17, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin-bottom: 10px !important;
+  width: 100% !important;
+}
+body .steps .step {
+  min-width: 0 !important;
+  padding: 4px 2px !important;
+  border-radius: 10px !important;
+  font-size: 0.56rem !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+
+/* Bazont24Q: Page 11 DBB complete 10-26. */
+@media (max-width: 1180px) {
+  body .steps { grid-template-columns: repeat(9, minmax(0, 1fr)) !important; }
 }
 </style>
 
@@ -165,12 +230,6 @@ body .login-security-mini p {
   width: 100% !important;
 }
 
-.login-nav-wrap > .nav form[action="/test-login"] button {
-  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: 0 0 16px rgba(239,68,68,0.45) !important;
-}
 </style>
 
 </head>
@@ -186,24 +245,38 @@ body .login-security-mini p {
           </div>
         </div>
       <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
+      {% if current_user %}<div class="topbar-auth"><a class="topbar-logout" href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }}{% if current_display_role %} • {{ current_display_role }}{% endif %}</span></div>{% endif %}
     </div>
     <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:22.22%"></div></div></div>
     <div class="steps">
-      <div class="step">17<br>Register</div>
-      <div class="step active">18<br>Login</div>
-      <div class="step">19<br>Role</div>
-      <div class="step">20<br>Dashboard</div>
-      <div class="step">21<br>Create</div>
-      <div class="step">22<br>Invite</div>
-      <div class="step">23<br>Transaction</div>
-      <div class="step">24<br>Actions</div>
-      <div class="step">25<br>Courier</div>
+      <div class="step">10<br>Register</div>
+      <div class="step active">11<br>Login</div>
+      <div class="step">12<br>Role</div>
+      <div class="step">13<br>Dashboard</div>
+      <div class="step">14<br>Create</div>
+      <div class="step">15<br>Pay</div>
+      <div class="step">16<br>Invite</div>
+      <div class="step">17<br>Courier</div>
+      <div class="step">18<br>Seller</div>
+      <div class="step">19<br>Tx</div>
+      <div class="step">20<br>Email</div>
+      <div class="step">21<br>Status</div>
+      <div class="step">22<br>Buyer Tx</div>
+      <div class="step">23<br>Seller Dash</div>
+      <div class="step">24<br>FAQ</div>
+      <div class="step">25<br>Index</div>
+      <div class="step">26<br>Back Office</div>
     </div>
 
 
 
     <div class="grid-2">
-      <div class="form-card">
+      <div class="form-card{% if current_user %} login-already-card{% endif %}">
+        {% if current_user %}
+          <h1>You are already logged in</h1>
+          <p>You are already logged in as <strong>{{ current_user['email'] }}</strong>.</p>
+          <p>Continue to choose your role/dashboard.</p>
+        {% else %}
         <form id="login-form" method="post" action="/login" style="margin: 0;">
           <h1>Login</h1>
           <p>Now log in using the account you just created.</p>
@@ -211,10 +284,14 @@ body .login-security-mini p {
           <input class="field" id="login-email" name="email" type="email" autocomplete="username" value="{{ prefill_email|default('')|e }}" aria-describedby="login-email-error">
           <div class="field-error" id="login-email-error" aria-live="polite"></div>
           <label class="label">Password</label>
-          <input class="field" id="login-password" name="password" type="password" autocomplete="current-password" value="{{ prefill_password|default('')|e }}" aria-describedby="login-password-error">
+          <div class="password-eye-wrap">
+            <input class="field password-eye-field" id="login-password" name="password" type="password" autocomplete="current-password" value="{{ prefill_password|default('')|e }}" aria-describedby="login-password-error">
+            <button class="password-eye-toggle" type="button" data-target="login-password" aria-label="Show password" aria-pressed="false"><svg class="password-eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
+          </div>
           <div class="field-error" id="login-password-error" aria-live="polite"></div>
           <div class="hint" id="login-hint">Enter your registered email address and password to log into the live platform.</div>
         </form>
+        {% endif %}
       </div>
       <div class="card login-security-panel">
         <h2>Security</h2>
@@ -233,10 +310,7 @@ body .login-security-mini p {
         <div class="nav">
           <a class="btn btn-secondary" href="/">Home</a>
           <a class="btn btn-secondary" id="login-back" href="/register">← Back</a>
-          <form method="post" action="/test-login" style="margin: 0;">
-            <button class="btn btn-primary" type="submit">Test Login</button>
-          </form>
-          <a class="btn btn-primary" id="login-next" href="#">Next →</a>
+          <a class="btn btn-primary" id="login-next" href="{% if current_user %}{{ url_for('role_select') }}{% else %}#{% endif %}">Next →</a>
         </div>
       </div>
     </div>
@@ -252,6 +326,65 @@ body .login-security-mini p {
   font-weight: 500;
   color: rgba(255,255,255,0.72);
   z-index: 70;
+}
+
+
+.password-eye-wrap {
+  position: relative !important;
+  width: 100% !important;
+}
+.password-eye-field {
+  padding-right: 58px !important;
+}
+.password-eye-toggle {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 18px !important;
+  background: rgba(255,255,255,0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  z-index: 4 !important;
+}
+
+.password-eye-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  overflow: hidden !important;
+}
+.password-eye-toggle .password-eye-icon {
+  display: block !important;
+  width: 20px !important;
+  height: 20px !important;
+  flex: 0 0 20px !important;
+  margin: auto !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+.password-eye-toggle.is-visible {
+  background: rgba(34,197,94,0.20) !important;
+  border-color: rgba(34,197,94,0.45) !important;
 }
 
 .field-error {
@@ -272,6 +405,7 @@ body .login-security-mini p {
 </style>
 <div class="footer-version">{{ VERSION }}</div>
 
+{% if not current_user %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("login-form");
@@ -281,6 +415,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const nextButton = document.getElementById("login-next");
   const emailError = document.getElementById("login-email-error");
   const passwordError = document.getElementById("login-password-error");
+
+  document.querySelectorAll(".password-eye-toggle").forEach(function (button) {
+    const target = document.getElementById(button.dataset.target);
+    if (!target) return;
+    button.addEventListener("click", function () {
+      const show = target.type === "password";
+      target.type = show ? "text" : "password";
+      button.setAttribute("aria-pressed", show ? "true" : "false");
+      button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      button.classList.toggle("is-visible", show);
+    });
+  });
 
   function clearErrors() {
     emailField.classList.remove("field-invalid");
@@ -349,6 +495,7 @@ document.addEventListener("DOMContentLoaded", function () {
   nextButton.addEventListener("click", submitLiveLogin);
 });
 </script>
+{% endif %}
 
 
 </body>

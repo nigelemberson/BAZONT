@@ -311,6 +311,7 @@
     background: linear-gradient(90deg, #ffb022 0%, #ffd36b 58%, #3a86ff 100%);
     box-shadow: 0 8px 18px rgba(255,176,34,0.22);
   }
+  body.register-page .register-bottom-accent { margin: 18px auto 10px; max-width: 900px; }
   .register-page-label {
     margin-top: 6px;
     text-align: right;
@@ -2223,9 +2224,9 @@ body.register-page > .shell > .steps .step {
   border-radius: 14px !important;
 }
 body.register-page > .shell > .steps .step.active {
-  background: linear-gradient(180deg, #2563eb, #1d4ed8) !important;
-  border-color: rgba(147,197,253,0.48) !important;
-  box-shadow: 0 10px 24px rgba(37,99,235,0.28) !important;
+  background: linear-gradient(180deg, #fb923c, #ea580c) !important;
+  border-color: rgba(255,255,255,0.16) !important;
+  box-shadow: 0 14px 30px rgba(234,88,12,0.35) !important;
 }
 body.register-page .flash.register-compact-alert {
   width: 100% !important;
@@ -2278,22 +2279,841 @@ body .topbar-auth .navchip {
   margin-left: 0 !important;
 }
 
+
+  /* Bazont23V: Page 10 visual repair - restore yellow progress line above the dead page buttons. */
+  body.register-page .progress-wrap {
+    display: block !important;
+    width: 100% !important;
+    margin: 12px 0 0 !important;
+    padding: 0 !important;
+  }
+  body.register-page .progress-bar {
+    display: block !important;
+    width: 100% !important;
+    height: 8px !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+    background: rgba(255,255,255,0.10) !important;
+  }
+  body.register-page .progress-fill {
+    display: block !important;
+    height: 100% !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, #ffb022 0%, #ffd36b 58%, #3a86ff 100%) !important;
+    box-shadow: 0 8px 18px rgba(255,176,34,0.22) !important;
+  }
+
+
+/* Bazont23X: consistent password visibility controls on Register/Login only. */
+body.register-page .password-eye-wrap,
+body.login-page .password-eye-wrap {
+  position: relative !important;
+  width: 100% !important;
+}
+body.register-page .password-eye-field,
+body.login-page .password-eye-field {
+  padding-right: 58px !important;
+}
+body.register-page .password-eye-toggle,
+body.login-page .password-eye-toggle {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 18px !important;
+  background: rgba(255,255,255,0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  z-index: 4 !important;
+}
+body.register-page .register-action-row .btn-primary,
+body.register-page .register-action-row button.btn-primary,
+body.register-page > .shell > .steps .step.active {
+  background: linear-gradient(180deg, #fb923c, #ea580c) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+
+/* Bazont24A: Page 10 register-only no-scroll fit + clean centered eye + logged-in clarity. */
+body.register-page { overflow-y: auto !important; }
+body.register-page .shell {
+  min-height: 100vh !important;
+  max-width: 1200px !important;
+  padding: 14px 22px 12px !important;
+}
+body.register-page .topbar { min-height: 50px !important; padding: 10px 16px !important; }
+body.register-page .brand .header-icon { width: 46px !important; height: 46px !important; }
+body.register-page .brand-title { font-size: 1.62rem !important; }
+body.register-page .brand-sub { font-size: 0.94rem !important; }
+body.register-page .demo-status { font-size: 0.94rem !important; }
+body.register-page .progress-wrap { margin: 8px 0 0 !important; }
+body.register-page > .shell > .steps {
+  margin: 8px 0 10px !important;
+  gap: 6px !important;
+  grid-template-columns: repeat(10, 104px) !important;
+}
+body.register-page > .shell > .steps .step {
+  min-height: 38px !important;
+  width: 104px !important;
+  min-width: 104px !important;
+  max-width: 104px !important;
+  padding: 7px 6px !important;
+  font-size: 0.78rem !important;
+  border-radius: 12px !important;
+}
+body.register-page .page-wrap {
+  margin: 8px auto 0 !important;
+  max-width: 1080px !important;
+  flex: 0 0 auto !important;
+}
+body.register-page .register-flow-grid {
+  gap: 14px !important;
+  margin: 0 !important;
+}
+body.register-page .register-flow-grid .hero-card,
+body.register-page .register-flow-grid .action-card {
+  min-height: 222px !important;
+  padding: 20px 24px !important;
+  border-radius: 22px !important;
+}
+body.register-page .register-flow-grid .hero-title {
+  font-size: 2.25rem !important;
+  line-height: 1.02 !important;
+  margin: 0 0 4px !important;
+}
+body.register-page .free-note { font-size: 0.34em !important; }
+body.register-page .register-flow-grid .hero-subtitle {
+  font-size: 1.02rem !important;
+  line-height: 1.22 !important;
+  margin: 0 0 10px !important;
+}
+body.register-page .register-flow-grid form { margin-top: 0 !important; }
+body.register-page .register-flow-grid label {
+  font-size: 0.98rem !important;
+  margin: 0 0 4px !important;
+}
+body.register-page .register-flow-grid input {
+  min-height: 42px !important;
+  padding: 10px 14px !important;
+  margin: 0 0 8px !important;
+  font-size: 1rem !important;
+  border-radius: 14px !important;
+}
+body.register-page .register-info-card .section-title {
+  font-size: 1.54rem !important;
+  margin: 0 0 12px !important;
+}
+body.register-page .register-info-list {
+  gap: 8px !important;
+  min-height: 0 !important;
+}
+body.register-page .register-info-list li {
+  padding: 11px 14px 11px 38px !important;
+  font-size: 0.96rem !important;
+  line-height: 1.24 !important;
+  border-radius: 14px !important;
+}
+body.register-page .register-info-list li::before { top: 10px !important; }
+body.register-page .register-bottom-accent {
+  margin: 10px auto 7px !important;
+  max-width: 860px !important;
+}
+body.register-page .register-action-row {
+  margin: 0 !important;
+  padding: 9px 12px !important;
+  gap: 12px !important;
+  border-radius: 20px !important;
+}
+body.register-page .register-action-row .btn,
+body.register-page .register-action-row button {
+  min-height: 40px !important;
+  height: 40px !important;
+  padding: 8px 12px !important;
+  font-size: 0.96rem !important;
+}
+body.register-page .password-eye-wrap,
+body.login-page .password-eye-wrap { position: relative !important; }
+body.register-page .password-eye-field,
+body.login-page .password-eye-field { padding-right: 52px !important; }
+body.register-page .password-eye-toggle,
+body.login-page .password-eye-toggle {
+  position: absolute !important;
+  top: 50% !important;
+  right: 9px !important;
+  transform: translateY(-50%) !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+  color: #eaf2ff !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+body.register-page .password-eye-toggle svg,
+body.login-page .password-eye-toggle svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+body.register-page .password-eye-toggle svg circle,
+body.login-page .password-eye-toggle svg circle { fill: none !important; }
+body.register-page .register-logged-in-card {
+  max-width: 720px !important;
+  margin: 14px auto 0 !important;
+  padding: 24px 36px !important;
+  border-radius: 26px !important;
+  background: rgba(15, 23, 42, 0.66) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 20px 46px rgba(0,0,0,0.26) !important;
+  text-align: center !important;
+}
+body.register-page .register-logged-in-card .hero-title { margin: 0 0 8px !important; font-size: 2.18rem !important; }
+body.register-page .register-logged-in-card .hero-subtitle { margin: 0 0 8px !important; color: #eaf2ff !important; }
+body.register-page .register-logged-in-note { margin: 0 0 16px !important; color: #cbd5e1 !important; }
+body.register-page .register-logged-in-actions { display: flex !important; justify-content: center !important; gap: 16px !important; }
+body.register-page .register-logged-in-actions .btn { min-width: 150px !important; }
+
+
+
+/* Bazont24E: global dead-button bar compacting only.
+   Keep all existing flow buttons/routes; prevent wrapping at normal desktop width. */
+body.register-page > .shell > .steps,
+body.role-select-page > .shell > .steps,
+body.buyer-dashboard-page > .shell > .steps,
+body.seller-dashboard-page > .shell > .steps,
+body.new-transaction-page > .shell > .steps,
+body.invitation-preview-body > .shell > .steps,
+body.transaction-detail-page > .shell > .steps {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin: 8px 0 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+body.register-page > .shell > .steps .step,
+body.role-select-page > .shell > .steps .step,
+body.buyer-dashboard-page > .shell > .steps .step,
+body.seller-dashboard-page > .shell > .steps .step,
+body.new-transaction-page > .shell > .steps .step,
+body.invitation-preview-body > .shell > .steps .step,
+body.transaction-detail-page > .shell > .steps .step {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 34px !important;
+  padding: 5px 3px !important;
+  border-radius: 10px !important;
+  font-size: 0.66rem !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+body.register-page > .shell,
+body.role-select-page > .shell,
+body.buyer-dashboard-page > .shell,
+body.seller-dashboard-page > .shell,
+body.new-transaction-page > .shell,
+body.invitation-preview-body > .shell,
+body.transaction-detail-page > .shell {
+  max-width: 1200px !important;
+}
+
+/* Bazont24E: Page 10 logged-in lower navigation vertical balance only.
+   Keep header/progress/dead-bar and card anchored; move only the lower nav area down. */
+body.register-page .register-bottom-accent {
+  margin-top: 14px !important;
+  margin-bottom: 10px !important;
+}
+body.register-page .register-logged-in-card + .register-bottom-accent {
+  margin-top: 90px !important;
+}
+body.register-page .register-action-row {
+  margin-top: 8px !important;
+}
+
+
+/* Bazont24E: Page 10 logged-in vertical rhythm only.
+   Keep header/progress/dead bar anchored; move logged-in panel and lower nav group down together. */
+body.register-page .register-logged-in-card {
+  margin-top: 54px !important;
+}
+body.register-page .register-logged-in-card + .register-bottom-accent {
+  margin-top: 90px !important;
+}
+body.register-page .register-action-row {
+  margin-top: 8px !important;
+}
+
+
+/* Bazont24G: Page 10 normal Register state vertical rhythm only.
+   Logged-in state remains exactly as delivered in the baseline.  Header/progress/dead bar stay anchored. */
+body.register-page .register-flow-grid {
+  margin-top: 54px !important;
+}
+body.register-page .register-flow-grid + .register-bottom-accent {
+  margin-top: 90px !important;
+}
+
+
+
+/* Bazont24H: Page 27 seller dashboard visual rebalance only.
+   Remove the duplicate seller role banner from the template and let the
+   normal top-right identity pill carry the seller state. Keep content full-size. */
+body.seller-dashboard-page > .shell {
+  max-width: 1200px !important;
+  padding: 18px 24px 28px !important;
+}
+body.seller-dashboard-page .page-wrap {
+  margin-top: 10px !important;
+  padding-top: 0 !important;
+}
+body.seller-dashboard-page .stack {
+  gap: 14px !important;
+}
+body.seller-dashboard-page .hero-card {
+  padding: 22px 28px !important;
+}
+body.seller-dashboard-page .hero-title {
+  margin-bottom: 8px !important;
+}
+body.seller-dashboard-page .hero-subtitle {
+  margin-bottom: 0 !important;
+}
+body.seller-dashboard-page .grid-4 {
+  gap: 14px !important;
+}
+body.seller-dashboard-page .stat-card,
+body.seller-dashboard-page .panel {
+  padding: 22px !important;
+}
+body.seller-dashboard-page .panel {
+  overflow-x: auto !important;
+}
+body.seller-dashboard-page table {
+  width: 100% !important;
+}
+
+
+/* Bazont24K: Page 27 seller dashboard standard framework repair only.
+   Make Seller Dashboard use the same compact normalised header/dead-bar shell
+   as Page 10/12/14. This removes the legacy oversized B/header rendering
+   without changing seller dashboard logic or content. */
+body.seller-dashboard-page > .shell {
+  max-width: 1120px !important;
+  padding: 24px 24px 34px !important;
+}
+body.seller-dashboard-page .topbar {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 18px !important;
+}
+body.seller-dashboard-page .brand.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+body.seller-dashboard-page .brand.header-left .header-icon,
+body.seller-dashboard-page .brand.header-left .logo-b {
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: contain !important;
+  flex: 0 0 48px !important;
+}
+body.seller-dashboard-page .brand.header-left .brand-title {
+  font-size: 1.6rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
+}
+body.seller-dashboard-page .brand.header-left .brand-sub {
+  font-size: 0.95rem !important;
+  margin-top: 4px !important;
+  color: #dbeafe !important;
+  font-weight: 700 !important;
+}
+body.seller-dashboard-page .demo-status {
+  color: #dbeafe !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+  text-align: right !important;
+  flex: 1 1 auto !important;
+}
+body.seller-dashboard-page .topbar-auth {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+body.seller-dashboard-page .progress-wrap {
+  margin: 12px 0 0 !important;
+}
+body.seller-dashboard-page .page-wrap {
+  margin-top: 22px !important;
+  padding-top: 34px !important;
+}
+body.seller-dashboard-page .hero-card {
+  padding: 26px 30px !important;
+}
+body.seller-dashboard-page .hero-title {
+  font-size: 2.7rem !important;
+  line-height: 1.08 !important;
+  margin: 0 0 10px !important;
+}
+body.seller-dashboard-page .hero-subtitle {
+  font-size: 1.25rem !important;
+  line-height: 1.45 !important;
+}
+
+/* Bazont24K: Page 25 status page standard framework repair only.
+   Keep the courier/status content intact, but force the surrounding shell/header,
+   yellow progress line and one-line dead bar to match the cleaned standard pages. */
+body.endpoint-courier-status > .shell {
+  max-width: 1680px !important;
+  padding: 18px 18px 28px !important;
+}
+body.endpoint-courier-status .topbar {
+  margin-top: 10px !important;
+  padding: 16px 20px !important;
+  border-radius: 24px !important;
+  min-height: 0 !important;
+  align-items: center !important;
+}
+body.endpoint-courier-status .brand.header-left .header-icon,
+body.endpoint-courier-status .brand.header-left .logo-b {
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: contain !important;
+}
+body.endpoint-courier-status .brand.header-left .brand-title {
+  font-size: 1.6rem !important;
+  line-height: 1 !important;
+}
+body.endpoint-courier-status .brand.header-left .brand-sub {
+  font-size: 0.95rem !important;
+  margin-top: 4px !important;
+}
+body.endpoint-courier-status .demo-status {
+  display: block !important;
+  color: #dbeafe !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+  text-align: right !important;
+  flex: 1 !important;
+}
+body.endpoint-courier-status .progress-wrap {
+  display: block !important;
+  margin: 12px 0 0 !important;
+}
+body.endpoint-courier-status .progress-bar {
+  display: block !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  background: rgba(255,255,255,0.10) !important;
+}
+body.endpoint-courier-status .progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #ffb022 0%, #ffd36b 58%, #3a86ff 100%) !important;
+}
+body.endpoint-courier-status > .shell > .steps {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 6px !important;
+  margin: 10px 0 12px !important;
+  align-items: stretch !important;
+}
+body.endpoint-courier-status > .shell > .steps .step {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  padding: 8px 4px !important;
+  font-size: 11px !important;
+  line-height: 1.05 !important;
+  border-radius: 12px !important;
+  white-space: normal !important;
+}
+body.endpoint-courier-status .page-wrap {
+  margin-top: 8px !important;
+  padding-top: 0 !important;
+}
+
+
+
+/* Bazont24N: Page 27 Seller Dashboard standard framework/rhythm repair only.
+   Match the cleaned Pages 12-14 shell/header/progress/dead-bar family while
+   preserving seller dashboard data, role behavior and routes. */
+body.seller-dashboard-page > .shell {
+  max-width: 1200px !important;
+  padding: 18px 18px 28px !important;
+}
+body.seller-dashboard-page .topbar {
+  margin-top: 10px !important;
+  background: rgba(15, 23, 42, 0.58) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.30) !important;
+  color: white !important;
+  border-radius: 28px !important;
+  padding: 16px 20px !important;
+  backdrop-filter: blur(12px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  flex-wrap: wrap !important;
+  min-height: 0 !important;
+}
+body.seller-dashboard-page .brand.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+body.seller-dashboard-page .brand.header-left .header-icon,
+body.seller-dashboard-page .brand.header-left .logo-b {
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: contain !important;
+  flex: 0 0 48px !important;
+}
+body.seller-dashboard-page .brand.header-left .brand-title {
+  font-size: 1.6rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
+}
+body.seller-dashboard-page .brand.header-left .brand-sub {
+  font-size: 0.95rem !important;
+  margin-top: 4px !important;
+  color: #dbeafe !important;
+  font-weight: 700 !important;
+}
+body.seller-dashboard-page .demo-status {
+  display: block !important;
+  color: #dbeafe !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+  text-align: right !important;
+  flex: 1 1 auto !important;
+}
+body.seller-dashboard-page .topbar-auth {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+body.seller-dashboard-page .progress-wrap {
+  display: block !important;
+  margin: 12px 0 0 !important;
+}
+body.seller-dashboard-page .progress-bar {
+  display: block !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  background: rgba(255,255,255,0.10) !important;
+}
+body.seller-dashboard-page .progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #ffb022 0%, #ffd36b 58%, #3a86ff 100%) !important;
+  box-shadow: 0 8px 18px rgba(255,176,34,0.22) !important;
+}
+body.seller-dashboard-page > .shell > .steps {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin: 8px 0 16px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.seller-dashboard-page > .shell > .steps .step {
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 34px !important;
+  padding: 5px 3px !important;
+  border-radius: 10px !important;
+  font-size: 0.66rem !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+body.seller-dashboard-page .page-wrap {
+  margin-top: 0 !important;
+  padding-top: 28px !important;
+}
+body.seller-dashboard-page .stack {
+  gap: 18px !important;
+}
+body.seller-dashboard-page .hero-card {
+  padding: 24px 28px !important;
+  border-radius: 24px !important;
+}
+body.seller-dashboard-page .hero-title {
+  font-size: 2.45rem !important;
+  line-height: 1.08 !important;
+  margin: 0 0 8px !important;
+}
+body.seller-dashboard-page .hero-subtitle {
+  font-size: 1.12rem !important;
+  line-height: 1.38 !important;
+  margin: 0 !important;
+}
+body.seller-dashboard-page .grid-4 {
+  gap: 14px !important;
+}
+body.seller-dashboard-page .stat-card {
+  padding: 18px 20px !important;
+  border-radius: 20px !important;
+}
+body.seller-dashboard-page .tiny {
+  font-size: 0.98rem !important;
+  line-height: 1.28 !important;
+}
+body.seller-dashboard-page .kpi {
+  font-size: 2.25rem !important;
+  margin: 6px 0 0 !important;
+}
+body.seller-dashboard-page .panel {
+  padding: 20px 22px !important;
+  border-radius: 22px !important;
+  overflow-x: auto !important;
+}
+body.seller-dashboard-page .section-title {
+  font-size: 1.62rem !important;
+  margin: 0 0 10px !important;
+}
+body.seller-dashboard-page th,
+body.seller-dashboard-page td {
+  padding: 10px 12px !important;
+  font-size: 1rem !important;
+}
+body.seller-dashboard-page th {
+  font-size: 0.9rem !important;
+}
+body.seller-dashboard-page .buyer-dashboard-bottom-actions {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 18px !important;
+  margin: 24px auto 0 !important;
+  width: 720px !important;
+  max-width: 100% !important;
+}
+body.seller-dashboard-page .buyer-dashboard-bottom-actions .btn {
+  width: auto !important;
+  min-width: 150px !important;
+  padding: 14px 24px !important;
+  font-size: 18px !important;
+}
+
+
+/* Bazont24N: Page 27 header-framework alignment only.
+   Force the Seller Dashboard header/progress/dead-bar spacing to match Page 12
+   exactly. Seller dashboard content, stats, table, routes and logic are untouched. */
+body.seller-dashboard-page > .shell {
+  max-width: 1200px !important;
+  padding: 24px 24px 20px !important;
+}
+body.seller-dashboard-page .topbar {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  flex-wrap: wrap !important;
+  min-height: 0 !important;
+}
+body.seller-dashboard-page .brand.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+body.seller-dashboard-page .brand.header-left .header-icon,
+body.seller-dashboard-page .brand.header-left .logo-b {
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: contain !important;
+  flex: 0 0 48px !important;
+}
+body.seller-dashboard-page .brand.header-left .brand-title {
+  font-size: 1.6rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
+}
+body.seller-dashboard-page .brand.header-left .brand-sub {
+  font-size: 0.95rem !important;
+  margin-top: 4px !important;
+  color: #dbeafe !important;
+  font-weight: 700 !important;
+}
+body.seller-dashboard-page .demo-status {
+  color: #dbeafe !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+  text-align: right !important;
+  flex: 1 1 auto !important;
+}
+body.seller-dashboard-page .topbar-auth {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+body.seller-dashboard-page .progress-wrap {
+  display: block !important;
+  margin: 12px 0 0 !important;
+}
+body.seller-dashboard-page .progress-bar {
+  display: block !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  background: rgba(255,255,255,0.10) !important;
+}
+body.seller-dashboard-page .progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #ffb022 0%, #ffd36b 58%, #3a86ff 100%) !important;
+  box-shadow: 0 8px 18px rgba(255,176,34,0.22) !important;
+}
+body.seller-dashboard-page > .shell > .steps {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin: 8px 0 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.seller-dashboard-page > .shell > .steps .step {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 34px !important;
+  padding: 5px 3px !important;
+  border-radius: 10px !important;
+  font-size: 0.66rem !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+body.seller-dashboard-page .page-wrap {
+  margin-top: 12px !important;
+  padding-top: 0 !important;
+}
+
+
+/* Bazont24Q: authoritative visible DBB 10-26.
+   Keep all 17 buttons visible, compact, and active-highlighted without old 25-30 numbering. */
+body.register-page > .shell > .steps,
+body.role-select-page > .shell > .steps,
+body.buyer-dashboard-page > .shell > .steps,
+body.seller-dashboard-page > .shell > .steps,
+body.new-transaction-page > .shell > .steps,
+body.invitation-preview-body > .shell > .steps,
+body.transaction-detail-page > .shell > .steps {
+  display: grid !important;
+  grid-template-columns: repeat(17, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+  margin: 7px 0 9px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.register-page > .shell > .steps .step,
+body.role-select-page > .shell > .steps .step,
+body.buyer-dashboard-page > .shell > .steps .step,
+body.seller-dashboard-page > .shell > .steps .step,
+body.new-transaction-page > .shell > .steps .step,
+body.invitation-preview-body > .shell > .steps .step,
+body.transaction-detail-page > .shell > .steps .step {
+  min-width: 0 !important;
+  min-height: 28px !important;
+  padding: 4px 2px !important;
+  border-radius: 8px !important;
+  font-size: 0.56rem !important;
+  line-height: 1.02 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+@media (max-width: 1180px) {
+  body.register-page > .shell > .steps,
+  body.role-select-page > .shell > .steps,
+  body.buyer-dashboard-page > .shell > .steps,
+  body.seller-dashboard-page > .shell > .steps,
+  body.new-transaction-page > .shell > .steps,
+  body.invitation-preview-body > .shell > .steps,
+  body.transaction-detail-page > .shell > .steps {
+    grid-template-columns: repeat(9, minmax(0, 1fr)) !important;
+  }
+}
 </style>
 </head>
-<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% elif request.endpoint == 'admin_backoffice' %}admin-backoffice-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
-{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','latest_invitation_preview':'16','invitation_email_preview':'20','courier_logs':'17','seller_join':'18','transaction_detail':'19','courier_status':'25','buyer_transactions':'26','seller_dashboard':'27','faq':'28','admin_backoffice':'30','page1_intro':'2'} %}
-{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'courier_status', 'buyer_transactions'] %}
-{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'16', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'25', 'buyer_transactions':'26'} %}
-{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('25','Status'), ('26','Buyer Tx'), ('27','Seller Dash')] %}
+<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'seller_dashboard' %}seller-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% elif request.endpoint == 'admin_backoffice' %}admin-backoffice-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
+{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','latest_invitation_preview':'16','invitation_email_preview':'20','courier_logs':'17','seller_join':'18','transaction_detail':'19','courier_status':'21','buyer_transactions':'22','seller_dashboard':'23','faq':'24','index_page':'25','admin_backoffice':'26','page1_intro':'2'} %}
+{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'courier_status', 'buyer_transactions', 'seller_dashboard'] %}
+{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'19', 'invitation_email_preview':'20', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'21', 'buyer_transactions':'22', 'seller_dashboard':'23', 'faq':'24', 'index_page':'25', 'admin_backoffice':'26'} %}
+{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('19','Tx'), ('20','Email'), ('21','Status'), ('22','Buyer Tx'), ('23','Seller Dash'), ('24','FAQ'), ('25','Index'), ('26','Back Office')] %}
 {% if request.endpoint in PAGE_IDS %}<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">{{ PAGE_IDS[request.endpoint] }}</div>{% endif %}
   <div class="shell">
     {% if request.endpoint in NORMALISED_PAGES %}
     <div class="topbar">
       <div class="brand header-left"><img src="/static/images/bazont_b_icon.png" alt="Bazont" class="header-icon logo-b"><div class="header-title"><div class="brand-title brand-name">BAZONT</div><div class="brand-sub subtitle">Safe Transactions</div></div></div>
       <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
-      {% if current_user %}<div class="topbar-auth"><a class="topbar-logout" href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span></div>{% endif %}
+      {% if current_user %}<div class="topbar-auth"><a class="topbar-logout" href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }}{% if current_display_role %} • {{ current_display_role }}{% endif %}</span></div>{% endif %}
     </div>
-    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ [100, ((((ACTIVE_PAGES[request.endpoint]|int) - 9) / 16 * 100)|round(2))]|min }}%"></div></div></div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ [100, ((((ACTIVE_PAGES[request.endpoint]|int) - 9) / 17 * 100)|round(2))]|min }}%"></div></div></div>
     <div class="steps">
       {% for page_no, label in FLOW_PAGES %}<div class="step{% if page_no == ACTIVE_PAGES[request.endpoint] %} active{% endif %}">{{ page_no }}<br>{{ label }}</div>{% endfor %}
     </div>
@@ -2304,7 +3124,7 @@ body .topbar-auth .navchip {
       <div class="register-tagline">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
       {% else %}
       <div><div class="brand-title" style="font-size:clamp(2.7rem,3.2vw,3.4rem); font-weight:900; letter-spacing:0.01em;">BAZONT</div><div class="brand-sub">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div></div>
-      <nav class="navlinks">{% if request.endpoint != 'live_home' %}<a href="{{ url_for('gateway_home') }}">Home</a>{% endif %}{% if current_user %}{% if current_user['role'] == 'buyer' %}<a href="{{ url_for('buyer_dashboard') }}">Buyer dashboard</a>{% else %}<a href="{{ url_for('seller_dashboard') }}">Seller dashboard</a>{% endif %}<a href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }} • {{ current_user['role'] }}</span>{% else %}<a href="{{ url_for('login') }}">Login</a><a href="{{ url_for('register') }}">Register</a>{% endif %}</nav>
+      <nav class="navlinks">{% if request.endpoint != 'live_home' %}<a href="{{ url_for('gateway_home') }}">Home</a>{% endif %}{% if current_user %}{% if current_display_role == 'buyer' %}<a href="{{ url_for('buyer_dashboard') }}">Buyer dashboard</a>{% elif current_display_role == 'seller' %}<a href="{{ url_for('seller_dashboard') }}">Seller dashboard</a>{% else %}<a href="{{ url_for('role_select') }}">Choose dashboard</a>{% endif %}<a href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }}{% if current_display_role %} • {{ current_display_role }}{% endif %}</span>{% else %}<a href="{{ url_for('login') }}">Login</a><a href="{{ url_for('register') }}">Register</a>{% endif %}</nav>
       {% endif %}
     </header>
     {% if request.endpoint == 'register' %}<div class="register-accent-line" aria-hidden="true"></div>{% endif %}

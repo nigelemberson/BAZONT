@@ -122,9 +122,7 @@
     <h3 class="section-title">Transaction summary</h3>
     <div class="tx-summary-columns">
       <table>
-        <tr><th>Buyer user ID</th><td>{{ tx['buyer_user_id'] }}</td></tr>
         <tr><th>Seller email</th><td>{{ tx['seller_email'] }}</td></tr>
-        <tr><th>Seller user ID</th><td>{{ tx['seller_user_id'] or 'Not joined yet' }}</td></tr>
         <tr><th>Description</th><td>{{ tx['item_description'] }}</td></tr>
         <tr><th>Payment received</th><td>{{ tx['payment_received_at'] or 'No' }}</td></tr>
       </table>
@@ -145,9 +143,12 @@
     </div>
   </section>
   <div class="tx-nav-row">
-    <a class="btn tx-back-blue" href="{{ url_for('buyer_transactions') if current_user and current_user['role'] == 'buyer' else url_for('seller_dashboard') }}">Back</a>
-    {% if current_user and current_user['role'] == 'buyer' %}<a class="btn" href="{{ url_for('buyer_actions', public_id=tx['public_id']) }}">Next → Buyer Actions</a>{% else %}<a class="btn" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next → Courier</a>{% endif %}
-    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+    {% if request.args.get('from_page') == 'buyer_transactions' %}
+    <a class="btn tx-back-blue" href="{{ url_for('buyer_transactions') }}">Back</a>
+    {% else %}
+    <a class="btn tx-back-blue" href="{{ url_for('invitation_preview', public_id=tx['public_id']) if current_user and current_user['role'] == 'buyer' else url_for('seller_dashboard') }}">Back</a>
+    {% endif %}
+    <a class="btn" href="{{ url_for('courier_status', public_id=tx['public_id'], from_page='transaction_detail') }}">Next → Status</a>
   </div>
 
   {% elif tx_view == 'actions' %}
@@ -226,7 +227,6 @@
   <div class="tx-nav-row">
     <a class="btn tx-back-blue" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">← Back</a>
     <a class="btn" href="{{ url_for('courier_logs', public_id=tx['public_id']) }}">Next → Courier & Logs</a>
-    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 
   {% elif tx_view == 'logs' %}
@@ -269,7 +269,6 @@
   <div class="tx-nav-row">
     <a class="btn secondary" href="{{ url_for('transaction_detail', public_id=tx['public_id'], view='actions') }}">← Back</a>
     <a class="btn" href="{{ url_for('live_home') }}">Done / Home</a>
-    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
   {% endif %}
 </div>

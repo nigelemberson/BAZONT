@@ -18,7 +18,9 @@
 18 | Seller | /seller/join/<token> | ALIVE
 19 | Transaction Detail | /transactions/<public_id> | PROTECTED
 20 | Invitation Email Preview | /buyer/transactions/<public_id>/invitation-email-preview | PROTECTED
-25 | Status | /transactions/<public_id>/status | PROTECTED
-26 | Buyer Transactions | /buyer/transactions | PROTECTED
-27 | Seller Dashboard | /seller/dashboard | PROTECTED
-28 | FAQ | /faq | ALIVE
+21 | Status | /transactions/<public_id>/status | PROTECTED
+22 | Buyer Transactions | /buyer/transactions | PROTECTED
+23 | Seller Dashboard | /seller/dashboard | PROTECTED
+24 | FAQ | /faq | ALIVE
+25 | Index | /index | ALIVE
+26 | Back Office | /admin/back-office | ALIVE

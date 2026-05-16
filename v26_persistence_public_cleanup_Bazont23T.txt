@@ -1,0 +1,19 @@
+Bazont23X STRICT F_B_C_v26 static proof
+Baseline: Bazont23S.zip
+Output: Bazont24S.zip
+
+PASS - DEFAULT_VERSION set to Bazont24S.zip.
+PASS - version.txt set to Bazont24S.zip.
+PASS - forms/version.txt set to Bazont24S.zip.
+PASS - app config sets permanent session lifetime and SameSite/HttpOnly cookies.
+PASS - destructive development reset disabled; accounts and transactions are not cleared on startup.
+PASS - SQLite persistent DB path remains outside temporary session memory: ~/BAZONT_data/bazont.db unless overridden.
+PASS - buyer dashboard reads persisted transactions from transactions table by buyer_user_id.
+PASS - seller dashboard, status, and back office read same transactions table.
+PASS - public Test Login form removed from login page.
+PASS - public Override button text removed from courier page.
+PASS - public seller development access panel removed from invitation page.
+PASS - Page 10 register yellow advancement/progress line restored above dead navigation button row.
+PASS - Home, X Index, Index page, page map and Back Office numbering preserved.
+
+Live Flask browser checks not run in sandbox because Flask is not installed here.

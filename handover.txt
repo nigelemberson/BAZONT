@@ -1,15 +1,2 @@
-Bazont23S.zip handover
-
-Baseline: Bazont23O.zip
-Output: Bazont23S.zip
-
-Amendment applied:
-1. Home subtitle changed to: Login or click Next to see how Bazont protects transactions between distant buyers and sellers.
-2. Home buttons swapped so Login is LEFT and Next is RIGHT.
-3. Preserved X Index, page numbering, routes, and existing functionality.
-
-Checks:
-- python py_compile app.py/package_check.py/zip_check.py PASS
-- package_check.py PASS
-- zip_check.py PASS after packaging
-- TRUE FLAT ZIP checked
+Bazont24S.zip
+DBB rebuilt from continuous visible map 10-26. Routes unchanged. TRUE flat ZIP.

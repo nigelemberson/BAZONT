@@ -1,0 +1,10 @@
+Bazont24S.zip
+STRICT F_B_C_v26 scoped check
+
+Scope: templates/role_select.html, templates/buyer_dashboard.html, templates/new_transaction.html, version sources.
+
+PASS: Page 12 bottom row Logout removed.
+PASS: Page 13 bottom row Logout removed.
+PASS: Page 14 bottom row is Home | Back | Next.
+PASS: Top-right identity/logout remains controlled by base template.
+PASS: Transaction/courier/auth logic untouched.

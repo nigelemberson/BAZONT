@@ -195,9 +195,8 @@
   </div>
 
   <div class="ba-nav">
-    <a class="btn ba-back-blue" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">← Back</a>
+    <a class="btn ba-back-blue" href="{{ url_for('new_transaction') }}">← Back</a>
     <a class="btn" href="{{ url_for('invitation_preview', public_id=tx['public_id']) }}">Next → Invitation Preview</a>
-    <a class="btn ba-logout buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 </div>
 {% endblock %}

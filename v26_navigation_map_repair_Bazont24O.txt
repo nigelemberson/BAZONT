@@ -1,0 +1,12 @@
+Bazont24S.zip STRICT F_B_C_v26 navigation-map repair
+
+Changes limited to navigation/page state cleanup requested:
+- base.html ACTIVE_PAGES: transaction_detail now highlights Page 19, not Page 16.
+- Page 15 buyer action bottom Back now returns to Page 14 Create; bottom Logout removed.
+- Page 19 transaction detail bottom Back no longer returns to Page 26; buyer back targets Page 16 Invite, seller back targets Page 27 Seller Dash.
+- Page 19 Next no longer loops back to Page 15; it targets Page 25 Status.
+- Page 19 stale technical user-id rows removed from visible summary.
+- Page 26 bottom Logout removed and stale title normalized to Buyer transactions.
+- Page 27 bottom Logout removed.
+- Top-right Logout/identity remains provided by base.html.
+- Version labels updated to Bazont24S.zip.

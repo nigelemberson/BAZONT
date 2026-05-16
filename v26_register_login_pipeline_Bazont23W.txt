@@ -1,0 +1,15 @@
+Bazont23X STRICT F_B_C_v26 static proof
+Baseline: Bazont23V.zip
+Output: Bazont24S.zip
+Scope: Register/Login credential pipeline only.
+
+PASS - Page /register stores real email and password hash in persistent users table.
+PASS - Existing email on /register refreshes that real account password hash for local/test pipeline validation; no demo fallback.
+PASS - Page /login validates against the same persistent users table with check_password_hash.
+PASS - Register -> Login handoff sets pending_login_email and pending_login_password for immediate local testing.
+PASS - current_user rejects buyer_demo@bazont.local and seller_demo@bazont.local from public auth sessions.
+PASS - Password eye exists on Page 10 Register.
+PASS - Password eye exists on Page 11 Login.
+PASS - Page 10 active Register styling remains orange.
+PASS - DEFAULT_VERSION/version.txt/forms/version.txt show Bazont24S.zip.
+PASS - No transaction/courier/back-office/Page 27 changes intentionally made.

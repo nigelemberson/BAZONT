@@ -1,10 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="role-banner seller">
-  {% if current_user %}
-    <div class="role-banner-text">VIEWING AS {{ current_user['role']|upper }}</div>
-  {% endif %}
-</div>
 <div class="stack">
   <section class="hero-card">
     <h1 class="hero-title">Seller dashboard</h1>
@@ -41,7 +36,6 @@
   <div class="buyer-dashboard-bottom-actions" aria-label="Seller dashboard navigation">
     <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
     <a class="btn buyer-dashboard-back" href="{{ url_for('role_select') }}">Back</a>
-    <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
   </div>
 </div>
 {% endblock %}

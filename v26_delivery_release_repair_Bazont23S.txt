@@ -2,12 +2,12 @@ Bazont23S v26 delivery/release repair proof
 
 Scope:
 - Baseline: Bazont23R.zip
-- Output: Bazont23S.zip
+- Output: Bazont24S.zip
 - Amendment only: courier final transition and simulated payment release after DELIVERED.
 
 Static checks:
-PASS - DEFAULT_VERSION set to Bazont23S.zip
-PASS - version.txt set to Bazont23S.zip
+PASS - DEFAULT_VERSION set to Bazont24S.zip
+PASS - version.txt set to Bazont24S.zip
 PASS - check_due_tracking selects TRACKING_UPLOADED, IN_TRANSIT, DELIVERED rows, excluding RELEASED/REFUNDED/CANCELLED holds
 PASS - simulator persists DELIVERED into transactions.tracking_api_status
 PASS - simulator inserts DELIVERED courier_events row

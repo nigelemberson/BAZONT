@@ -18,19 +18,19 @@
 </style>
 <div class="stack">
 <section class="panel">
-    <h3 class="section-title">My transactions</h3>
+    <h3 class="section-title">Existing transactions</h3>
     <table>
-      <tr><th>Public ID</th><th>Seller email</th><th>record total</th><th>Buyer pays</th><th>Seller receives</th><th>Status</th><th>Action</th></tr>
+      <tr><th>Transaction ID</th><th>Seller email</th><th>Transaction total</th><th>Buyer pays</th><th>Seller receives</th><th>Status</th><th>Action</th></tr>
       {% for tx in transactions %}
       {% set f = tx_financials(tx) %}
       <tr>
-        <td><strong><a href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">{{ tx['public_id'] }}</a></strong></td>
+        <td><strong><a href="{{ url_for('transaction_detail', public_id=tx['public_id'], from_page='buyer_transactions') }}">{{ tx['public_id'] }}</a></strong></td>
         <td>{{ tx['seller_email'] }}</td>
         <td>₱{{ '%.2f'|format(f.transaction_total) }}</td>
         <td>₱{{ '%.2f'|format(f.buyer_pays) }}</td>
         <td>₱{{ '%.2f'|format(f.seller_receives) }}</td>
         <td>{{ tx['status'] }}</td>
-        <td><a class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 0 10px rgba(59,130,246,0.5); width: auto; min-width: max-content; white-space: nowrap;" href="{{ url_for('transaction_detail', public_id=tx['public_id']) }}">Open transaction</a></td>
+        <td><a class="btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 0 10px rgba(59,130,246,0.5); width: auto; min-width: max-content; white-space: nowrap;" href="{{ url_for('transaction_detail', public_id=tx['public_id'], from_page='buyer_transactions') }}">Open transaction</a></td>
       </tr>
       {% else %}
       <tr><td colspan="7">No transactions yet.</td></tr>
@@ -41,7 +41,7 @@
 <div class="buyer-dashboard-bottom-actions" aria-label="Buyer transactions navigation">
   <a class="btn buyer-dashboard-home" href="{{ url_for('gateway_home') }}">Home</a>
   <a class="btn buyer-dashboard-back" href="{{ url_for('buyer_dashboard') }}">Back</a>
-  <a class="btn buyer-dashboard-logout" href="{{ url_for('logout') }}">Logout</a>
+  <a class="btn" href="{{ url_for('new_transaction') }}">Next</a>
 </div>
 {% endblock %}
 

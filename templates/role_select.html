@@ -97,18 +97,17 @@
     <div class="role-choice-option role-choice-buyer">
       <div class="role-choice-label">Buyer workspace</div>
       <p>Create transactions, record payment, and manage buyer-side progress.</p>
-      <a class="btn" href="{{ url_for('buyer_dashboard') }}">Buyer Dashboard</a>
+      <a class="btn" href="{{ url_for('choose_role', role='buyer') }}">Buyer Dashboard</a>
     </div>
     <div class="role-choice-option role-choice-seller">
       <div class="role-choice-label">Seller workspace</div>
       <p>Review assigned transactions and upload courier tracking details.</p>
-      <a class="btn secondary" href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
+      <a class="btn secondary" href="{{ url_for('choose_role', role='seller') }}">Seller Dashboard</a>
     </div>
   </div>
 </section>
 <div class="role-action-row">
   <a class="btn role-home" href="{{ url_for('gateway_home') }}">Home</a>
   <a class="btn role-back" href="{{ url_for('login') }}">Back</a>
-  <a class="btn role-logout" href="{{ url_for('logout') }}">Logout</a>
 </div>
 {% endblock %}

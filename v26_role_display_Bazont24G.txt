@@ -1,0 +1,8 @@
+Bazont24G STRICT F_B_C_v26 focused proof
+
+PASS - version.txt = Bazont24S.zip
+PASS - /__version returns Bazont24S.zip via Flask test client
+PASS - Page 12 authenticated pre-selection renders email without buyer/seller suffix
+PASS - Buyer Dashboard selection sets selected role to buyer and top-right shows buyer
+PASS - Logout clears identity display and logged-out Page 11 remains login form
+PASS - No transaction/courier/back office route changes intended

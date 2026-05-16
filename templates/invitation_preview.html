@@ -484,59 +484,8 @@
   }
 
 
-  /* Bazont22W - development-only seller route access after invitation sent */
-  .seller-dev-access-panel {
-    margin-top: 12px;
-    padding: 12px 14px;
-    border: 1px solid rgba(59, 130, 246, 0.45);
-    border-radius: 16px;
-    background: rgba(37, 99, 235, 0.10);
-  }
+  /* Bazont23V - public development seller route panel removed */
 
-  .seller-dev-access-panel .seller-dev-access-title {
-    margin: 0 0 8px;
-    font-size: 12px;
-    font-weight: 900;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #93c5fd;
-  }
-
-  .seller-dev-access-panel .seller-dev-access-copy {
-    margin: 0 0 10px;
-    font-size: 13px;
-    line-height: 1.35;
-    color: #dbeafe;
-  }
-
-  .seller-dev-access-panel .seller-dev-access-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 9px 16px;
-    border-radius: 999px;
-    background: #2563eb;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 900;
-    text-decoration: none;
-    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
-  }
-
-
-  .email-failed-banner {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    width: 100%;
-    margin: 12px 0 14px;
-    padding: 14px 18px;
-    border: 1px solid rgba(248, 113, 113, 0.85);
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(153, 27, 27, 0.98), rgba(220, 38, 38, 0.88));
-    color: #ffffff;
-    box-shadow: 0 16px 32px rgba(127, 29, 29, 0.28);
-  }
 
 </style>
 {% set invite_url = seller_invite_link(tx) %}
@@ -577,16 +526,7 @@
       </span>
     </div>
     {% endif %}
-
-    {% if email_sent %}
-    <div class="seller-dev-access-panel" role="region" aria-label="Seller route development access">
-      <p class="seller-dev-access-title">Development seller access</p>
-      <p class="seller-dev-access-copy">Use this button to open the seller invitation route directly during testing.</p>
-      <a class="seller-dev-access-button" href="{{ invite_url }}" target="_blank" rel="noopener">Open Seller Join Route</a>
-    </div>
-    {% endif %}
-
-    <div class="invite-layout-grid">
+<div class="invite-layout-grid">
       <div class="invite-card-panel">
         <p class="invite-section-label">Send invitation by Bazont Email</p>
         <div class="bazont-primary-row" aria-label="Bazont email actions">

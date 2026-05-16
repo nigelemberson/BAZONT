@@ -108,6 +108,19 @@
     .footer-space {
       height: 16px;
     }
+    .page-version-fixed {
+      position: fixed;
+      right: 14px;
+      bottom: 10px;
+      z-index: 2147483647;
+      color: rgba(255,255,255,0.72);
+      font: 700 12px/1 Arial, sans-serif;
+      letter-spacing: 0.04em;
+      background: rgba(15,23,42,0.54);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
 
     .brand { display: flex; align-items: center; gap: 10px; }
 .brand > div { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
@@ -125,7 +138,7 @@
 </style>
 </head>
 <body>
-  <div class="page-id-badge">28</div>
+  <div class="page-id-badge">24</div>
 
   <div class="wrap">
     <div class="bazont-old-header">
@@ -224,5 +237,6 @@
     <div class="footer-space"></div>
   </div>
 
+  <div class="page-version-fixed">{{ VERSION }}</div>
 </body>
 </html>

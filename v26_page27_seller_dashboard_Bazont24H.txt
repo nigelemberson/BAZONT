@@ -1,0 +1,18 @@
+Bazont24H STRICT F_B_C_v26 focused proof
+Baseline: Bazont24G.zip
+Created: Bazont24S.zip
+Scope: Page 27 Seller Dashboard only
+
+Checks performed:
+PASS - templates/seller_dashboard.html no longer contains VIEWING AS SELLER banner.
+PASS - Seller dashboard title preserved.
+PASS - seller stats preserved.
+PASS - assigned transactions table preserved.
+PASS - Home / Back / Logout buttons preserved.
+PASS - top-left Page 27 badge handled by base template unchanged.
+PASS - top-right identity pill handled by base template unchanged.
+PASS - Page 27 rendered with seller session through Flask test client.
+PASS - rendered Page 27 contains Bazont24S.zip.
+PASS - rendered Page 27 does not contain VIEWING AS SELLER.
+PASS - app.py syntax check passed.
+PASS - TRUE flat ZIP packaged at archive root.

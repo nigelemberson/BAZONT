@@ -115,11 +115,9 @@ body.new-transaction-page #page-25-create-form .page-25-measurements input {
   </section>
 
   <div class="page-25-action-row" aria-label="Create transaction navigation">
-    <button type="submit" form="page-25-create-form" class="btn page-25-send">Next</button>
-    <a class="btn page-25-send" href="{{ url_for('latest_invitation_preview') }}">Next / Preview</a>
     <a class="btn page-25-home" href="{{ url_for('gateway_home') }}">Home</a>
     <a class="btn page-25-back" href="{{ url_for('buyer_dashboard') }}">Back</a>
-    <a class="btn page-25-logout" href="{{ url_for('logout') }}">Logout</a>
+    <button type="submit" form="page-25-create-form" class="btn page-25-send">Next</button>
   </div>
 </div>
 {% endblock %}

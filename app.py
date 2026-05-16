@@ -22,7 +22,8 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont23S.zip'
+DEFAULT_VERSION = 'Bazont24S.zip'
+DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
         value = VERSION_FILE.read_text(encoding='utf-8').strip()
@@ -230,6 +231,9 @@ def admin_payment_status(tx):
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['EMAIL_OUTBOX_DIR'] = BASE_DIR / 'outbox'
 app.config['EMAIL_OUTBOX_DIR'].mkdir(exist_ok=True)
 
@@ -376,35 +380,45 @@ def init_db():
     conn.execute("UPDATE transactions SET status = 'TRACKING_UPLOADED' WHERE status = 'TRACKING_UPLOADED'")
     conn.execute("UPDATE transactions SET status = 'RELEASED' WHERE status = 'RELEASED'")
     conn.execute("UPDATE transactions SET status = 'REFUNDED' WHERE status = 'REFUNDED'")
+    purge_legacy_demo_transaction_residue(conn)
     conn.commit()
     conn.close()
 
 
 def run_one_time_development_reset():
-    """Bazont22W cleanup: clear stale development transactions/invites once.
+    """Bazont23V: production persistence guard.
 
-    This preserves registered accounts and configuration, but removes old
-    transactions, audit rows, courier rows, and local invite proof files so
-    the next test run starts cleanly.
+    Older builds used this hook to wipe local demo transactions once. That is
+    now forbidden because registered accounts and transactions must survive
+    browser refresh, logout/login, and app restart. Keep the function as a
+    harmless compatibility hook only.
     """
-    if DEV_RESET_MARKER.exists():
-        return
-    conn = db_connect()
     try:
-        conn.execute('DELETE FROM courier_events')
-        conn.execute('DELETE FROM audit_log')
-        conn.execute('DELETE FROM transactions')
-        conn.commit()
-    finally:
-        conn.close()
-    outbox_dir = app.config['EMAIL_OUTBOX_DIR']
-    for path in outbox_dir.glob('invite_*'):
-        if path.is_file():
-            try:
-                path.unlink()
-            except OSError:
-                pass
-    DEV_RESET_MARKER.write_text(now_iso(), encoding='utf-8')
+        DEV_RESET_MARKER.write_text('persistence-preserved-' + now_iso(), encoding='utf-8')
+    except OSError:
+        pass
+    return
+
+
+def purge_legacy_demo_transaction_residue(conn):
+    """Remove stale seeded/demo/audit transactions from the persistent store.
+
+    Public pages must show only transactions created by real registered users.
+    Audit inspection can still create temporary audit records later through
+    /audit/p/<page_no>, but old seeded/demo rows must not leak into Page 22 or
+    Page 19 in the normal buyer flow.
+    """
+    demo_emails = tuple(DEMO_EMAILS | {'seller.audit@bazont.local'})
+    placeholders = ','.join('?' for _ in demo_emails)
+    conn.execute(f"""
+        DELETE FROM transactions
+        WHERE public_id = 'TX-B72BAD32'
+           OR item_description LIKE 'Audit access transaction%'
+           OR seller_email IN ({placeholders})
+           OR buyer_user_id IN (SELECT id FROM users WHERE email IN ({placeholders}))
+           OR seller_user_id IN (SELECT id FROM users WHERE email IN ({placeholders}))
+    """, demo_emails + demo_emails + demo_emails)
+    conn.execute(f"DELETE FROM users WHERE email IN ({placeholders})", demo_emails)
 
 
 TX_CREATED = 'CREATED'
@@ -517,13 +531,24 @@ def establish_authenticated_session(user):
     session['auth_email'] = user['email']
     session['auth_role'] = user['role']
     session['auth_ok'] = True
+    session.pop('selected_role', None)
 
 
 def clear_authenticated_session():
     """Remove every auth/display key while preserving later flash messages."""
-    for key in ('user_id', 'user', 'auth_email', 'auth_role', 'auth_ok'):
+    for key in ('user_id', 'user', 'auth_email', 'auth_role', 'auth_ok', 'selected_role'):
         session.pop(key, None)
     session['auth_logged_out'] = True
+
+
+def audit_session_allows_current_endpoint():
+    """Allow demo identities only for the one protected page entered from /audit/p/<page_no>."""
+    if session.get('audit_access_mode') is not True:
+        return False
+    allowed_endpoint = session.get('audit_allowed_endpoint')
+    if not allowed_endpoint:
+        return False
+    return request.endpoint == allowed_endpoint
 
 
 def current_user():
@@ -540,16 +565,30 @@ def current_user():
     if user is None:
         clear_authenticated_session()
         return None
+    if user['email'] in DEMO_EMAILS:
+        # Bazont24K: demo/audit users remain blocked in normal public flow.
+        # They are valid only for the exact endpoint reached from /audit/p/<page_no>.
+        if not audit_session_allows_current_endpoint():
+            clear_authenticated_session()
+            return None
     if session.get('auth_email') != user['email'] or session.get('auth_role') != user['role']:
         clear_authenticated_session()
         return None
     return user
 
 
+def current_display_role():
+    role = session.get('selected_role')
+    if role in ('buyer', 'seller'):
+        return role
+    return ''
+
+
 @app.context_processor
 def inject_globals():
     return {
         'current_user': current_user(),
+        'current_display_role': current_display_role(),
         'VERSION': (get_version() if get_version().endswith('.zip') else get_version() + '.zip'),
         'MAX_ITEM_PRICE': MAX_ITEM_PRICE,
         'MAX_WEIGHT': MAX_WEIGHT,
@@ -567,6 +606,11 @@ def inject_globals():
 
 
 bootstrap_runtime()
+
+
+@app.before_request
+def keep_session_until_logout():
+    session.permanent = True
 
 
 @app.before_request
@@ -1191,14 +1235,20 @@ def forms_api_register():
 
     conn = get_db()
     existing = conn.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+    password_hash = generate_password_hash(password)
     if existing:
-        return jsonify({'ok': False, 'code': 'exists', 'message': 'Email already registered. Please log in.'}), 409
-
-    conn.execute(
-        'INSERT INTO users (email, password_hash, role, created_at) VALUES (?, ?, ?, ?)',
-        (email, generate_password_hash(password), role, now_iso())
-    )
+        conn.execute(
+            'UPDATE users SET password_hash = ?, role = ? WHERE email = ?',
+            (password_hash, role, email)
+        )
+    else:
+        conn.execute(
+            'INSERT INTO users (email, password_hash, role, created_at) VALUES (?, ?, ?, ?)',
+            (email, password_hash, role, now_iso())
+        )
     conn.commit()
+    session['pending_login_email'] = email
+    session['pending_login_password'] = password
     return jsonify({'ok': True})
 
 
@@ -1225,19 +1275,29 @@ def register():
     if request.method == 'POST':
         email = request.form['email'].strip().lower()
         password = request.form['password']
+        if email in DEMO_EMAILS:
+            flash('Demo accounts are disabled in the public flow.', 'error')
+            return redirect(url_for('register'))
         role = request.form['role']
         if role not in ('buyer', 'seller'):
             flash('Unable to create account. Please try again.', 'error')
             return redirect(url_for('register'))
         conn = get_db()
-        existing = conn.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+        existing = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+        password_hash = generate_password_hash(password)
         if existing:
-            session.pop('_flashes', None)
-            return redirect(url_for('login'))
-        conn.execute(
-            'INSERT INTO users (email, password_hash, role, created_at) VALUES (?, ?, ?, ?)',
-            (email, generate_password_hash(password), role, now_iso())
-        )
+            # Bazont23X: local/test registration must refresh the real account
+            # credentials so Register -> Login always validates against the
+            # same persistent users table.  No demo fallback is used.
+            conn.execute(
+                'UPDATE users SET password_hash = ?, role = ? WHERE email = ?',
+                (password_hash, role, email)
+            )
+        else:
+            conn.execute(
+                'INSERT INTO users (email, password_hash, role, created_at) VALUES (?, ?, ?, ?)',
+                (email, password_hash, role, now_iso())
+            )
         conn.commit()
         session['pending_login_email'] = email
         session['pending_login_password'] = password
@@ -1257,7 +1317,12 @@ def login():
         password = request.form['password']
         conn = get_db()
         user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+        if email in DEMO_EMAILS:
+            session['pending_login_email'] = ''
+            flash('Demo accounts are disabled in the public flow.', 'error')
+            return redirect(url_for('login'))
         if not user or not check_password_hash(user['password_hash'], password):
+            session['pending_login_email'] = email
             flash('Invalid email or password.', 'error')
             if next_url:
                 return redirect(url_for('login', next=next_url))
@@ -1296,13 +1361,37 @@ def logout():
     return redirect(url_for('gateway_home'))
 
 
+@app.route('/choose-role/<role>')
+@login_required()
+def choose_role(role):
+    role = (role or '').strip().lower()
+    if role not in ('buyer', 'seller'):
+        abort(404)
+    user = current_user()
+    conn = get_db()
+    conn.execute('UPDATE users SET role = ? WHERE id = ?', (role, user['id']))
+    conn.commit()
+    session['auth_role'] = role
+    session['selected_role'] = role
+    if role == 'seller':
+        return redirect(url_for('seller_dashboard'))
+    return redirect(url_for('buyer_dashboard'))
+
+
 @app.route('/buyer/dashboard')
 @login_required(role='buyer')
 def buyer_dashboard():
     user = current_user()
     conn = get_db()
     transactions = conn.execute(
-        'SELECT * FROM transactions WHERE buyer_user_id = ? ORDER BY id DESC',
+        """
+        SELECT * FROM transactions
+        WHERE buyer_user_id = ?
+          AND public_id <> 'TX-B72BAD32'
+          AND item_description NOT LIKE 'Audit access transaction%'
+          AND seller_email NOT IN ('buyer_demo@bazont.local', 'seller_demo@bazont.local', 'seller.audit@bazont.local')
+        ORDER BY id DESC
+        """,
         (user['id'],)
     ).fetchall()
     return render_template('buyer_dashboard.html', transactions=transactions)
@@ -1314,7 +1403,14 @@ def buyer_transactions():
     user = current_user()
     conn = get_db()
     transactions = conn.execute(
-        'SELECT * FROM transactions WHERE buyer_user_id = ? ORDER BY id DESC',
+        """
+        SELECT * FROM transactions
+        WHERE buyer_user_id = ?
+          AND public_id <> 'TX-B72BAD32'
+          AND item_description NOT LIKE 'Audit access transaction%'
+          AND seller_email NOT IN ('buyer_demo@bazont.local', 'seller_demo@bazont.local', 'seller.audit@bazont.local')
+        ORDER BY id DESC
+        """,
         (user['id'],)
     ).fetchall()
     return render_template('buyer_transactions.html', transactions=transactions)
@@ -1394,37 +1490,10 @@ def new_transaction():
 @app.route('/buyer/transactions/latest/invitation-preview')
 @login_required(role='buyer')
 def latest_invitation_preview():
-    # Build 20A: Page 21 Next / Preview must open Page 22 payment/actions, not Page 23.
-    # This route creates a safe draft test transaction when needed and never sends seller email.
-    user = current_user()
-    conn = get_db()
-    tx = conn.execute(
-        'SELECT * FROM transactions WHERE buyer_user_id = ? ORDER BY id DESC LIMIT 1',
-        (user['id'],)
-    ).fetchone()
-
-    if not tx:
-        seller_email = 'seller.test@bazont.local'
-        if user['email'].lower() == seller_email:
-            seller_email = 'seller.preview@bazont.local'
-        public_id = 'TX-' + secrets.token_hex(4).upper()
-        invite_token = secrets.token_urlsafe(24)
-        now = now_iso()
-        conn.execute(
-            '''INSERT INTO transactions (
-                public_id, buyer_user_id, seller_email, item_description, item_price, shipping_price, total_amount,
-                weight_kg, length_cm, width_cm, height_cm, invite_token, invite_sent_at,
-                status, hold_status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CREATED', 'NOT_FUNDED', ?, ?)''',
-            (public_id, user['id'], seller_email, 'Preview test transaction', 8500.0, 300.0, 8800.0,
-             1.0, 15.0, 15.0, 15.0, invite_token, now, now, now)
-        )
-        tx_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
-        log_audit(conn, tx_id, 'buyer', user['email'], 'PREVIEW_TEST_TRANSACTION_CREATED', None, TX_CREATED, 'Page 21 Next / Preview created a test transaction and opened Page 22. Seller email not sent.')
-        conn.commit()
-        return redirect(url_for('buyer_actions', public_id=public_id))
-
-    return redirect(url_for('buyer_actions', public_id=tx['public_id']))
+    # Bazont23X: public Next / Preview bypass removed. Transactions must be
+    # created through the Page 14 form so required fields and payment flow run.
+    flash('Please complete the transaction form before continuing.', 'error')
+    return redirect(url_for('new_transaction'))
 
 
 @app.route('/buyer/transactions/<public_id>/invitation-preview', methods=['GET', 'POST'])
@@ -1581,6 +1650,13 @@ def transaction_detail(public_id):
     tx = conn.execute('SELECT * FROM transactions WHERE public_id = ?', (public_id,)).fetchone()
     if not tx:
         abort(404)
+    is_seeded_or_audit_tx = (
+        tx['public_id'] == 'TX-B72BAD32'
+        or (tx['item_description'] or '').startswith('Audit access transaction')
+        or (tx['seller_email'] or '').lower() in DEMO_EMAILS | {'seller.audit@bazont.local'}
+    )
+    if is_seeded_or_audit_tx and not session.get('audit_access_mode'):
+        abort(404)
     if user['id'] not in {tx['buyer_user_id'], tx['seller_user_id']}:
         abort(403)
 
@@ -1665,6 +1741,13 @@ def _get_authorized_transaction(public_id):
     conn = get_db()
     tx = conn.execute('SELECT * FROM transactions WHERE public_id = ?', (public_id,)).fetchone()
     if not tx:
+        abort(404)
+    is_seeded_or_audit_tx = (
+        tx['public_id'] == 'TX-B72BAD32'
+        or (tx['item_description'] or '').startswith('Audit access transaction')
+        or (tx['seller_email'] or '').lower() in DEMO_EMAILS | {'seller.audit@bazont.local'}
+    )
+    if is_seeded_or_audit_tx and not session.get('audit_access_mode'):
         abort(404)
     if user['id'] not in {tx['buyer_user_id'], tx['seller_user_id']}:
         abort(403)
@@ -1919,26 +2002,28 @@ MASTER_PAGE_MAP = [
     {'number':'18', 'title':'Seller', 'route':'/seller/join/<token>', 'endpoint':'seller_join', 'template':'templates/seller_join.html', 'protected':False, 'audit_kind':'seller_join'},
     {'number':'19', 'title':'Transaction Detail', 'route':'/transactions/<public_id>', 'endpoint':'transaction_detail', 'template':'templates/transaction_detail.html', 'protected':True, 'audit_kind':'tx_buyer'},
     {'number':'20', 'title':'Invitation Email Preview', 'route':'/buyer/transactions/<public_id>/invitation-email-preview', 'endpoint':'invitation_email_preview', 'template':'generated html', 'protected':True, 'audit_kind':'tx_paid_buyer'},
-    {'number':'25', 'title':'Status', 'route':'/transactions/<public_id>/status', 'endpoint':'courier_status', 'template':'templates/courier_status.html', 'protected':True, 'audit_kind':'tx_buyer_tracking'},
-    {'number':'26', 'title':'Buyer Transactions', 'route':'/buyer/transactions', 'endpoint':'buyer_transactions', 'template':'templates/buyer_transactions.html', 'protected':True, 'audit_kind':'buyer'},
-    {'number':'27', 'title':'Seller Dashboard', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
-    {'number':'28', 'title':'FAQ', 'route':'/faq', 'endpoint':'faq', 'template':'templates/faq.html', 'protected':False, 'audit_kind':'public'},
-    {'number':'29', 'title':'Index', 'route':'/index', 'endpoint':'index_page', 'template':'index_page.html', 'protected':False, 'audit_kind':'public'},
-    {'number':'30', 'title':'Back Office', 'route':'/admin/back-office', 'endpoint':'admin_backoffice', 'template':'templates/admin_backoffice.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'21', 'title':'Status', 'route':'/transactions/<public_id>/status', 'endpoint':'courier_status', 'template':'templates/courier_status.html', 'protected':True, 'audit_kind':'tx_buyer_tracking'},
+    {'number':'22', 'title':'Buyer Transactions', 'route':'/buyer/transactions', 'endpoint':'buyer_transactions', 'template':'templates/buyer_transactions.html', 'protected':True, 'audit_kind':'buyer'},
+    {'number':'23', 'title':'Seller Dashboard', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
+    {'number':'24', 'title':'FAQ', 'route':'/faq', 'endpoint':'faq', 'template':'templates/faq.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'25', 'title':'Index', 'route':'/index', 'endpoint':'index_page', 'template':'index_page.html', 'protected':False, 'audit_kind':'public'},
+    {'number':'26', 'title':'Back Office', 'route':'/admin/back-office', 'endpoint':'admin_backoffice', 'template':'templates/admin_backoffice.html', 'protected':False, 'audit_kind':'public'},
 ]
 MASTER_PAGE_BY_NUMBER = {row['number']: row for row in MASTER_PAGE_MAP}
 
 
-def audit_login_as(role='buyer'):
+def audit_login_as(role='buyer', allowed_endpoint=None):
     conn = get_db()
     buyer, seller = ensure_demo_users(conn)
     user = seller if role == 'seller' else buyer
     establish_authenticated_session(user)
     session['audit_access_mode'] = True
+    if allowed_endpoint:
+        session['audit_allowed_endpoint'] = allowed_endpoint
     return user
 
 
-def audit_transaction_for(kind='tx_buyer'):
+def audit_transaction_for(kind='tx_buyer', allowed_endpoint=None):
     conn = get_db()
     buyer, seller = ensure_demo_users(conn)
     audit_seller = get_or_create_user(conn, 'seller.audit@bazont.local', 'seller')
@@ -1949,6 +2034,8 @@ def audit_transaction_for(kind='tx_buyer'):
     tx = get_or_create_audit_transaction(conn, buyer=buyer, paid=paid, assign_seller=assign_seller, tracking=tracking, audit_key=kind)
     establish_authenticated_session(audit_seller if role == 'seller' else buyer)
     session['audit_access_mode'] = True
+    if allowed_endpoint:
+        session['audit_allowed_endpoint'] = allowed_endpoint
     return tx
 
 
@@ -1958,10 +2045,10 @@ def audit_destination_for(page):
     if kind == 'public':
         return redirect(page['route'])
     if kind == 'buyer':
-        audit_login_as('buyer')
+        audit_login_as('buyer', endpoint)
         return redirect(url_for(endpoint))
     if kind == 'seller':
-        audit_login_as('seller')
+        audit_login_as('seller', endpoint)
         return redirect(url_for(endpoint))
     if kind == 'seller_join':
         conn = get_db()
@@ -1969,9 +2056,10 @@ def audit_destination_for(page):
         tx = get_or_create_audit_transaction(conn, buyer=buyer, paid=True, assign_seller=False, tracking=False)
         clear_authenticated_session()
         session['audit_access_mode'] = True
+        session['audit_allowed_endpoint'] = 'seller_join'
         return redirect(url_for('seller_join', token=tx['invite_token']))
     if kind.startswith('tx_'):
-        tx = audit_transaction_for(kind)
+        tx = audit_transaction_for(kind, endpoint)
         if endpoint in ('buyer_actions', 'transaction_detail', 'courier_logs', 'courier_status', 'invitation_email_preview'):
             return redirect(url_for(endpoint, public_id=tx['public_id']))
         if endpoint == 'invitation_preview':
@@ -1986,10 +2074,10 @@ def audit_master_page(page_no):
         abort(404)
     return audit_destination_for(page)
 
-# Backward-compatible audit aliases now delegate to the single master map.
+# Bazont24K: audit inspection entry is deliberately limited to /audit/p/<page_no>.
 @app.route('/audit/page<int:page_no>')
 def audit_page_legacy(page_no):
-    return redirect(url_for('audit_master_page', page_no=str(page_no)))
+    abort(404)
 
 @app.route('/audit-map.json')
 def audit_map_json():
@@ -2018,7 +2106,7 @@ def render_gateway_home_page():
     page_path = BASE_DIR / 'page0.html'
     content = page_path.read_text(encoding='utf-8')
     version = get_version()
-    content = re.sub(r'Bazont23[A-Z]\.zip', version, content)
+    content = re.sub(r'Bazont2[34][A-Z]\.zip', version, content)
     return content
 
 
@@ -2026,7 +2114,7 @@ def render_index_page():
     page_path = BASE_DIR / 'index_page.html'
     content = page_path.read_text(encoding='utf-8')
     version = get_version()
-    content = re.sub(r'Bazont23[A-Z]\.zip', version, content)
+    content = re.sub(r'Bazont2[34][A-Z]\.zip', version, content)
     content = content.replace('<!-- AUDIT_PANEL_ROWS -->', build_audit_panel_html())
     return content
 
