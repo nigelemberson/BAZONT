@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont25F.zip'
+DEFAULT_VERSION = 'Bazont25L.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
@@ -2135,10 +2135,50 @@ def find_active_seller_transaction(conn, user):
 @app.route('/seller/payment-secured')
 @login_required(role='seller')
 def seller_payment_secured():
-    """Focused seller transition page after invitation intro Pages 1-9."""
+    """Focused seller transition page after invitation intro Pages 1-9.
+
+    Bazont25L: allow the v26 Index/Audit Page 23 button to render the
+    Payment Secured page directly.  Normal seller lookup deliberately excludes
+    audit users/transactions, but Index is Steven's page inspection tool and
+    must not be bounced to Page 24 /seller/dashboard.
+    """
     user = current_user()
     conn = get_db()
-    selected_tx, transactions = find_active_seller_transaction(conn, user)
+
+    selected_tx = None
+    transactions = []
+
+    if session.get('audit_access_mode') is True and session.get('audit_allowed_endpoint') == 'seller_payment_secured':
+        active_public_id = (
+            session.get('active_seller_transaction_public_id')
+            or session.get('seller_onboarding_public_id')
+            or session.get('seller_invite_public_id')
+        )
+        if active_public_id:
+            selected_tx = conn.execute(
+                """SELECT t.*, buyer.email AS buyer_email
+                   FROM transactions t
+                   LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+                   WHERE t.public_id = ?""",
+                (active_public_id,)
+            ).fetchone()
+        if selected_tx is None:
+            selected_tx = conn.execute(
+                """SELECT t.*, buyer.email AS buyer_email
+                   FROM transactions t
+                   LEFT JOIN users buyer ON buyer.id = t.buyer_user_id
+                   WHERE t.item_description LIKE 'Audit access transaction%'
+                   ORDER BY t.id DESC LIMIT 1"""
+            ).fetchone()
+        if selected_tx:
+            transactions = [selected_tx]
+            session['active_seller_transaction_public_id'] = selected_tx['public_id']
+            session['seller_onboarding_public_id'] = selected_tx['public_id']
+            session['seller_invite_public_id'] = selected_tx['public_id']
+            session['seller_invite_journey'] = True
+    else:
+        selected_tx, transactions = find_active_seller_transaction(conn, user)
+
     if not selected_tx:
         flash('No joined seller transaction is available for this account. Please use the seller invitation link from the buyer.', 'error')
         return redirect(url_for('seller_dashboard'))
@@ -2400,7 +2440,7 @@ def render_gateway_home_page():
     page_path = BASE_DIR / 'page0.html'
     content = page_path.read_text(encoding='utf-8')
     version = get_version()
-    content = re.sub(r'Bazont2[34][A-Z]\.zip', version, content)
+    content = re.sub(r'Bazont2[3-9][A-Z]\.zip', version, content)
     return content
 
 
@@ -2408,7 +2448,7 @@ def render_index_page():
     page_path = BASE_DIR / 'index_page.html'
     content = page_path.read_text(encoding='utf-8')
     version = get_version()
-    content = re.sub(r'Bazont2[34][A-Z]\.zip', version, content)
+    content = re.sub(r'Bazont2[3-9][A-Z]\.zip', version, content)
     content = content.replace('<!-- AUDIT_PANEL_ROWS -->', build_audit_panel_html())
     return content
 

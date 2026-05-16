@@ -16,11 +16,12 @@
 16 | Invite | /buyer/transactions/<public_id>/invitation-preview | PROTECTED
 17 | Courier | /transactions/<public_id>/courier | PROTECTED
 18 | Seller | /seller/join/<token> | ALIVE
-19 | Transaction Detail | /transactions/<public_id> | PROTECTED
-20 | Invitation Email Preview | /buyer/transactions/<public_id>/invitation-email-preview | PROTECTED
+19 | TX | /transactions/<public_id> | PROTECTED
+20 | Email | /buyer/transactions/<public_id>/invitation-email-preview | PROTECTED
 21 | Status | /transactions/<public_id>/status | PROTECTED
-22 | Buyer Transactions | /buyer/transactions | PROTECTED
-23 | Seller Dashboard | /seller/dashboard | PROTECTED
-24 | FAQ | /faq | ALIVE
-25 | Index | /index | ALIVE
-26 | Back Office | /admin/back-office | ALIVE
+22 | Buyer Tx | /buyer/transactions | PROTECTED
+23 | Seller Payment Secured | /seller/payment-secured | PROTECTED
+24 | Seller Dashboard | /seller/dashboard | PROTECTED
+25 | FAQ | /faq | ALIVE
+26 | Index | /index | ALIVE
+27 | Back Office | /admin/back-office | ALIVE

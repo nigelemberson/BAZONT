@@ -886,12 +886,14 @@
   body.buyer-dashboard-page > .shell > .steps,
   body.new-transaction-page > .shell > .steps,
   body.invitation-preview-body > .shell > .steps,
-  body.transaction-detail-page > .shell > .steps { display:grid; grid-template-columns:repeat(8,1fr); gap:10px; margin:20px 0 20px; }
+  body.transaction-detail-page > .shell > .steps,
+body.seller-payment-secured-body > .shell > .steps { display:grid; grid-template-columns:repeat(8,1fr); gap:10px; margin:20px 0 20px; }
   body.role-select-page > .shell > .steps .step,
   body.buyer-dashboard-page > .shell > .steps .step,
   body.new-transaction-page > .shell > .steps .step,
   body.invitation-preview-body > .shell > .steps .step,
-  body.transaction-detail-page > .shell > .steps .step { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); color:#dbeafe; border-radius:16px; padding:12px 8px; text-align:center; font-size:13px; box-shadow:0 10px 24px rgba(0,0,0,0.18); }
+  body.transaction-detail-page > .shell > .steps .step,
+body.seller-payment-secured-body > .shell > .steps .step { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); color:#dbeafe; border-radius:16px; padding:12px 8px; text-align:center; font-size:13px; box-shadow:0 10px 24px rgba(0,0,0,0.18); }
   body.role-select-page > .shell > .steps .step.active,
   body.buyer-dashboard-page > .shell > .steps .step.active,
   body.new-transaction-page > .shell > .steps .step.active,
@@ -1227,13 +1229,15 @@
   }
   body.new-transaction-page > .shell > .steps,
   body.invitation-preview-body > .shell > .steps,
-  body.transaction-detail-page > .shell > .steps {
+  body.transaction-detail-page > .shell > .steps,
+body.seller-payment-secured-body > .shell > .steps {
     margin: 10px 0 10px !important;
     gap: 8px !important;
   }
   body.new-transaction-page > .shell > .steps .step,
   body.invitation-preview-body > .shell > .steps .step,
-  body.transaction-detail-page > .shell > .steps .step {
+  body.transaction-detail-page > .shell > .steps .step,
+body.seller-payment-secured-body > .shell > .steps .step {
     padding: 8px 6px !important;
     font-size: 12px !important;
   }
@@ -1393,7 +1397,8 @@
   body.buyer-dashboard-page > .shell > .steps,
   body.new-transaction-page > .shell > .steps,
   body.invitation-preview-body > .shell > .steps,
-  body.transaction-detail-page > .shell > .steps {
+  body.transaction-detail-page > .shell > .steps,
+body.seller-payment-secured-body > .shell > .steps {
     display:grid !important;
     grid-template-columns:repeat(9, minmax(0,1fr)) !important;
     gap:6px !important;
@@ -1404,7 +1409,8 @@
   body.buyer-dashboard-page > .shell > .steps .step,
   body.new-transaction-page > .shell > .steps .step,
   body.invitation-preview-body > .shell > .steps .step,
-  body.transaction-detail-page > .shell > .steps .step {
+  body.transaction-detail-page > .shell > .steps .step,
+body.seller-payment-secured-body > .shell > .steps .step {
     padding:10px 4px !important;
     font-size:12px !important;
     border-radius:14px !important;
@@ -2510,7 +2516,8 @@ body.buyer-dashboard-page > .shell > .steps,
 body.seller-dashboard-page > .shell > .steps,
 body.new-transaction-page > .shell > .steps,
 body.invitation-preview-body > .shell > .steps,
-body.transaction-detail-page > .shell > .steps {
+body.transaction-detail-page > .shell > .steps,
+body.seller-payment-secured-body > .shell > .steps {
   display: grid !important;
   grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
   gap: 4px !important;
@@ -2525,7 +2532,8 @@ body.buyer-dashboard-page > .shell > .steps .step,
 body.seller-dashboard-page > .shell > .steps .step,
 body.new-transaction-page > .shell > .steps .step,
 body.invitation-preview-body > .shell > .steps .step,
-body.transaction-detail-page > .shell > .steps .step {
+body.transaction-detail-page > .shell > .steps .step,
+body.seller-payment-secured-body > .shell > .steps .step {
   width: auto !important;
   min-width: 0 !important;
   max-width: none !important;
@@ -3063,7 +3071,8 @@ body.buyer-dashboard-page > .shell > .steps,
 body.seller-dashboard-page > .shell > .steps,
 body.new-transaction-page > .shell > .steps,
 body.invitation-preview-body > .shell > .steps,
-body.transaction-detail-page > .shell > .steps {
+body.transaction-detail-page > .shell > .steps,
+body.seller-payment-secured-body > .shell > .steps {
   display: grid !important;
   grid-template-columns: repeat(17, minmax(0, 1fr)) !important;
   gap: 3px !important;
@@ -3077,7 +3086,8 @@ body.buyer-dashboard-page > .shell > .steps .step,
 body.seller-dashboard-page > .shell > .steps .step,
 body.new-transaction-page > .shell > .steps .step,
 body.invitation-preview-body > .shell > .steps .step,
-body.transaction-detail-page > .shell > .steps .step {
+body.transaction-detail-page > .shell > .steps .step,
+body.seller-payment-secured-body > .shell > .steps .step {
   min-width: 0 !important;
   min-height: 28px !important;
   padding: 4px 2px !important;
@@ -3094,7 +3104,8 @@ body.transaction-detail-page > .shell > .steps .step {
   body.seller-dashboard-page > .shell > .steps,
   body.new-transaction-page > .shell > .steps,
   body.invitation-preview-body > .shell > .steps,
-  body.transaction-detail-page > .shell > .steps {
+  body.transaction-detail-page > .shell > .steps,
+body.seller-payment-secured-body > .shell > .steps {
     grid-template-columns: repeat(9, minmax(0, 1fr)) !important;
   }
 }
@@ -3257,6 +3268,241 @@ body.seller-payment-secured-body .seller-payment-bottom-nav .back-btn {
   body.seller-payment-secured-body .seller-detail-row { grid-template-columns: 1fr; gap: 4px; }
   body.seller-payment-secured-body .seller-payment-bottom-nav { flex-direction: column; }
   body.seller-payment-secured-body .seller-payment-bottom-nav .btn { width: 100%; max-width: none; }
+}
+
+
+/* Bazont25G: Page 23 Seller Payment Secured standard Bazont framework, presentation only. */
+body.seller-payment-secured-body > .shell {
+  max-width: 1280px !important;
+  padding-top: 14px !important;
+}
+body.seller-payment-secured-body .topbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 14px 18px !important;
+  border-radius: 22px !important;
+  min-height: 76px !important;
+  background: rgba(9,16,32,0.82) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  box-shadow: 0 18px 42px rgba(0,0,0,0.24) !important;
+}
+body.seller-payment-secured-body .brand.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex: 0 0 auto !important;
+}
+body.seller-payment-secured-body .header-icon.logo-b,
+body.seller-payment-secured-body .logo-b {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: contain !important;
+  border-radius: 14px !important;
+}
+body.seller-payment-secured-body .brand-title.brand-name {
+  font-size: 1.72rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 950 !important;
+}
+body.seller-payment-secured-body .brand-sub.subtitle {
+  font-size: 0.82rem !important;
+  line-height: 1.15 !important;
+  margin-top: 3px !important;
+}
+body.seller-payment-secured-body .demo-status {
+  flex: 1 1 auto !important;
+  text-align: center !important;
+  color: #f8fafc !important;
+  font-size: 0.98rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+}
+body.seller-payment-secured-body .topbar-auth {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+}
+body.seller-payment-secured-body .topbar-logout {
+  padding: 9px 13px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #ef4444, #b91c1c) !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 0.86rem !important;
+  font-weight: 900 !important;
+}
+body.seller-payment-secured-body .navchip {
+  max-width: 260px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  padding: 9px 12px !important;
+  border-radius: 999px !important;
+  font-size: 0.84rem !important;
+  font-weight: 850 !important;
+}
+body.seller-payment-secured-body .progress-wrap {
+  display: block !important;
+  margin: 10px 0 8px !important;
+}
+body.seller-payment-secured-body .progress-bar {
+  display: block !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  background: rgba(255,255,255,0.10) !important;
+}
+body.seller-payment-secured-body .progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #ffb022 0%, #ffd36b 58%, #3a86ff 100%) !important;
+  box-shadow: 0 8px 18px rgba(255,176,34,0.22) !important;
+}
+body.seller-payment-secured-body > .shell > .steps {
+  display: grid !important;
+  grid-template-columns: repeat(18, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+  margin: 7px 0 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.seller-payment-secured-body > .shell > .steps .step {
+  min-width: 0 !important;
+  min-height: 28px !important;
+  padding: 4px 2px !important;
+  border-radius: 8px !important;
+  font-size: 0.54rem !important;
+  line-height: 1.02 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+body.seller-payment-secured-body > .shell > .steps .step.active {
+  background: linear-gradient(180deg, #ffb022, #f97316) !important;
+  color: #111827 !important;
+  box-shadow: 0 8px 18px rgba(255,176,34,0.28) !important;
+}
+body.seller-payment-secured-body .page-wrap {
+  margin-top: 8px !important;
+  padding-top: 0 !important;
+}
+body.seller-payment-secured-body .seller-payment-secured-page {
+  max-width: 1220px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  gap: 14px !important;
+}
+body.seller-payment-secured-body .seller-payment-title-card.standard-title-banner {
+  padding: 18px 24px !important;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,41,59,0.74)) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 18px 42px rgba(0,0,0,0.22) !important;
+}
+body.seller-payment-secured-body .seller-payment-title-card .secure-kicker {
+  margin-bottom: 7px !important;
+  font-size: 0.8rem !important;
+}
+body.seller-payment-secured-body .seller-payment-title-card .hero-title {
+  font-size: clamp(1.9rem, 2.6vw, 2.55rem) !important;
+  line-height: 1.04 !important;
+  margin: 0 0 6px !important;
+}
+body.seller-payment-secured-body .seller-payment-title-card .hero-subtitle {
+  font-size: clamp(1.02rem, 1.2vw, 1.18rem) !important;
+  line-height: 1.38 !important;
+  margin: 0 !important;
+  color: #dbeafe !important;
+}
+body.seller-payment-secured-body .seller-confirmation-panel.seller-confirmation-green {
+  padding: 18px 24px !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(134,239,172,0.42) !important;
+  background: linear-gradient(135deg, rgba(22,101,52,0.92), rgba(21,128,61,0.58)) !important;
+  box-shadow: 0 18px 44px rgba(22,101,52,0.26) !important;
+}
+body.seller-payment-secured-body .seller-confirmation-panel h2 {
+  font-size: clamp(1.45rem, 1.85vw, 1.95rem) !important;
+  line-height: 1.12 !important;
+  margin: 0 0 7px !important;
+}
+body.seller-payment-secured-body .seller-confirmation-panel p {
+  font-size: clamp(1rem, 1.1vw, 1.12rem) !important;
+  line-height: 1.45 !important;
+}
+body.seller-payment-secured-body .seller-secured-columns.seller-two-column-workspace {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+body.seller-payment-secured-body .seller-secured-column {
+  display: grid !important;
+  gap: 14px !important;
+}
+body.seller-payment-secured-body .seller-info-panel {
+  padding: 18px 20px !important;
+  border-radius: 20px !important;
+  background: rgba(15,23,42,0.64) !important;
+  border: 1px solid rgba(255,255,255,0.11) !important;
+}
+body.seller-payment-secured-body .seller-info-panel .section-title {
+  font-size: 1.28rem !important;
+  line-height: 1.15 !important;
+  margin: 0 0 11px !important;
+  color: #fff !important;
+}
+body.seller-payment-secured-body .seller-detail-list { gap: 8px !important; }
+body.seller-payment-secured-body .seller-detail-row {
+  grid-template-columns: 40% minmax(0, 1fr) !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 13px !important;
+}
+body.seller-payment-secured-body .seller-detail-label {
+  font-size: 0.82rem !important;
+  line-height: 1.15 !important;
+}
+body.seller-payment-secured-body .seller-detail-value {
+  font-size: 1rem !important;
+  line-height: 1.25 !important;
+}
+body.seller-payment-secured-body .seller-rule-list,
+body.seller-payment-secured-body .seller-next-list {
+  gap: 8px !important;
+  font-size: 1rem !important;
+  line-height: 1.38 !important;
+}
+body.seller-payment-secured-body .seller-primary-action {
+  margin-top: 8px !important;
+  min-height: 52px !important;
+  font-size: 1.08rem !important;
+  border-radius: 15px !important;
+}
+body.seller-payment-secured-body .seller-payment-bottom-nav {
+  padding-top: 4px !important;
+  gap: 16px !important;
+}
+body.seller-payment-secured-body .seller-payment-bottom-nav .btn {
+  width: 170px !important;
+  min-height: 46px !important;
+}
+@media (max-width: 1180px) {
+  body.seller-payment-secured-body > .shell > .steps { grid-template-columns: repeat(9, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 980px) {
+  body.seller-payment-secured-body .seller-secured-columns.seller-two-column-workspace { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 760px) {
+  body.seller-payment-secured-body .topbar { flex-wrap: wrap !important; }
+  body.seller-payment-secured-body .demo-status { order: 3; flex-basis: 100% !important; }
 }
 
 </style>

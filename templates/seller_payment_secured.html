@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="stack seller-payment-secured-page">
-  <section class="hero-card seller-payment-title-card">
+<div class="seller-payment-secured-page seller-payment-secured-standard">
+  <section class="hero-card seller-payment-title-card standard-title-banner">
     <div class="secure-kicker">Seller workflow</div>
     <h1 class="hero-title">Seller Payment Secured</h1>
     <p class="hero-subtitle">Bazont is securely holding the buyer’s payment for this transaction.</p>
   </section>
 
-  <section class="panel seller-confirmation-panel" aria-label="Payment secured confirmation">
+  <section class="panel seller-confirmation-panel seller-confirmation-green" aria-label="Payment secured confirmation">
     <h2>Bazont securely holds the buyer’s payment.</h2>
     <p>You now have {{ TRACKING_DEADLINE_DAYS }} days to arrange shipping and submit valid courier tracking details before the transaction auto-cancels and the buyer is refunded.</p>
   </section>
 
-  <section class="seller-secured-columns" aria-label="Seller payment secured details">
+  <section class="seller-secured-columns seller-two-column-workspace" aria-label="Seller payment secured details">
     <div class="seller-secured-column">
       <div class="panel seller-info-panel">
         <h3 class="section-title">Transaction details</h3>
