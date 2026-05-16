@@ -1,9 +1,9 @@
-Bazont25E.zip
+Bazont25F.zip
 
 F_B_C_v26 handover
 
 Baseline: Bazont25C.zip
-Build: Bazont25E.zip
+Build: Bazont25F.zip
 
 Amendment:
 - Added focused Seller Payment Secured page after seller_invite Pages 1-9.
@@ -12,6 +12,6 @@ Amendment:
 - Seller payment-secured page shows transaction identity, secured-payment message, money details, 3-day tracking rule, seller next actions, and Continue to Shipping Details.
 - Buyer/public flow preserved.
 
-Bazont25E: Connected Seller Payment Secured page to seller-only shipping details and courier progress routing.
+Bazont25F: Cleaned Seller Payment Secured page presentation, standard frame, two-column layout, and removed duplicate Next navigation.
 
-Bazont25E: Connected Seller Payment Secured page to seller-only shipping details and courier progress routing.
+Bazont25F: Cleaned Seller Payment Secured page presentation, standard frame, two-column layout, and removed duplicate Next navigation.

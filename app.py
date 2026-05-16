@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont25E.zip'
+DEFAULT_VERSION = 'Bazont25F.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():

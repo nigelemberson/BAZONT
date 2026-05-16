@@ -3106,13 +3106,166 @@ body.seller-join-clean-page .password-eye-toggle { position: absolute !important
 body.seller-join-clean-page .password-eye-toggle svg { width: 18px !important; height: 18px !important; display: block !important; fill: none !important; stroke: currentColor !important; stroke-width: 1.9 !important; stroke-linecap: round !important; stroke-linejoin: round !important; }
 body.seller-join-clean-page .password-eye-toggle svg circle { fill: none !important; }
 
+
+/* Bazont25F: Seller Payment Secured page presentation cleanup only. */
+body.seller-payment-secured-body .page-wrap {
+  padding-top: 20px !important;
+}
+body.seller-payment-secured-body .seller-payment-secured-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  gap: 18px;
+}
+body.seller-payment-secured-body .seller-payment-title-card {
+  padding: 24px 28px !important;
+  border-radius: 24px !important;
+  background: rgba(15,23,42,0.62) !important;
+}
+body.seller-payment-secured-body .seller-payment-title-card .secure-kicker {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(34,197,94,0.16);
+  border: 1px solid rgba(34,197,94,0.34);
+  color: #86efac;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+body.seller-payment-secured-body .seller-payment-title-card .hero-title {
+  font-size: clamp(2.15rem, 3vw, 3rem) !important;
+  margin-bottom: 8px !important;
+}
+body.seller-payment-secured-body .seller-payment-title-card .hero-subtitle {
+  font-size: clamp(1.12rem, 1.45vw, 1.38rem) !important;
+  line-height: 1.45 !important;
+}
+body.seller-payment-secured-body .seller-confirmation-panel {
+  padding: 22px 26px !important;
+  border-color: rgba(34,197,94,0.34) !important;
+  background: linear-gradient(135deg, rgba(22,101,52,0.78), rgba(21,128,61,0.46)) !important;
+  box-shadow: 0 22px 54px rgba(22,101,52,0.24) !important;
+}
+body.seller-payment-secured-body .seller-confirmation-panel h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.72rem, 2.3vw, 2.35rem);
+  color: #ffffff;
+}
+body.seller-payment-secured-body .seller-confirmation-panel p {
+  margin: 0;
+  color: #eafff0;
+  font-size: clamp(1.05rem, 1.35vw, 1.26rem);
+  line-height: 1.55;
+  font-weight: 700;
+}
+body.seller-payment-secured-body .seller-secured-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+body.seller-payment-secured-body .seller-secured-column {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+body.seller-payment-secured-body .seller-info-panel {
+  padding: 22px 24px !important;
+  border-radius: 22px !important;
+}
+body.seller-payment-secured-body .seller-info-panel .section-title {
+  font-size: 1.48rem !important;
+  margin-bottom: 14px !important;
+}
+body.seller-payment-secured-body .seller-detail-list {
+  display: grid;
+  gap: 10px;
+}
+body.seller-payment-secured-body .seller-detail-row {
+  display: grid;
+  grid-template-columns: 42% minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.09);
+  align-items: center;
+}
+body.seller-payment-secured-body .seller-detail-label {
+  color: rgba(219,234,254,0.82);
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+body.seller-payment-secured-body .seller-detail-value {
+  color: #fff;
+  font-size: 1.08rem;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+body.seller-payment-secured-body .seller-detail-value.good {
+  color: #86efac;
+}
+body.seller-payment-secured-body .seller-rule-list,
+body.seller-payment-secured-body .seller-next-list {
+  margin: 0;
+  padding-left: 23px;
+  display: grid;
+  gap: 11px;
+  color: #dbeafe;
+  font-size: 1.08rem;
+  line-height: 1.45;
+}
+body.seller-payment-secured-body .seller-rule-list li::marker,
+body.seller-payment-secured-body .seller-next-list li::marker {
+  color: #ffcf5a;
+  font-weight: 900;
+}
+body.seller-payment-secured-body .seller-primary-action {
+  margin-top: 4px;
+  width: 100%;
+  min-height: 56px;
+  font-size: 1.14rem;
+  background: linear-gradient(180deg, #22c55e, #15803d) !important;
+  box-shadow: 0 16px 34px rgba(21,128,61,0.36) !important;
+}
+body.seller-payment-secured-body .seller-payment-bottom-nav {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 16px 0 0;
+}
+body.seller-payment-secured-body .seller-payment-bottom-nav .btn {
+  width: 180px;
+  max-width: 45%;
+}
+body.seller-payment-secured-body .seller-payment-bottom-nav .home-btn {
+  background: linear-gradient(180deg, #22c55e, #15803d) !important;
+  box-shadow: 0 14px 30px rgba(21,128,61,0.28) !important;
+}
+body.seller-payment-secured-body .seller-payment-bottom-nav .back-btn {
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8) !important;
+  box-shadow: 0 14px 30px rgba(29,78,216,0.28) !important;
+}
+@media (max-width: 980px) {
+  body.seller-payment-secured-body .seller-secured-columns { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  body.seller-payment-secured-body .seller-detail-row { grid-template-columns: 1fr; gap: 4px; }
+  body.seller-payment-secured-body .seller-payment-bottom-nav { flex-direction: column; }
+  body.seller-payment-secured-body .seller-payment-bottom-nav .btn { width: 100%; max-width: none; }
+}
+
 </style>
 </head>
-<body class="{% if request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'seller_dashboard' %}seller-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% elif request.endpoint == 'admin_backoffice' %}admin-backoffice-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
-{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','latest_invitation_preview':'16','invitation_email_preview':'20','courier_logs':'17','seller_join':'18','transaction_detail':'19','courier_status':'21','buyer_transactions':'22','seller_dashboard':'23','faq':'24','index_page':'25','admin_backoffice':'26','page1_intro':'2'} %}
-{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'courier_status', 'buyer_transactions', 'seller_dashboard'] %}
-{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'19', 'invitation_email_preview':'20', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'21', 'buyer_transactions':'22', 'seller_dashboard':'23', 'faq':'24', 'index_page':'25', 'admin_backoffice':'26'} %}
-{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('19','Tx'), ('20','Email'), ('21','Status'), ('22','Buyer Tx'), ('23','Seller Dash'), ('24','FAQ'), ('25','Index'), ('26','Back Office')] %}
+<body class="{% if request.endpoint == 'seller_payment_secured' %}seller-payment-secured-body{% elif request.endpoint == 'register' %}register-page{% elif request.endpoint == 'role_select' %}role-select-page{% elif request.endpoint in ['buyer_dashboard', 'buyer_transactions'] %}buyer-dashboard-page{% elif request.endpoint == 'seller_dashboard' %}seller-dashboard-page{% elif request.endpoint == 'new_transaction' %}new-transaction-page{% elif request.endpoint in ['transaction_detail','buyer_actions','courier_logs','courier_status'] %}transaction-detail-page{% elif request.endpoint == 'invitation_preview' %}invitation-preview-body{% elif request.endpoint == 'seller_join' %}seller-join-clean-page{% elif request.endpoint == 'admin_backoffice' %}admin-backoffice-page{% endif %} endpoint-{{ request.endpoint|replace('_', '-') }}">
+{% set PAGE_IDS = {'register':'10','login':'11','role_select':'12','buyer_dashboard':'13','new_transaction':'14','buyer_actions':'15','invitation_preview':'16','latest_invitation_preview':'16','invitation_email_preview':'20','courier_logs':'17','seller_join':'18','transaction_detail':'19','courier_status':'21','buyer_transactions':'22','seller_payment_secured':'23','seller_dashboard':'24','faq':'25','index_page':'26','admin_backoffice':'27','page1_intro':'2'} %}
+{% set NORMALISED_PAGES = ['register', 'role_select', 'buyer_dashboard', 'new_transaction', 'buyer_actions', 'invitation_preview', 'transaction_detail', 'courier_logs', 'courier_status', 'buyer_transactions', 'seller_payment_secured', 'seller_dashboard'] %}
+{% set ACTIVE_PAGES = {'register':'10', 'role_select':'12', 'buyer_dashboard':'13', 'new_transaction':'14', 'buyer_actions':'15', 'invitation_preview':'16', 'transaction_detail':'19', 'invitation_email_preview':'20', 'courier_logs':'17', 'seller_join':'18', 'courier_status':'21', 'buyer_transactions':'22', 'seller_payment_secured':'23', 'seller_dashboard':'24', 'faq':'25', 'index_page':'26', 'admin_backoffice':'27'} %}
+{% set FLOW_PAGES = [('10','Register'), ('11','Login'), ('12','Role'), ('13','Dashboard'), ('14','Create'), ('15','Pay'), ('16','Invite'), ('17','Courier'), ('18','Seller'), ('19','Tx'), ('20','Email'), ('21','Status'), ('22','Buyer Tx'), ('23','Seller Pay'), ('24','Seller Dash'), ('25','FAQ'), ('26','Index'), ('27','Back Office')] %}
 {% if request.endpoint in PAGE_IDS %}<div class="page-id-badge" style="position:fixed;top:8px;left:10px;z-index:2147483647;background:rgba(15,23,42,0.92);color:#fff;padding:4px 8px;border-radius:999px;font:700 12px/1 Arial,sans-serif;letter-spacing:0.04em;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.28);">{{ PAGE_IDS[request.endpoint] }}</div>{% endif %}
   <div class="shell">
     {% if request.endpoint in NORMALISED_PAGES %}
@@ -3121,7 +3274,7 @@ body.seller-join-clean-page .password-eye-toggle svg circle { fill: none !import
       <div class="demo-status">Secure the Deal: Pay Safe. Ship Safe. Bazont follows the Rules.</div>
       {% if current_user %}<div class="topbar-auth"><a class="topbar-logout" href="{{ url_for('logout') }}">Logout</a><span class="navchip">{{ current_user['email'] }}{% if current_display_role %} • {{ current_display_role }}{% endif %}</span></div>{% endif %}
     </div>
-    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ [100, ((((ACTIVE_PAGES[request.endpoint]|int) - 9) / 17 * 100)|round(2))]|min }}%"></div></div></div>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:{{ [100, ((((ACTIVE_PAGES[request.endpoint]|int) - 9) / 18 * 100)|round(2))]|min }}%"></div></div></div>
     <div class="steps">
       {% for page_no, label in FLOW_PAGES %}<div class="step{% if page_no == ACTIVE_PAGES[request.endpoint] %} active{% endif %}">{{ page_no }}<br>{{ label }}</div>{% endfor %}
     </div>
