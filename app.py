@@ -22,7 +22,7 @@ DATA_DIR = Path(os.environ.get('BAZONT_DATA_DIR', Path.home() / 'BAZONT_data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = Path(os.environ.get('BAZONT_DB_PATH', DATA_DIR / 'bazont.db'))
 VERSION_FILE = BASE_DIR / 'version.txt'
-DEFAULT_VERSION = 'Bazont25L.zip'
+DEFAULT_VERSION = 'Bazont25N.zip'
 DEMO_EMAILS = {'buyer_demo@bazont.local', 'seller_demo@bazont.local'}
 def get_version():
     if VERSION_FILE.exists():
@@ -2137,7 +2137,7 @@ def find_active_seller_transaction(conn, user):
 def seller_payment_secured():
     """Focused seller transition page after invitation intro Pages 1-9.
 
-    Bazont25L: allow the v26 Index/Audit Page 23 button to render the
+    Bazont25M: allow the v26 Index/Audit Page 23 button to render the
     Payment Secured page directly.  Normal seller lookup deliberately excludes
     audit users/transactions, but Index is Steven's page inspection tool and
     must not be bounced to Page 24 /seller/dashboard.
@@ -2331,8 +2331,8 @@ MASTER_PAGE_MAP = [
     {'number':'20', 'title':'Invitation Email Preview', 'route':'/buyer/transactions/<public_id>/invitation-email-preview', 'endpoint':'invitation_email_preview', 'template':'generated html', 'protected':True, 'audit_kind':'tx_paid_buyer'},
     {'number':'21', 'title':'Status', 'route':'/transactions/<public_id>/status', 'endpoint':'courier_status', 'template':'templates/courier_status.html', 'protected':True, 'audit_kind':'tx_buyer_tracking'},
     {'number':'22', 'title':'Buyer Transactions', 'route':'/buyer/transactions', 'endpoint':'buyer_transactions', 'template':'templates/buyer_transactions.html', 'protected':True, 'audit_kind':'buyer'},
-    {'number':'23', 'title':'Seller Payment Secured', 'route':'/seller/payment-secured', 'endpoint':'seller_payment_secured', 'template':'templates/seller_payment_secured.html', 'protected':True, 'audit_kind':'tx_seller_tracking'},
-    {'number':'24', 'title':'Seller Dashboard', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
+    {'number':'23', 'title':'Seller Pay', 'route':'/seller/payment-secured', 'endpoint':'seller_payment_secured', 'template':'templates/seller_payment_secured.html', 'protected':True, 'audit_kind':'tx_seller_tracking'},
+    {'number':'24', 'title':'Seller Dash', 'route':'/seller/dashboard', 'endpoint':'seller_dashboard', 'template':'templates/seller_dashboard.html', 'protected':True, 'audit_kind':'seller'},
     {'number':'25', 'title':'FAQ', 'route':'/faq', 'endpoint':'faq', 'template':'templates/faq.html', 'protected':False, 'audit_kind':'public'},
     {'number':'26', 'title':'Index', 'route':'/index', 'endpoint':'index_page', 'template':'index_page.html', 'protected':False, 'audit_kind':'public'},
     {'number':'27', 'title':'Back Office', 'route':'/admin/back-office', 'endpoint':'admin_backoffice', 'template':'templates/admin_backoffice.html', 'protected':False, 'audit_kind':'public'},

@@ -2,9 +2,7 @@
 {% block content %}
 <div class="seller-payment-secured-page seller-payment-secured-standard">
   <section class="hero-card seller-payment-title-card standard-title-banner">
-    <div class="secure-kicker">Seller workflow</div>
     <h1 class="hero-title">Seller Payment Secured</h1>
-    <p class="hero-subtitle">Bazont is securely holding the buyer’s payment for this transaction.</p>
   </section>
 
   <section class="panel seller-confirmation-panel seller-confirmation-green" aria-label="Payment secured confirmation">
@@ -28,16 +26,14 @@
         <h3 class="section-title">Money / security details</h3>
         <div class="seller-detail-list">
           <div class="seller-detail-row"><span class="seller-detail-label">Total amount held</span><span class="seller-detail-value good">₱{{ '%.2f'|format(financials.platform_holds) }}</span></div>
-          <div class="seller-detail-row"><span class="seller-detail-label">Buyer payment</span><span class="seller-detail-value good">Secured by Bazont</span></div>
           <div class="seller-detail-row"><span class="seller-detail-label">Seller receives on delivery</span><span class="seller-detail-value good">₱{{ '%.2f'|format(financials.seller_receives) }}</span></div>
           <div class="seller-detail-row"><span class="seller-detail-label">Seller fee</span><span class="seller-detail-value">₱{{ '%.2f'|format(financials.seller_fee) }}</span></div>
           <div class="seller-detail-row"><span class="seller-detail-label">Shipping fee</span><span class="seller-detail-value">₱{{ '%.2f'|format(financials.shipping_price) }} included</span></div>
-          <div class="seller-detail-row"><span class="seller-detail-label">Release rule</span><span class="seller-detail-value">Payment released after courier confirms DELIVERED.</span></div>
         </div>
       </div>
     </div>
 
-    <div class="seller-secured-column">
+    <div class="seller-secured-column seller-secured-right-column">
       <div class="panel seller-info-panel">
         <h3 class="section-title">Seller rules</h3>
         <ul class="seller-rule-list">
@@ -57,12 +53,15 @@
         </ol>
         <a class="btn seller-primary-action" href="{{ url_for('seller_shipping_details') }}">Continue to Shipping Details →</a>
       </div>
+
+      <div class="seller-right-actions-area" aria-label="Seller payment navigation">
+        <p class="seller-release-note seller-release-note-right">Payment released after courier confirms DELIVERED.</p>
+        <nav class="seller-payment-bottom-nav seller-payment-side-nav" aria-label="Seller payment secured navigation">
+          <a class="btn home-btn" href="{{ url_for('gateway_home') }}">Home</a>
+          <a class="btn back-btn" href="{{ url_for('seller_invite_back') }}">Back</a>
+        </nav>
+      </div>
     </div>
   </section>
-
-  <nav class="seller-payment-bottom-nav" aria-label="Seller payment secured navigation">
-    <a class="btn home-btn" href="{{ url_for('gateway_home') }}">Home</a>
-    <a class="btn back-btn" href="{{ url_for('seller_invite_back') }}">Back</a>
-  </nav>
 </div>
 {% endblock %}
