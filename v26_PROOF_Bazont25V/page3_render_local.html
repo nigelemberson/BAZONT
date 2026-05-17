@@ -27,7 +27,7 @@
     .progress-fill { height: 100%; width: 16.66%; border-radius: 999px; background: linear-gradient(90deg, #ffb022 0%, #3a86ff 100%); }
 
     /* BUILD 15P: shield framing fix - full shield visible, no vertical crop. */
-    /* Bazont25V: Page 3 only - refined left text typography: title slightly reduced, paragraph gap added, subtitle changed to enforcement green; no artwork/button/structure changes. */
+    /* Bazont25V: Page 3 only - moved complete left text block up 46px and left 26px; no text/artwork/button/structure changes. */
     .page2-hero {
       flex: 1;
       min-height: 0;
@@ -62,7 +62,7 @@
       top: calc(10.8% - 46px);
       z-index: 4;
       margin: 0;
-      font-size: clamp(54px, 4.45vw, 68px);
+      font-size: clamp(60px, 4.95vw, 76px);
       line-height: 1.05;
       font-weight: 900;
       letter-spacing: -0.045em;
@@ -73,19 +73,19 @@
     .rules-subtitle {
       position: absolute;
       left: calc(5.25% - 26px);
-      top: calc(31.5% - 46px);
+      top: calc(29.0% - 46px);
       z-index: 4;
       margin: 0;
       font-size: 28px;
       line-height: 1.20;
-      color: #00d27a;
+      color: #5aa2ff;
       font-weight: 700;
       text-shadow: 0 3px 16px rgba(0,0,0,0.62);
     }
     .rules-separator {
       position: absolute;
       left: calc(5.25% - 26px);
-      top: calc(36.4% - 46px);
+      top: calc(34.2% - 46px);
       width: 610px;
       height: 1px;
       background: linear-gradient(90deg, rgba(127,179,255,0.38), rgba(127,179,255,0));
@@ -94,7 +94,7 @@
     .rules-list {
       position: absolute;
       left: calc(5.25% - 26px);
-      top: calc(39.1% - 46px);
+      top: calc(37.0% - 46px);
       z-index: 4;
       width: 760px;
       max-width: 49vw;
@@ -235,10 +235,10 @@
 }
 
     @media (max-height: 760px) and (min-width: 901px) {
-      .rules-title { top: calc(7.5% - 46px); font-size: 49px; }
-      .rules-subtitle { top: calc(27.4% - 46px); font-size: 25px; line-height: 1.14; }
-      .rules-separator { top: calc(32.4% - 46px); }
-      .rules-list { top: calc(34.8% - 46px); max-width: 55vw; }
+      .rules-title { top: calc(7.5% - 46px); font-size: 54px; }
+      .rules-subtitle { top: calc(25.2% - 46px); font-size: 25px; line-height: 1.14; }
+      .rules-separator { top: calc(30.2% - 46px); }
+      .rules-list { top: calc(32.6% - 46px); max-width: 55vw; }
       .rule-row { margin-bottom: 6px; grid-template-columns: 58px 10px minmax(0, 1fr); column-gap: 12px; }
       .rule-icon { width: 42px; height: 42px; font-size: 22px; }
       .rule-line { height: 42px; }
@@ -250,10 +250,10 @@
     @media (max-width: 900px) {
       .page-shell { width: min(100%, calc(100vw - 28px)); }
       .page2-overlay { width: 100%; background: linear-gradient(to right, rgba(5,15,30,0.96), rgba(5,15,30,0.82)); }
-      .rules-title { left: 5.2%; top: 10.8%; font-size: clamp(2.0rem, 7.4vw, 2.95rem); max-width: 86%; }
-      .rules-subtitle { left: 5.25%; top: 31.5%; max-width: 86%; color: #00d27a; }
-      .rules-list { left: 5.25%; top: 39.1%; max-width: 86%; width: 86%; }
-     .rules-separator { left: 5.25%; top: 36.4%; width: 86%; }
+      .rules-title { left: 5.2%; top: 10.8%; font-size: clamp(2.2rem, 8vw, 3.2rem); max-width: 86%; }
+      .rules-subtitle { left: 5.25%; top: 29.0%; max-width: 86%; }
+      .rules-list { left: 5.25%; top: 37.0%; max-width: 86%; width: 86%; }
+     .rules-separator { left: 5.25%; top: 34.2%; width: 86%; }
       .controls { flex-wrap: nowrap; }
       .primary-btn, .ghost-btn { min-width: 0; flex: 1; }
     }

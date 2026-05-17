@@ -1,5 +1,3 @@
-Bazont25N.zip
-
-Fix: Index/Audit Page 23 now renders /seller/payment-secured directly instead of bouncing to Page 24 /seller/dashboard.
-
-Scope: app.py route/audit handling + version bump only.
+Bazont25V.zip
+Baseline: Bazont25U.zip
+Page 3 only: refined left text block typography. Reduced main title size, added visual paragraph break after Sides, changed subtitle to Bazont enforcement green. Version references bumped to Bazont25V.zip. Flat ZIP packaged after package_check and compileall.
